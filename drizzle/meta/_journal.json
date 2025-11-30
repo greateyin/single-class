@@ -8,6 +8,20 @@
       "when": 1764503075657,
       "tag": "0000_late_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1764504072087,
+      "tag": "0001_puzzling_scrambler",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1764504085179,
+      "tag": "0002_good_rafael_vega",
+      "breakpoints": true
     }
   ]
 }

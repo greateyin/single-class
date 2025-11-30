@@ -8,7 +8,9 @@ export const offerType = pgEnum('offer_type', ['core', 'upsell', 'downsell']);
 // 1. Users
 export const users = pgTable('users', {
   id: text('id').primaryKey(), // Matches Auth.js ID format
+  name: text('name'),
   email: text('email').notNull().unique(),
+  image: text('image'),
   hashedPassword: text('hashed_password'), // For Credentials provider
   role: userRoles('role').default('student').notNull(),
   stripeCustomerId: text('stripe_customer_id'), // Critical for One-Click Upsell
@@ -21,6 +23,8 @@ export const lessons = pgTable('lessons', {
   title: varchar('title', { length: 256 }).notNull(),
   orderIndex: integer('order_index').notNull(), // Determines sequence
   videoEmbedUrl: text('video_embed_url').notNull(), // Vimeo URL
+  description: text('description'),
+  slug: text('slug').unique(),
   hasAttachment: boolean('has_attachment').default(false),
   hasAssessment: boolean('has_assessment').default(false),
 });
