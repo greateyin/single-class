@@ -6,8 +6,8 @@ import { db } from '@/db';
 import { transactions, users } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { revalidateTag, revalidatePath } from 'next/cache';
+import { stripe } from '@/lib/stripe';
 
-// Mock Prices (In real app, fetch from DB or Stripe)
 const PRICES = {
     core: 9700, // $97.00
     upsell: 4700, // $47.00
@@ -16,22 +16,47 @@ const PRICES = {
 
 export async function createCoreCheckoutSession() {
     const session = await enforceAuthentication();
+    console.log('createCoreCheckoutSession Session:', session);
     const userId = session.user.id;
+    console.log('createCoreCheckoutSession User ID:', userId);
 
-    // MOCK: Simulate Stripe Checkout creation
-    console.log(`[MOCK] Creating Core Checkout for user ${userId}`);
+    const checkoutSession = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+            {
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: 'Single Class Platform - Core Course',
+                        description: 'The Ultimate Guide to Single Class Architecture',
+                    },
+                    unit_amount: PRICES.core,
+                },
+                quantity: 1,
+            },
+        ],
+        mode: 'payment',
+        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/upsell?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/core`,
+        customer_email: session.user.email || undefined,
+        metadata: {
+            userId,
+            offerType: 'core',
+        },
+        payment_intent_data: {
+            setup_future_usage: 'off_session', // Save card for upsells
+            metadata: {
+                userId,
+                offerType: 'core',
+            }
+        }
+    });
 
-    // In real implementation:
-    // const stripeSession = await stripe.checkout.sessions.create({...})
-    // redirect(stripeSession.url)
+    if (!checkoutSession.url) {
+        throw new Error('Failed to create checkout session');
+    }
 
-    // For testing, we simulate a successful redirect to a "mock payment" page
-    // or directly to the success URL logic.
-    // Let's simulate a direct fulfillment for now to unblock UI dev.
-
-    await fulfillOrder(userId, 'core', `mock_pi_${Date.now()}`, 'stripe', `mock_cus_${userId}`);
-
-    redirect('/upsell');
+    redirect(checkoutSession.url);
 }
 
 export async function handleOneClickUpsell() {
@@ -45,60 +70,91 @@ export async function handleOneClickUpsell() {
 
     if (!user?.stripeCustomerId) {
         console.error('No Stripe Customer ID found for One-Click Upsell');
-        redirect('/downsell'); // Fallback
+        redirect('/downsell'); // Fallback if no card on file
     }
 
-    // MOCK: Simulate Off-Session Payment Intent
-    console.log(`[MOCK] Charging Upsell to ${user.stripeCustomerId}`);
+    try {
+        // 2. Create PaymentIntent Off-Session
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: PRICES.upsell,
+            currency: 'usd',
+            customer: user.stripeCustomerId,
+            payment_method: 'pm_card_visa', // TEST MODE ONLY: Force success. In prod, retrieve default payment method.
+            // In production, you would list payment methods and pick the default one:
+            // const paymentMethods = await stripe.paymentMethods.list({ customer: user.stripeCustomerId, type: 'card' });
+            // payment_method: paymentMethods.data[0].id,
+            off_session: true,
+            confirm: true,
+            metadata: {
+                userId,
+                offerType: 'upsell',
+            },
+            description: 'Single Class Platform - Advanced Module (Upsell)',
+        });
 
-    await fulfillOrder(userId, 'upsell', `mock_pi_upsell_${Date.now()}`, 'stripe', user.stripeCustomerId);
-
-    redirect('/confirmation');
+        if (paymentIntent.status === 'succeeded') {
+            // Webhook will handle DB insertion, but we can do optimistic update or wait.
+            // For speed, let's just redirect to confirmation.
+            redirect('/confirmation');
+        } else {
+            // Handle authentication required (3D Secure)
+            console.warn('Payment requires action', paymentIntent.status);
+            redirect('/downsell'); // Or show error
+        }
+    } catch (error) {
+        console.error('Upsell Failed:', error);
+        redirect('/downsell');
+    }
 }
 
 export async function handleDownsellPurchase() {
     const session = await enforceAuthentication();
     const userId = session.user.id;
 
-    // MOCK: Simulate Downsell Charge (could be another checkout or one-click)
-    console.log(`[MOCK] Charging Downsell for user ${userId}`);
+    // For Downsell, we can also try one-click if they have a customer ID, 
+    // or send them to a new Checkout Session if we want to be safe.
+    // Let's try One-Click for consistency.
 
-    await fulfillOrder(userId, 'downsell', `mock_pi_downsell_${Date.now()}`, 'stripe', `mock_cus_${userId}`);
-
-    redirect('/confirmation');
-}
-
-// Internal Fulfillment Logic (duplicated from webhook for mock)
-async function fulfillOrder(userId: string, offerType: 'core' | 'upsell' | 'downsell', paymentIntentId: string, source: string, customerId: string) {
-    // Idempotency check
-    const existing = await db.query.transactions.findFirst({
-        where: eq(transactions.paymentIntentId, paymentIntentId)
+    const user = await db.query.users.findFirst({
+        where: eq(users.id, userId),
     });
 
-    if (existing) return;
-
-    await db.transaction(async (tx) => {
-        await tx.insert(transactions).values({
-            userId,
-            amountCents: PRICES[offerType],
-            status: 'completed',
-            type: offerType,
-            paymentIntentId,
-            isVaulted: true, // Mocking that we saved the card
+    if (!user?.stripeCustomerId) {
+        // Fallback to Checkout if no customer ID
+        const checkoutSession = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+                price_data: {
+                    currency: 'usd',
+                    product_data: { name: 'Single Class Platform - Lite Pack' },
+                    unit_amount: PRICES.downsell,
+                },
+                quantity: 1,
+            }],
+            mode: 'payment',
+            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/confirmation`,
+            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/downsell`,
+            metadata: { userId, offerType: 'downsell' },
         });
+        if (checkoutSession.url) redirect(checkoutSession.url);
+        return;
+    }
 
-        if (offerType === 'core') {
-            await tx.update(users)
-                .set({ stripeCustomerId: customerId })
-                .where(eq(users.id, userId));
-        }
-    });
-
-    revalidatePath('/', 'layout');
-    // Actually, I'll just import revalidatePath and use that.
-    // But I need to update the import first.
-    // Let me just comment out revalidateTag for now to unblock build, as it's an optimization.
-    // revalidateTag('user-purchases');
+    try {
+        await stripe.paymentIntents.create({
+            amount: PRICES.downsell,
+            currency: 'usd',
+            customer: user.stripeCustomerId,
+            payment_method: 'pm_card_visa', // TEST MODE ONLY
+            off_session: true,
+            confirm: true,
+            metadata: { userId, offerType: 'downsell' },
+        });
+        redirect('/confirmation');
+    } catch (error) {
+        console.error('Downsell Failed:', error);
+        redirect('/confirmation'); // Or error page
+    }
 }
 
 export async function getFunnelState() {

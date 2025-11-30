@@ -1,0 +1,36 @@
+Checking DB...
+Connecting to DB...
+DB Connection OK: Result {
+  command: 'SELECT',
+  rowCount: 1,
+  oid: null,
+  rows: [ { '?column?': 1 } ],
+  fields: [
+    Field {
+      name: '?column?',
+      tableID: 0,
+      columnID: 0,
+      dataTypeID: 23,
+      dataTypeSize: 4,
+      dataTypeModifier: -1,
+      format: 'text'
+    }
+  ],
+  _parsers: [ [Function: parseInteger] ],
+  _types: { getTypeParser: [Function: getTypeParser] },
+  RowCtor: null,
+  rowAsArray: false,
+  _prebuiltEmptyResultObject: { '?column?': null }
+}
+Querying user: test-verification@example.com
+User Result: {
+  "id": "test-user-verification",
+  "name": null,
+  "email": "test-verification@example.com",
+  "image": null,
+  "hashedPassword": "$2b$10$cabmUmwLyzKcGvgBq6qGZu.XfBIt5Gef2WWW26fQJifGyjz9KA0oW",
+  "role": "student",
+  "stripeCustomerId": null,
+  "createdAt": "2025-11-30T12:28:48.157Z"
+}
+Transactions: []

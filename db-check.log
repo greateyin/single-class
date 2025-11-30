@@ -1,0 +1,36 @@
+Checking DB...
+Connecting to DB...
+DB Connection OK: Result {
+  command: 'SELECT',
+  rowCount: 1,
+  oid: null,
+  rows: [ { '?column?': 1 } ],
+  fields: [
+    Field {
+      name: '?column?',
+      tableID: 0,
+      columnID: 0,
+      dataTypeID: 23,
+      dataTypeSize: 4,
+      dataTypeModifier: -1,
+      format: 'text'
+    }
+  ],
+  _parsers: [ [Function: parseInteger] ],
+  _types: { getTypeParser: [Function: getTypeParser] },
+  RowCtor: null,
+  rowAsArray: false,
+  _prebuiltEmptyResultObject: { '?column?': null }
+}
+Querying user: test-verification@example.com
+DB Error: TypeError: Cannot read properties of undefined (reading 'referencedTable')
+    at normalizeRelation (/Users/weichih/Documents/GitHub/single-class/node_modules/src/relations.ts:571:74)
+    at PgDialect.buildRelationalQueryWithoutPK (/Users/weichih/Documents/GitHub/single-class/node_modules/src/pg-core/dialect.ts:1283:32)
+    at QueryPromise._getQuery (/Users/weichih/Documents/GitHub/single-class/node_modules/src/pg-core/query-builders/query.ts:117:23)
+    at QueryPromise._toSQL (/Users/weichih/Documents/GitHub/single-class/node_modules/src/pg-core/query-builders/query.ts:134:22)
+    at <anonymous> (/Users/weichih/Documents/GitHub/single-class/node_modules/src/pg-core/query-builders/query.ts:92:39)
+    at Object.startActiveSpan (/Users/weichih/Documents/GitHub/single-class/node_modules/src/tracing.ts:27:11)
+    at QueryPromise._prepare (/Users/weichih/Documents/GitHub/single-class/node_modules/src/pg-core/query-builders/query.ts:91:17)
+    at <anonymous> (/Users/weichih/Documents/GitHub/single-class/node_modules/src/pg-core/query-builders/query.ts:154:16)
+    at Object.startActiveSpan (/Users/weichih/Documents/GitHub/single-class/node_modules/src/tracing.ts:27:11)
+    at QueryPromise.execute (/Users/weichih/Documents/GitHub/single-class/node_modules/src/pg-core/query-builders/query.ts:153:17)

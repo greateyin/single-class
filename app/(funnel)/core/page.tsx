@@ -2,8 +2,33 @@ import { createCoreCheckoutSession } from '@/actions/payment';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check } from 'lucide-react';
+import { auth } from '@/lib/auth';
+import { db } from '@/db';
+import { transactions } from '@/db/schema';
+import { eq, and, or } from 'drizzle-orm';
+import { redirect } from 'next/navigation';
 
-export default function CoreOfferPage() {
+export default async function CoreOfferPage() {
+    const session = await auth();
+
+    if (session?.user?.id) {
+        const hasAccess = await db.query.transactions.findFirst({
+            where: and(
+                eq(transactions.userId, session.user.id),
+                eq(transactions.status, 'completed'),
+                or(
+                    eq(transactions.type, 'core'),
+                    eq(transactions.type, 'upsell'), // Upsell includes core
+                    eq(transactions.type, 'downsell') // Downsell includes core
+                )
+            ),
+        });
+
+        if (hasAccess) {
+            redirect('/dashboard');
+        }
+    }
+
     return (
         <div className="space-y-8">
             <div className="text-center space-y-4">
