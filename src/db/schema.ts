@@ -91,3 +91,31 @@ export const userAttempts = pgTable('user_attempts', {
   score: integer('score').notNull(),
   attemptedAt: timestamp('attempted_at', { withTimezone: true }).defaultNow().notNull(),
 });
+
+// 9. Relations
+import { relations } from 'drizzle-orm';
+
+export const usersRelations = relations(users, ({ many }) => ({
+  transactions: many(transactions),
+  lessonCompletion: many(lessonCompletion),
+  qaMessages: many(qaMessages),
+  userAttempts: many(userAttempts),
+}));
+
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  user: one(users, {
+    fields: [transactions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const lessonCompletionRelations = relations(lessonCompletion, ({ one }) => ({
+  user: one(users, {
+    fields: [lessonCompletion.userId],
+    references: [users.id],
+  }),
+  lesson: one(lessons, {
+    fields: [lessonCompletion.lessonId],
+    references: [lessons.id],
+  }),
+}));

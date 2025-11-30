@@ -1,54 +1,71 @@
 'use server';
 
 import { db } from '@/db';
-import { users, transactions, lessons } from '@/db/schema';
+import { transactions, users, lessonCompletion, lessons } from '@/db/schema';
 import { enforceAdminRole } from '@/lib/auth-guards';
-import { count, eq, desc, asc } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { sql, eq, desc, count } from 'drizzle-orm';
 
-export async function getAdminStats() {
+export async function getSalesStats() {
     await enforceAdminRole();
 
-    const [userCount] = await db.select({ count: count() }).from(users);
-    const [txCount] = await db.select({ count: count() }).from(transactions);
+    // 1. Total Revenue
+    const revenueResult = await db
+        .select({
+            total: sql<number>`sum(${transactions.amountCents})`
+        })
+        .from(transactions)
+        .where(eq(transactions.status, 'completed'));
 
-    // Calculate revenue (simple sum for now)
-    const allTx = await db.query.transactions.findMany({
-        where: eq(transactions.status, 'completed'),
-    });
-    const totalRevenueCents = allTx.reduce((acc, tx) => acc + tx.amountCents, 0);
+    const totalRevenue = revenueResult[0]?.total || 0;
+
+    // 2. Sales Count by Type
+    const salesByType = await db
+        .select({
+            type: transactions.type,
+            count: count(transactions.id),
+        })
+        .from(transactions)
+        .where(eq(transactions.status, 'completed'))
+        .groupBy(transactions.type);
 
     return {
-        totalUsers: userCount.count,
-        totalRevenue: totalRevenueCents / 100,
-        totalSales: txCount.count,
+        totalRevenue,
+        salesByType,
     };
 }
 
-export async function getUsers() {
+export async function getUsersList() {
     await enforceAdminRole();
-    return db.query.users.findMany({
-        orderBy: [desc(users.id)], // Ideally created_at, but using ID for now
-        limit: 50,
+
+    // Fetch users with their transactions and progress
+    // Note: Drizzle's query builder is great for this, but for complex aggregations 
+    // sometimes raw SQL or separate queries are cleaner. 
+    // Let's use query builder with 'with' relations if possible, or just map it.
+
+    const allUsers = await db.query.users.findMany({
+        orderBy: [desc(users.createdAt)],
+        with: {
+            transactions: true,
+            lessonCompletion: true,
+        },
     });
-}
 
-export async function updateUserRole(userId: string, role: 'student' | 'admin') {
-    await enforceAdminRole();
-    await db.update(users).set({ role }).where(eq(users.id, userId));
-    revalidatePath('/admin/users');
-}
+    // Get total lesson count for progress calculation
+    const totalLessonsResult = await db.select({ count: count(lessons.id) }).from(lessons);
+    const totalLessons = totalLessonsResult[0]?.count || 0;
 
-export async function getLessonsForAdmin() {
-    await enforceAdminRole();
-    return db.query.lessons.findMany({
-        orderBy: [asc(lessons.orderIndex)],
+    return allUsers.map(user => {
+        const hasCore = user.transactions.some(t => t.type === 'core' && t.status === 'completed');
+        const completedLessons = user.lessonCompletion.length;
+        const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+        return {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            joinedAt: user.createdAt,
+            status: hasCore ? 'Paid' : 'Free',
+            progress: progress,
+        };
     });
-}
-
-export async function updateLesson(lessonId: number, data: { title: string; videoEmbedUrl: string; description: string }) {
-    await enforceAdminRole();
-    await db.update(lessons).set(data).where(eq(lessons.id, lessonId));
-    revalidatePath('/admin/content');
-    revalidatePath('/(course)'); // Update student view too
 }
