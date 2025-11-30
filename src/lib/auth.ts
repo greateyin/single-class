@@ -1,0 +1,68 @@
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
+import Resend from "next-auth/providers/resend";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { db } from '@/db'; // Drizzle DB Client
+import { users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { compare } from 'bcrypt'; // Must run in Node.js Runtime
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+    adapter: DrizzleAdapter(db) as any,
+    session: { strategy: "jwt" }, // Recommended JWT strategy
+    providers: [
+        Google({
+            clientId: process.env.AUTH_GOOGLE_CLIENT_ID,
+            clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET,
+            profile(profile) {
+                return {
+                    id: profile.sub,
+                    name: profile.name,
+                    email: profile.email,
+                    image: profile.picture,
+                    role: "student", // Default role
+                };
+            },
+        }),
+        Resend({
+            apiKey: process.env.RESEND_API_KEY,
+            from: "onboarding@resend.dev",
+        }),
+        Credentials({
+            credentials: { email: {}, password: {} },
+            authorize: async (credentials) => {
+                // 1. Query user from DB
+                const userArray = await db.select().from(users).where(eq(users.email, credentials.email as string));
+                const user = userArray[0];
+
+                if (!user || !user.hashedPassword) return null;
+
+                // 2. Password hash comparison (Server-side)
+                const isValid = await compare(credentials.password as string, user.hashedPassword);
+
+                if (isValid) {
+                    // Return user object, Auth.js will create session based on this
+                    return { id: user.id, email: user.email, role: user.role };
+                }
+                return null; // Validation failed
+            },
+        }),
+    ],
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                // Persist role to JWT Token
+                token.role = user.role;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            // Expose role to client useSession
+            if (token.role && session.user) {
+                session.user.role = token.role as 'student' | 'admin';
+            }
+            return session;
+        },
+    },
+});
