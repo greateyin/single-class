@@ -4,10 +4,8 @@ import { stripe } from '@/lib/stripe';
 import { fulfillOrder } from '@/lib/fulfillment';
 
 // Disable Next.js body parsing to allow signature verification
-export const config = {
-    runtime: 'nodejs',
-    api: { bodyParser: false },
-};
+// Note: In App Router, bodyParser is disabled by default for Route Handlers when reading the body manually.
+
 
 export async function POST(req: Request) {
     const rawBody = await req.text();

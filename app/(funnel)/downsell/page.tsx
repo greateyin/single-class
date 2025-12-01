@@ -37,7 +37,7 @@ export default function DownsellPage() {
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
-                    <form action={handleOneClickCharge.bind(null, 'downsell')} className="w-full">
+                    <form action={handleOneClickCharge.bind(null, 'downsell', null)} className="w-full">
                         <Button size="lg" className="w-full text-lg py-6 bg-orange-600 hover:bg-orange-700">
                             Yes, Add Lite Pack (One-Click)
                         </Button>

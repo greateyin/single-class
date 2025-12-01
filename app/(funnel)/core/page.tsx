@@ -65,7 +65,7 @@ export default async function CoreOfferPage() {
                         <span className="text-3xl font-bold">$97</span>
                         <span className="text-slate-500 ml-2 line-through">$197</span>
                     </div>
-                    <form action={createCoreCheckoutSession} className="w-full">
+                    <form action={createCoreCheckoutSession.bind(null, 1)} className="w-full">
                         <Button size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-lg">
                             Get Instant Access
                         </Button>

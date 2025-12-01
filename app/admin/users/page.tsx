@@ -42,7 +42,7 @@ export default async function AdminUsersPage() {
                                         </Badge>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant={user.status === 'Paid' ? 'success' : 'outline'} className={user.status === 'Paid' ? 'bg-green-100 text-green-800 hover:bg-green-100' : ''}>
+                                        <Badge variant="outline" className={user.status === 'Paid' ? 'bg-green-100 text-green-800 hover:bg-green-100' : ''}>
                                             {user.status}
                                         </Badge>
                                     </TableCell>

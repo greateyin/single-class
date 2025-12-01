@@ -34,6 +34,31 @@ export async function getSalesStats() {
     };
 }
 
+export async function getAdminStats() {
+    await enforceAdminRole();
+
+    // 1. Total Revenue & Sales Count
+    const revenueResult = await db
+        .select({
+            totalRevenue: sql<number>`sum(${transactions.amountCents})`,
+            totalSales: count(transactions.id),
+        })
+        .from(transactions)
+        .where(eq(transactions.status, 'completed'));
+
+    const { totalRevenue, totalSales } = revenueResult[0] || { totalRevenue: 0, totalSales: 0 };
+
+    // 2. Total Users
+    const usersResult = await db.select({ count: count(users.id) }).from(users);
+    const totalUsers = usersResult[0]?.count || 0;
+
+    return {
+        totalRevenue: (totalRevenue || 0) / 100, // Convert to dollars
+        totalUsers,
+        totalSales,
+    };
+}
+
 export async function getUsersList() {
     await enforceAdminRole();
 

@@ -71,7 +71,7 @@ export async function createCoreCheckoutSession(courseId: number) {
     redirect(checkoutSession.url);
 }
 
-export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseId?: number) {
+export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseId: number | null | undefined, formData: FormData) {
     const session = await enforceAuthentication();
     const userId = session.user.id;
     // For now, use fixed prices or fetch from courseId if provided
@@ -99,8 +99,8 @@ export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseI
     if (user.stripeCustomerId.startsWith('cus_test_')) {
         console.log(`[Mock] Processing one-click ${offer} for ${user.stripeCustomerId}`);
         // Simulate success
-        await fulfillOrder(userId, offer, `pi_mock_${offer}_${Date.now()}`, 'stripe', user.stripeCustomerId, courseId);
-        revalidateTag('user-purchases');
+        await fulfillOrder(userId, offer, `pi_mock_${offer}_${Date.now()}`, 'stripe', user.stripeCustomerId, courseId || undefined);
+
         redirect('/confirmation');
     }
 

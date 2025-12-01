@@ -40,7 +40,7 @@ export default function UpsellPage() {
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
-                    <form action={handleOneClickCharge.bind(null, 'upsell')} className="w-full">
+                    <form action={handleOneClickCharge.bind(null, 'upsell', null)} className="w-full">
                         <Button size="lg" className="w-full text-lg py-6 bg-blue-600 hover:bg-blue-700">
                             Yes, Add to My Order (One-Click)
                         </Button>
