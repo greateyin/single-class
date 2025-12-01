@@ -1,77 +1,61 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { db } from '@/db';
-import { transactions, users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import Stripe from 'stripe';
+import { fulfillOrder } from '@/lib/fulfillment';
+
+// Disable Next.js body parsing to allow signature verification
+export const config = {
+    runtime: 'nodejs',
+    api: { bodyParser: false },
+};
 
 export async function POST(req: Request) {
-    const body = await req.text();
-    const signature = (await headers()).get('Stripe-Signature') as string;
+    const rawBody = await req.text();
+    const headersList = await headers();
+    const signature = headersList.get('stripe-signature');
 
-    let event: Stripe.Event;
+    let event;
 
+    // 1. Signature Verification
     try {
         event = stripe.webhooks.constructEvent(
-            body,
-            signature,
+            rawBody,
+            signature!,
             process.env.STRIPE_WEBHOOK_SECRET!
         );
-    } catch (error: any) {
-        console.error(`Webhook Error: ${error.message}`);
-        return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
+    } catch (err: any) {
+        console.error(`Webhook signature verification failed: ${err.message}`);
+        return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
     }
 
-    const session = event.data.object as Stripe.Checkout.Session;
+    // 2. Handle Events
+    if (event.type === 'checkout.session.completed' || event.type === 'payment_intent.succeeded') {
+        const session = event.data.object as any;
+        const { userId, offerType } = session.metadata;
 
-    if (event.type === 'checkout.session.completed') {
-        const userId = session.metadata?.userId;
-        const offerType = session.metadata?.offerType;
-
-        console.log('Webhook Session Metadata:', session.metadata);
-        console.log('Webhook Session ID:', session.id);
+        // For PaymentIntents, customer is a direct field. For Checkout Sessions, it might be in customer_details or customer.
+        // We prioritize the 'customer' field which is the ID.
+        const customerRef = session.customer as string | null;
 
         if (!userId || !offerType) {
-            console.error('Missing metadata:', { userId, offerType });
-            return new NextResponse('Webhook Error: Missing metadata', { status: 400 });
+            console.error('Missing metadata in webhook event');
+            return new NextResponse('Missing metadata', { status: 400 });
         }
 
-        // Create Transaction
-        await db.insert(transactions).values({
-            userId,
-            amountCents: session.amount_total || 0,
-            status: 'completed',
-            type: offerType as 'core' | 'upsell' | 'downsell',
-            paymentIntentId: session.payment_intent as string,
-            isVaulted: true, // Assuming we save cards by default in checkout settings
-        }).onConflictDoNothing();
-
-        // If Core offer, save Stripe Customer ID for future one-click upsells
-        if (offerType === 'core' && session.customer) {
-            await db.update(users)
-                .set({ stripeCustomerId: session.customer as string })
-                .where(eq(users.id, userId));
-        }
-    }
-
-    if (event.type === 'payment_intent.succeeded') {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        const userId = paymentIntent.metadata?.userId;
-        const offerType = paymentIntent.metadata?.offerType;
-
-        // Only handle if metadata exists (Upsells might be created via PI directly)
-        if (userId && offerType) {
-            await db.insert(transactions).values({
+        try {
+            await fulfillOrder(
                 userId,
-                amountCents: paymentIntent.amount,
-                status: 'completed',
-                type: offerType as 'core' | 'upsell' | 'downsell',
-                paymentIntentId: paymentIntent.id,
-                isVaulted: true,
-            }).onConflictDoNothing();
+                offerType,
+                session.payment_intent || session.id, // Use PI ID or Session ID as ref
+                'stripe',
+                customerRef
+            );
+            return NextResponse.json({ received: true });
+        } catch (error) {
+            console.error('Fulfillment failed:', error);
+            return new NextResponse('Fulfillment failed.', { status: 500 });
         }
     }
 
-    return new NextResponse(null, { status: 200 });
+    return NextResponse.json({ received: true });
 }
