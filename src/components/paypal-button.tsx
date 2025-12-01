@@ -10,7 +10,7 @@ interface PayPalButtonProps {
 
 export function PayPalButton({ courseId, clientId }: PayPalButtonProps) {
     return (
-        <PayPalScriptProvider options={{ clientId }}>
+        <PayPalScriptProvider options={{ clientId: clientId.trim() }}>
             <PayPalButtons
                 style={{ layout: "horizontal", height: 55 }}
                 createOrder={async () => {
