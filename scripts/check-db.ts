@@ -1,32 +1,19 @@
-import 'dotenv/config';
-import { db } from '../src/db';
-import { users, transactions } from '../src/db/schema';
-import { eq } from 'drizzle-orm';
+import { db } from '@/db';
+import { sql } from 'drizzle-orm';
 
-async function checkDb() {
-    console.log('Checking DB...');
+async function main() {
+    console.log('Checking database connection...');
     try {
-        console.error('Connecting to DB...');
-        const result = await db.execute('SELECT 1');
-        console.error('DB Connection OK:', result);
-
-        const email = 'test-verification@example.com';
-        console.error('Querying user:', email);
-        const user = await db.query.users.findFirst({
-            where: eq(users.email, email),
-        });
-        console.error('User Result:', JSON.stringify(user, null, 2));
-
-        if (user) {
-            const userTransactions = await db.query.transactions.findMany({
-                where: eq(transactions.userId, user.id),
-            });
-            console.error('Transactions:', JSON.stringify(userTransactions, null, 2));
-        }
+        const result = await db.execute(sql`
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public'
+        `);
+        console.log('Tables found:', result.rows.map((r: any) => r.table_name));
     } catch (error) {
-        console.error('DB Error:', error);
+        console.error('Failed to connect or query DB:', error);
     }
     process.exit(0);
 }
 
-checkDb();
+main();

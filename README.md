@@ -1,37 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Single Class Platform
 
-## Getting Started
+A scalable course platform built with Next.js 16, Drizzle ORM, Stripe, and PayPal.
+
+## 🚀 Getting Started
 
 First, run the development server:
 
 ```bash
 npm run dev
 # or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🗺️ URL Structure & Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🟢 Public Funnel (Sales & Checkout)
+| URL | Purpose |
+| --- | --- |
+| `/core` | **Core Offer Sales Page**. The main landing page for the course. |
+| `/enroll/[courseId]` | **Enrollment Page**. Dynamic checkout page with Stripe & PayPal options. |
+| `/upsell` | **One-Click Upsell**. Offered immediately after a successful core purchase. |
+| `/downsell` | **Downsell Page**. Offered if the user rejects the upsell. |
+| `/confirmation` | **Order Confirmation**. The final "Thank You" page. |
 
-## Learn More
+### 🔵 Student Area (Learning)
+| URL | Purpose |
+| --- | --- |
+| `/dashboard` | **Student Dashboard**. Lists all purchased courses and progress. |
+| `/courses/[courseId]` | **Course Curriculum**. Displays the list of lessons for a specific course. |
+| `/lessons/[lessonId]` | **Lesson Player**. Video player, content, and navigation for a specific lesson. |
+| `/qa` | **Q&A Board**. Global question and answer section for students. |
 
-To learn more about Next.js, take a look at the following resources:
+### 🔴 Admin Area (Management)
+*Requires `role: 'admin'`*
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| URL | Purpose |
+| --- | --- |
+| `/admin` | **Admin Dashboard**. Overview of revenue, users, and sales stats. |
+| `/admin/courses` | **Course Management**. Create, edit, and publish courses. |
+| `/admin/lessons` | **Lesson Management**. Create and organize lessons within courses. |
+| `/admin/users` | **User Management**. View registered users and their purchase status. |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ⚙️ API & Webhooks
+| URL | Purpose |
+| --- | --- |
+| `/api/webhooks/stripe` | **Stripe Webhook**. Listens for payment events to fulfill orders. |
+| `/api/auth/signin` | **Sign In**. Authentication page (Magic Link / Credentials). |
 
-## Deploy on Vercel
+## 🛠️ Key Commands
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev`: Start development server.
+- `npm run build`: Build for production.
+- `npm run db:push`: Deploy schema changes to the database.
+- `npm run db:studio`: Open Drizzle Studio to view data.
+- `npm run db:seed`: Populate the database with initial data (e.g., default course).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# single-class
+## 🌱 Database Seeding & Initial Data
+
+The application requires certain data to function correctly. If the database is empty, you may encounter errors like "Course not found".
+
+### Required Initial Data
+1.  **Courses**: At least one course must exist for the enrollment page (`/enroll/[courseId]`) to work.
+2.  **Users**: You can register a new user via the Sign In page. To access the Admin Dashboard, you must manually update the user's role to `admin` in the database.
+
+### How to Seed
+Run the following command to create a default course:
+```bash
+npm run db:seed
+```
+
+### Handling Missing Data
+- **"Course not found"**: Run the seed script or create a course manually via the Admin Dashboard (once you have admin access).
+- **"User not found"**: Ensure you have registered or that the auto-registration flow (Guest Checkout) is working.
+
+
