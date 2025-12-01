@@ -119,3 +119,55 @@ export const lessonCompletionRelations = relations(lessonCompletion, ({ one }) =
     references: [lessons.id],
   }),
 }));
+
+export const lessonsRelations = relations(lessons, ({ many }) => ({
+  attachments: many(attachments),
+  assessments: many(assessments),
+  lessonCompletion: many(lessonCompletion),
+  qaMessages: many(qaMessages),
+}));
+
+export const attachmentsRelations = relations(attachments, ({ one }) => ({
+  lesson: one(lessons, {
+    fields: [attachments.lessonId],
+    references: [lessons.id],
+  }),
+}));
+
+export const assessmentsRelations = relations(assessments, ({ one, many }) => ({
+  lesson: one(lessons, {
+    fields: [assessments.lessonId],
+    references: [lessons.id],
+  }),
+  userAttempts: many(userAttempts),
+}));
+
+export const userAttemptsRelations = relations(userAttempts, ({ one }) => ({
+  user: one(users, {
+    fields: [userAttempts.userId],
+    references: [users.id],
+  }),
+  assessment: one(assessments, {
+    fields: [userAttempts.assessmentId],
+    references: [assessments.id],
+  }),
+}));
+
+export const qaMessagesRelations = relations(qaMessages, ({ one, many }) => ({
+  author: one(users, {
+    fields: [qaMessages.authorId],
+    references: [users.id],
+  }),
+  lesson: one(lessons, {
+    fields: [qaMessages.lessonId],
+    references: [lessons.id],
+  }),
+  parent: one(qaMessages, {
+    fields: [qaMessages.parentId],
+    references: [qaMessages.id],
+    relationName: 'replies',
+  }),
+  replies: many(qaMessages, {
+    relationName: 'replies',
+  }),
+}));

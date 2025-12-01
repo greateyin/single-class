@@ -1,0 +1,196 @@
+import { getLessonById, updateLesson, uploadAttachment, deleteAttachment, createAssessment, deleteAssessment } from '@/actions/admin-content';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { notFound, redirect } from 'next/navigation';
+
+export default async function EditLessonPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id: idString } = await params;
+    console.log('EditLessonPage params resolved:', idString);
+    const id = parseInt(idString);
+    console.log('EditLessonPage parsed id:', id);
+    if (isNaN(id)) {
+        console.log('EditLessonPage: Invalid ID');
+        notFound();
+    }
+
+    const lesson = await getLessonById(id);
+    console.log('EditLessonPage lesson:', lesson);
+    if (!lesson) {
+        console.log('EditLessonPage: Lesson not found');
+        notFound();
+    }
+
+    async function handleUpdate(formData: FormData) {
+        'use server';
+        const title = formData.get('title') as string;
+        const videoEmbedUrl = formData.get('videoEmbedUrl') as string;
+        const description = formData.get('description') as string;
+        const orderIndex = parseInt(formData.get('orderIndex') as string);
+
+        await updateLesson(id, {
+            title,
+            videoEmbedUrl,
+            description,
+            orderIndex,
+        });
+
+        redirect('/admin/lessons');
+    }
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center gap-4">
+                <Link href="/admin/lessons">
+                    <Button variant="ghost" size="sm">
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Back
+                    </Button>
+                </Link>
+                <h1 className="text-3xl font-bold text-slate-900">Edit Lesson</h1>
+            </div>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Lesson Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form action={handleUpdate} className="space-y-6">
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="title">Title</Label>
+                                <Input id="title" name="title" defaultValue={lesson.title} required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="orderIndex">Order Index</Label>
+                                <Input id="orderIndex" name="orderIndex" type="number" defaultValue={lesson.orderIndex} required />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="videoEmbedUrl">Vimeo Embed URL</Label>
+                            <Input
+                                id="videoEmbedUrl"
+                                name="videoEmbedUrl"
+                                defaultValue={lesson.videoEmbedUrl}
+                                placeholder="https://player.vimeo.com/video/..."
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Only Vimeo URLs are secure. Ensure domain privacy is set on Vimeo.
+                            </p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Description</Label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                defaultValue={lesson.description || ''}
+                            />
+                        </div>
+
+                        <div className="flex justify-end">
+                            <Button type="submit">
+                                <Save className="h-4 w-4 mr-2" />
+                                Save Changes
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
+
+            {/* Attachments & Assessments */}
+            <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Attachments</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {/* List Attachments */}
+                        {lesson.attachments.length > 0 ? (
+                            <ul className="space-y-2">
+                                {lesson.attachments.map((att) => (
+                                    <li key={att.id} className="flex items-center justify-between p-2 bg-slate-50 rounded border">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            <span className="text-sm font-medium truncate">{att.fileName}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Link href={att.storageUrl} target="_blank" className="text-xs text-blue-600 hover:underline">
+                                                View
+                                            </Link>
+                                            <form action={deleteAttachment.bind(null, att.id)}>
+                                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-red-500">
+                                                    <Trash2 className="h-3 w-3" />
+                                                </Button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No attachments yet.</p>
+                        )}
+
+                        {/* Upload Form */}
+                        <div className="pt-4 border-t">
+                            <form action={uploadAttachment.bind(null, lesson.id)} className="flex gap-2">
+                                <Input type="file" name="file" required className="text-sm" />
+                                <Button type="submit" size="sm">Upload</Button>
+                            </form>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Assessment</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {/* List Assessments */}
+                        {lesson.assessments.length > 0 ? (
+                            <ul className="space-y-4">
+                                {lesson.assessments.map((q) => (
+                                    <li key={q.id} className="p-3 bg-slate-50 rounded border space-y-2">
+                                        <div className="flex justify-between items-start">
+                                            <p className="font-medium text-sm">{q.questionText}</p>
+                                            <form action={deleteAssessment.bind(null, q.id)}>
+                                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-red-500">
+                                                    <Trash2 className="h-3 w-3" />
+                                                </Button>
+                                            </form>
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                            <span className="font-semibold">Answer:</span> {q.correctAnswer}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No assessments yet.</p>
+                        )}
+
+                        {/* Add Assessment Form */}
+                        <div className="pt-4 border-t">
+                            <form action={createAssessment.bind(null, lesson.id)} className="space-y-3">
+                                <div className="space-y-1">
+                                    <Label htmlFor="questionText" className="text-xs">Question</Label>
+                                    <Input id="questionText" name="questionText" required className="text-sm" placeholder="e.g. What is the capital of France?" />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor="correctAnswer" className="text-xs">Correct Answer</Label>
+                                    <Input id="correctAnswer" name="correctAnswer" required className="text-sm" placeholder="e.g. Paris" />
+                                </div>
+                                <Button type="submit" size="sm" className="w-full">Add Question</Button>
+                            </form>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}

@@ -1,4 +1,4 @@
-import { getAdminStats } from '@/actions/admin';
+import { getSalesStats } from '@/actions/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, DollarSign, ShoppingCart } from 'lucide-react';
 

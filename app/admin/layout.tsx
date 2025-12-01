@@ -1,7 +1,7 @@
 import { enforceAdminRole } from '@/lib/auth-guards';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Users, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, BookOpen } from 'lucide-react';
 import { signOut } from '@/lib/auth'; // We might need a client-side signout or server action
 // Actually, for simplicity, let's just use a link to api/auth/signout or a server action form
 
@@ -27,6 +27,10 @@ export default async function AdminLayout({
                     <Link href="/admin/users" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-slate-800 transition-colors">
                         <Users className="h-5 w-5" />
                         Users
+                    </Link>
+                    <Link href="/admin/lessons" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-slate-800 transition-colors">
+                        <BookOpen className="h-5 w-5" />
+                        Lessons
                     </Link>
                 </nav>
                 <div className="absolute bottom-0 w-64 p-4 border-t border-slate-800">
