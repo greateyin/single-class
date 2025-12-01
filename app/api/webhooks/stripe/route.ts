@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     // 2. Handle Events
     if (event.type === 'checkout.session.completed' || event.type === 'payment_intent.succeeded') {
         const session = event.data.object as any;
-        const { userId, offerType } = session.metadata;
+        const { userId, offerType, courseId } = session.metadata;
 
         // For PaymentIntents, customer is a direct field. For Checkout Sessions, it might be in customer_details or customer.
         // We prioritize the 'customer' field which is the ID.
@@ -48,7 +48,8 @@ export async function POST(req: Request) {
                 offerType,
                 session.payment_intent || session.id, // Use PI ID or Session ID as ref
                 'stripe',
-                customerRef
+                customerRef,
+                courseId ? parseInt(courseId) : undefined
             );
             return NextResponse.json({ received: true });
         } catch (error) {

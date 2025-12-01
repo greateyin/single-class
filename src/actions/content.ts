@@ -165,11 +165,14 @@ export async function submitAssessment(lessonId: number, formData: FormData) {
 
 // --- Q&A ---
 
-export async function getQaMessages(lessonId: number) {
-    const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
-    if (!lesson || !lesson.courseId) return [];
-
-    const session = await enforcePaidAccess(lesson.courseId);
+export async function getQaMessages(lessonId?: number) {
+    if (lessonId) {
+        const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
+        if (!lesson || !lesson.courseId) return [];
+        await enforcePaidAccess(lesson.courseId);
+    } else {
+        await enforceAuthentication();
+    }
 
     // Fetch messages with author info
     const messages = await db.query.qaMessages.findMany({

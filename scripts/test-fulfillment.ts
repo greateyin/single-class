@@ -1,17 +1,17 @@
 import { fulfillOrder } from '@/lib/fulfillment';
 import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { transactions, users } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 async function main() {
-    const email = process.argv[2];
-    if (!email) {
-        console.error('Please provide an email address');
-        process.exit(1);
-    }
+    const userEmail = 'student@example.com';
+    const courseId = 1;
+    const txRef = `pi_test_fulfill_${Date.now()}`;
+
+    console.log(`Testing fulfillment for ${userEmail} - courseId ${courseId}...`);
 
     const user = await db.query.users.findFirst({
-        where: eq(users.email, email),
+        where: eq(users.email, userEmail),
     });
 
     if (!user) {
@@ -19,18 +19,31 @@ async function main() {
         process.exit(1);
     }
 
-    console.log(`Testing Upsell Fulfillment for ${email}...`);
-
-    // Simulate Upsell Fulfillment
+    // Call fulfillOrder directly
     await fulfillOrder(
         user.id,
-        'upsell',
-        `pi_test_upsell_${Date.now()}`,
+        'core',
+        txRef,
         'stripe',
-        user.stripeCustomerId
+        'cus_test_123',
+        courseId
     );
 
-    console.log('Fulfillment function executed.');
+    // Verify in DB
+    const tx = await db.query.transactions.findFirst({
+        where: and(
+            eq(transactions.paymentIntentId, txRef),
+            eq(transactions.courseId, courseId)
+        ),
+    });
+
+    if (tx) {
+        console.log('Transaction verified in DB:', tx);
+    } else {
+        console.error('Transaction NOT found in DB!');
+        process.exit(1);
+    }
+
     process.exit(0);
 }
 
