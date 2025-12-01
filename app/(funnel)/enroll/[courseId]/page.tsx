@@ -27,15 +27,17 @@ export default async function EnrollPage({ params }: { params: Promise<{ courseI
     }
 
     const session = await auth();
+    let hasAccess = false;
 
     if (session?.user?.id) {
-        const hasAccess = await db.query.transactions.findFirst({
+        const tx = await db.query.transactions.findFirst({
             where: and(
                 eq(transactions.userId, session.user.id),
                 eq(transactions.status, 'completed'),
                 eq(transactions.courseId, courseId)
             ),
         });
+        hasAccess = !!tx;
 
         if (hasAccess) {
             redirect(`/courses/${courseId}`);
@@ -97,6 +99,12 @@ export default async function EnrollPage({ params }: { params: Promise<{ courseI
                     <p className="text-xs text-center text-slate-500">
                         Secure Payment via Stripe or PayPal • 30-Day Money Back Guarantee
                     </p>
+
+                    {!session?.user && (
+                        <div className="text-center text-sm text-slate-600 mt-2">
+                            Already have an account? <a href="/api/auth/signin" className="text-blue-600 hover:underline">Sign in</a>
+                        </div>
+                    )}
                 </CardFooter>
             </Card>
         </div>

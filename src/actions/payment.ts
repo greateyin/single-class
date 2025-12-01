@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
 import { enforceAuthentication } from '@/lib/auth-guards';
 import { db } from '@/db';
 import { transactions, users, courses } from '@/db/schema';
@@ -16,9 +17,9 @@ const PRICES = {
 };
 
 export async function createCoreCheckoutSession(courseId: number) {
-    const session = await enforceAuthentication();
+    const session = await auth();
     console.log('createCoreCheckoutSession Session:', session);
-    const userId = session.user.id;
+    const userId = session?.user?.id;
     console.log('createCoreCheckoutSession User ID:', userId);
 
     // Fetch course details to get price and title
@@ -48,16 +49,16 @@ export async function createCoreCheckoutSession(courseId: number) {
         mode: 'payment',
         success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/upsell?session_id={CHECKOUT_SESSION_ID}&courseId=${courseId}`, // Pass courseId for context if needed
         cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/courses/${courseId}`,
-        customer_email: session.user.email || undefined,
+        customer_email: session?.user?.email || undefined,
         metadata: {
-            userId,
+            userId: userId || '', // Empty string if guest
             offerType: 'core',
             courseId: courseId.toString(),
         },
         payment_intent_data: {
             setup_future_usage: 'off_session', // Save card for upsells
             metadata: {
-                userId,
+                userId: userId || '',
                 offerType: 'core',
                 courseId: courseId.toString(),
             }

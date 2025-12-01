@@ -35,19 +35,23 @@ export async function POST(req: Request) {
         // We prioritize the 'customer' field which is the ID.
         const customerRef = session.customer as string | null;
 
-        if (!userId || !offerType) {
-            console.error('Missing metadata in webhook event');
-            return new NextResponse('Missing metadata', { status: 400 });
+        // Extract email from customer_details or customer_email
+        const customerEmail = session.customer_details?.email || session.customer_email;
+
+        if ((!userId && !customerEmail) || !offerType) {
+            console.error('Missing metadata or email in webhook event');
+            return new NextResponse('Missing metadata or email', { status: 400 });
         }
 
         try {
             await fulfillOrder(
-                userId,
+                userId || null, // Pass null if empty string
                 offerType,
                 session.payment_intent || session.id, // Use PI ID or Session ID as ref
                 'stripe',
                 customerRef,
-                courseId ? parseInt(courseId) : undefined
+                courseId ? parseInt(courseId) : undefined,
+                customerEmail
             );
             return NextResponse.json({ received: true });
         } catch (error) {
