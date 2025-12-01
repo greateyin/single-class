@@ -1,63 +1,68 @@
-import { getCourseContent } from '@/actions/content';
-import { Button } from '@/components/ui/button';
+import { getStudentLessons } from '@/actions/content';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { auth } from '@/lib/auth';
-import { PlayCircle } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle, Lock, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
-    const session = await auth();
-    const { lessons, progress } = await getCourseContent();
+    const lessons = await getStudentLessons();
 
-    const nextLesson = lessons.find(l => !l.isCompleted) || lessons[0];
+    const completedCount = lessons.filter(l => l.isCompleted).length;
+    const progress = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
 
     return (
-        <div className="p-8 space-y-8">
-            <div className="space-y-2">
-                <h1 className="text-3xl font-bold">Welcome back, {session?.user?.name || 'Student'}</h1>
-                <p className="text-slate-400">
-                    You are {Math.round(progress)}% through the course. Keep it up!
-                </p>
-            </div>
+        <div className="max-w-4xl mx-auto space-y-8">
+            {/* Progress Section */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Your Progress</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                        <span>{Math.round(progress)}% Completed</span>
+                        <span>{completedCount} / {lessons.length} Lessons</span>
+                    </div>
+                    <Progress value={progress} className="h-2" />
+                </CardContent>
+            </Card>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {/* Resume Card */}
-                <Card className="bg-slate-900 border-slate-800 col-span-2">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <PlayCircle className="text-blue-500" />
-                            Continue Learning
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-1">
-                            <p className="text-sm text-slate-400 uppercase tracking-wider font-semibold">Next Up</p>
-                            <h3 className="text-xl font-bold">{nextLesson.title}</h3>
-                        </div>
-                        <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-                            <Link href={`/lessons/${nextLesson.id}`}>
-                                {progress === 0 ? 'Start Course' : 'Resume Lesson'}
-                            </Link>
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Stats Card */}
-                <Card className="bg-slate-900 border-slate-800">
-                    <CardHeader>
-                        <CardTitle>Your Stats</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex justify-between items-center">
-                            <span className="text-slate-400">Completed</span>
-                            <span className="text-xl font-bold">{lessons.filter(l => l.isCompleted).length} / {lessons.length}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-slate-400">Certificates</span>
-                            <span className="text-xl font-bold">{progress === 100 ? 1 : 0}</span>
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* Lesson List */}
+            <div className="space-y-4">
+                <h2 className="text-2xl font-bold tracking-tight">Course Content</h2>
+                <div className="grid gap-4">
+                    {lessons.map((lesson) => (
+                        <Link
+                            key={lesson.id}
+                            href={lesson.isLocked ? '#' : `/lessons/${lesson.id}`}
+                            className={`block transition-opacity ${lesson.isLocked ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80'}`}
+                        >
+                            <Card>
+                                <CardContent className="p-4 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex-shrink-0">
+                                            {lesson.isCompleted ? (
+                                                <CheckCircle className="h-6 w-6 text-green-500" />
+                                            ) : lesson.isLocked ? (
+                                                <Lock className="h-6 w-6 text-slate-400" />
+                                            ) : (
+                                                <PlayCircle className="h-6 w-6 text-blue-500" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium">{lesson.title}</h3>
+                                            <p className="text-sm text-muted-foreground">Lesson {lesson.orderIndex}</p>
+                                        </div>
+                                    </div>
+                                    {lesson.isCompleted && (
+                                        <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">
+                                            Completed
+                                        </span>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </div>
     );

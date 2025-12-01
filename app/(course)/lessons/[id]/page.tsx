@@ -1,70 +1,175 @@
-import { getLesson, markLessonComplete } from '@/actions/content';
+import { getLessonDetails, markLessonCompleted, submitAssessment, submitQaMessage, getQaMessages } from '@/actions/content';
 import { Button } from '@/components/ui/button';
-import { notFound } from 'next/navigation';
-import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { CheckCircle, Download, FileText, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+import { notFound, redirect } from 'next/navigation';
 
-export default async function LessonPage({ params }: { params: { id: string } }) {
-    const lessonId = parseInt(params.id);
-    const lesson = await getLesson(lessonId);
+export default async function LessonPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id: idString } = await params;
+    const lessonId = parseInt(idString);
+    if (isNaN(lessonId)) notFound();
 
-    if (!lesson) {
-        notFound();
-    }
+    const lesson = await getLessonDetails(lessonId);
+    if (!lesson) notFound();
+
+    const qaMessages = await getQaMessages(lessonId);
 
     return (
-        <div className="flex flex-col h-full">
-            {/* Video Player Area */}
-            <div className="bg-black aspect-video w-full flex items-center justify-center">
+        <div className="max-w-4xl mx-auto space-y-8">
+            {/* Video Player */}
+            <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
                 <iframe
                     src={lesson.videoEmbedUrl}
                     className="w-full h-full"
                     allow="autoplay; fullscreen; picture-in-picture"
                     allowFullScreen
+                    title={lesson.title}
                 />
             </div>
 
-            {/* Content Area */}
-            <div className="p-8 max-w-4xl mx-auto w-full space-y-8">
-                <div className="flex items-center justify-between">
+            {/* Header & Actions */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
                     <h1 className="text-2xl font-bold">{lesson.title}</h1>
-                    <form action={markLessonComplete.bind(null, lessonId)}>
-                        <Button
-                            variant={lesson.isCompleted ? "outline" : "default"}
-                            className={lesson.isCompleted ? "text-green-500 border-green-500 hover:text-green-600" : "bg-green-600 hover:bg-green-700 text-white"}
-                        >
-                            {lesson.isCompleted ? (
-                                <>
-                                    <CheckCircle className="mr-2 h-4 w-4" />
-                                    Completed
-                                </>
-                            ) : (
-                                "Mark as Complete"
-                            )}
-                        </Button>
-                    </form>
+                    <p className="text-muted-foreground">Lesson {lesson.orderIndex}</p>
                 </div>
-
-                <div className="prose prose-invert max-w-none">
-                    <p className="text-slate-400">
-                        In this lesson, we will cover the fundamental concepts of... (Content placeholder)
-                    </p>
-                    {/* In a real app, render lesson.description (Markdown) here */}
-                </div>
-
-                <div className="flex justify-between pt-8 border-t border-slate-800">
-                    <Button variant="ghost" asChild>
-                        <Link href={`/lessons/${lessonId - 1}`}>
-                            <ChevronLeft className="mr-2 h-4 w-4" /> Previous
-                        </Link>
+                <form action={markLessonCompleted.bind(null, lessonId)}>
+                    <Button
+                        disabled={lesson.isCompleted}
+                        variant={lesson.isCompleted ? "outline" : "default"}
+                        className="gap-2"
+                    >
+                        {lesson.isCompleted ? (
+                            <>
+                                <CheckCircle className="h-4 w-4" /> Completed
+                            </>
+                        ) : (
+                            "Mark as Complete"
+                        )}
                     </Button>
-                    <Button variant="ghost" asChild>
-                        <Link href={`/lessons/${lessonId + 1}`}>
-                            Next <ChevronRight className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
-                </div>
+                </form>
             </div>
+
+            {/* Content Tabs */}
+            <Tabs defaultValue="overview" className="w-full">
+                <TabsList>
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="assessment">Assessment</TabsTrigger>
+                    <TabsTrigger value="qa">Q&A</TabsTrigger>
+                </TabsList>
+
+                {/* Overview Tab */}
+                <TabsContent value="overview" className="space-y-6 mt-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Attachments</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {lesson.attachments.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {lesson.attachments.map((att) => (
+                                        <li key={att.id} className="flex items-center justify-between p-3 bg-slate-50 rounded border">
+                                            <div className="flex items-center gap-3">
+                                                <FileText className="h-5 w-5 text-slate-500" />
+                                                <span className="font-medium text-sm">{att.fileName}</span>
+                                            </div>
+                                            <Link href={att.storageUrl} target="_blank" download>
+                                                <Button variant="ghost" size="sm" className="gap-2">
+                                                    <Download className="h-4 w-4" /> Download
+                                                </Button>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">No attachments available.</p>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* Assessment Tab */}
+                <TabsContent value="assessment" className="space-y-6 mt-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Knowledge Check</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {lesson.assessments.length > 0 ? (
+                                lesson.assessments.map((assessment) => {
+                                    const attempt = lesson.attempts.find(a => a.assessmentId === assessment.id);
+                                    return (
+                                        <div key={assessment.id} className="space-y-4 p-4 border rounded-lg">
+                                            <p className="font-medium">{assessment.questionText}</p>
+
+                                            {attempt ? (
+                                                <div className={`p-3 rounded text-sm font-medium ${attempt.score > 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                                                    {attempt.score > 0 ? 'Correct! Good job.' : 'Incorrect. Try again?'}
+                                                </div>
+                                            ) : (
+                                                <form action={submitAssessment.bind(null, lessonId)} className="flex gap-2">
+                                                    <input type="hidden" name="assessmentId" value={assessment.id} />
+                                                    <Input name="answer" placeholder="Type your answer..." required className="flex-1" />
+                                                    <Button type="submit">Submit</Button>
+                                                </form>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p className="text-sm text-muted-foreground">No assessments for this lesson.</p>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* Q&A Tab */}
+                <TabsContent value="qa" className="space-y-6 mt-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Discussion</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Post Question Form */}
+                            <form action={submitQaMessage.bind(null, lessonId)} className="space-y-4">
+                                <Textarea name="content" placeholder="Ask a question..." required />
+                                <Button type="submit" className="gap-2">
+                                    <MessageSquare className="h-4 w-4" /> Post Question
+                                </Button>
+                            </form>
+
+                            {/* Message List */}
+                            <div className="space-y-4">
+                                {qaMessages.length > 0 ? (
+                                    qaMessages.map((msg) => (
+                                        <div key={msg.id} className="p-4 bg-slate-50 rounded-lg space-y-2">
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-semibold text-sm">{msg.authorName}</span>
+                                                    {msg.authorRole === 'admin' && (
+                                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Instructor</span>
+                                                    )}
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {msg.createdAt.toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-slate-700">{msg.content}</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-muted-foreground text-center py-8">No questions yet. Be the first to ask!</p>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }
