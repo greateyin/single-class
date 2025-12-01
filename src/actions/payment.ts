@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { enforceAuthentication } from '@/lib/auth-guards';
 import { db } from '@/db';
-import { transactions, users } from '@/db/schema';
+import { transactions, users, courses } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { revalidateTag, revalidatePath } from 'next/cache';
 import { stripe } from '@/lib/stripe';
@@ -15,11 +15,20 @@ const PRICES = {
     downsell: 2700, // $27.00
 };
 
-export async function createCoreCheckoutSession() {
+export async function createCoreCheckoutSession(courseId: number) {
     const session = await enforceAuthentication();
     console.log('createCoreCheckoutSession Session:', session);
     const userId = session.user.id;
     console.log('createCoreCheckoutSession User ID:', userId);
+
+    // Fetch course details to get price and title
+    const course = await db.query.courses.findFirst({
+        where: eq(courses.id, courseId),
+    });
+
+    if (!course) {
+        throw new Error('Course not found');
+    }
 
     const checkoutSession = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -28,27 +37,29 @@ export async function createCoreCheckoutSession() {
                 price_data: {
                     currency: 'usd',
                     product_data: {
-                        name: 'Single Class Platform - Core Course',
-                        description: 'The Ultimate Guide to Single Class Architecture',
+                        name: course.title,
+                        description: course.description || 'Online Course',
                     },
-                    unit_amount: PRICES.core,
+                    unit_amount: course.priceCents,
                 },
                 quantity: 1,
             },
         ],
         mode: 'payment',
-        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/upsell?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/core`,
+        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/upsell?session_id={CHECKOUT_SESSION_ID}&courseId=${courseId}`, // Pass courseId for context if needed
+        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/courses/${courseId}`,
         customer_email: session.user.email || undefined,
         metadata: {
             userId,
             offerType: 'core',
+            courseId: courseId.toString(),
         },
         payment_intent_data: {
             setup_future_usage: 'off_session', // Save card for upsells
             metadata: {
                 userId,
                 offerType: 'core',
+                courseId: courseId.toString(),
             }
         }
     });
@@ -60,10 +71,19 @@ export async function createCoreCheckoutSession() {
     redirect(checkoutSession.url);
 }
 
-export async function handleOneClickCharge(offer: 'upsell' | 'downsell') {
+export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseId?: number) {
     const session = await enforceAuthentication();
     const userId = session.user.id;
-    const amount = offer === 'upsell' ? PRICES.upsell : PRICES.downsell;
+    // For now, use fixed prices or fetch from courseId if provided
+    // If courseId is provided, fetch price. Else fallback to constants.
+    let amount = offer === 'upsell' ? PRICES.upsell : PRICES.downsell;
+
+    if (courseId) {
+        const course = await db.query.courses.findFirst({ where: eq(courses.id, courseId) });
+        if (course) {
+            amount = course.priceCents;
+        }
+    }
 
     const user = await db.query.users.findFirst({
         where: eq(users.id, userId),
@@ -71,8 +91,6 @@ export async function handleOneClickCharge(offer: 'upsell' | 'downsell') {
 
     if (!user?.stripeCustomerId) {
         console.error('No Stripe Customer ID found for One-Click Charge');
-        // If downsell fails, maybe just go to confirmation or show error?
-        // If upsell fails, go to downsell?
         if (offer === 'upsell') redirect('/downsell');
         redirect('/confirmation');
     }
@@ -81,7 +99,7 @@ export async function handleOneClickCharge(offer: 'upsell' | 'downsell') {
     if (user.stripeCustomerId.startsWith('cus_test_')) {
         console.log(`[Mock] Processing one-click ${offer} for ${user.stripeCustomerId}`);
         // Simulate success
-        await fulfillOrder(userId, offer, `pi_mock_${offer}_${Date.now()}`, 'stripe', user.stripeCustomerId);
+        await fulfillOrder(userId, offer, `pi_mock_${offer}_${Date.now()}`, 'stripe', user.stripeCustomerId, courseId);
         revalidateTag('user-purchases');
         redirect('/confirmation');
     }
@@ -97,13 +115,12 @@ export async function handleOneClickCharge(offer: 'upsell' | 'downsell') {
             metadata: {
                 userId,
                 offerType: offer,
+                courseId: courseId ? courseId.toString() : '',
             },
             description: `Single Class Platform - ${offer === 'upsell' ? 'Advanced Module' : 'Lite Pack'}`,
         });
 
         if (paymentIntent.status === 'succeeded') {
-            // Webhook handles fulfillment usually, but for immediate UI feedback we can redirect.
-            // Ideally we wait for webhook, but optimistic success is fine.
             redirect('/confirmation');
         } else {
             console.warn('Payment requires action', paymentIntent.status);

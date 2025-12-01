@@ -1,69 +1,79 @@
-import { getStudentLessons } from '@/actions/content';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Lock, PlayCircle } from 'lucide-react';
+import { enforceAuthentication } from '@/lib/auth-guards';
+import { db } from '@/db';
+import { courses, transactions } from '@/db/schema';
+import { eq, and, inArray } from 'drizzle-orm';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { BookOpen, Lock } from 'lucide-react';
 
 export default async function DashboardPage() {
-    const lessons = await getStudentLessons();
+    const session = await enforceAuthentication();
+    const userId = session.user.id;
 
-    const completedCount = lessons.filter(l => l.isCompleted).length;
-    const progress = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
+    // 1. Get User's Transactions to find purchased courses
+    const userTransactions = await db.query.transactions.findMany({
+        where: and(
+            eq(transactions.userId, userId),
+            eq(transactions.status, 'completed')
+        ),
+    });
+
+    const purchasedCourseIds = userTransactions
+        .map(tx => tx.courseId)
+        .filter((id): id is number => id !== null);
+
+    // 2. Get All Published Courses
+    const allCourses = await db.query.courses.findMany({
+        where: eq(courses.isPublished, true),
+    });
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
-            {/* Progress Section */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Your Progress</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>{Math.round(progress)}% Completed</span>
-                        <span>{completedCount} / {lessons.length} Lessons</span>
-                    </div>
-                    <Progress value={progress} className="h-2" />
-                </CardContent>
-            </Card>
-
-            {/* Lesson List */}
-            <div className="space-y-4">
-                <h2 className="text-2xl font-bold tracking-tight">Course Content</h2>
-                <div className="grid gap-4">
-                    {lessons.map((lesson) => (
-                        <Link
-                            key={lesson.id}
-                            href={lesson.isLocked ? '#' : `/lessons/${lesson.id}`}
-                            className={`block transition-opacity ${lesson.isLocked ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80'}`}
-                        >
-                            <Card>
-                                <CardContent className="p-4 flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex-shrink-0">
-                                            {lesson.isCompleted ? (
-                                                <CheckCircle className="h-6 w-6 text-green-500" />
-                                            ) : lesson.isLocked ? (
-                                                <Lock className="h-6 w-6 text-slate-400" />
-                                            ) : (
-                                                <PlayCircle className="h-6 w-6 text-blue-500" />
-                                            )}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium">{lesson.title}</h3>
-                                            <p className="text-sm text-muted-foreground">Lesson {lesson.orderIndex}</p>
-                                        </div>
-                                    </div>
-                                    {lesson.isCompleted && (
-                                        <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">
-                                            Completed
-                                        </span>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </Link>
-                    ))}
+        <div className="space-y-8">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">My Learning</h1>
+                    <p className="text-slate-500 mt-2">Welcome back, {session.user.name}</p>
                 </div>
             </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {allCourses.map((course) => {
+                    const isPurchased = purchasedCourseIds.includes(course.id);
+
+                    return (
+                        <Card key={course.id} className={`flex flex-col ${!isPurchased ? 'opacity-75' : ''}`}>
+                            <CardHeader>
+                                <CardTitle className="line-clamp-2">{course.title}</CardTitle>
+                                <CardDescription className="line-clamp-2">{course.description}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="mt-auto pt-0">
+                                {isPurchased ? (
+                                    <Link href={`/courses/${course.id}`} className="w-full">
+                                        <Button className="w-full">
+                                            <BookOpen className="mr-2 h-4 w-4" />
+                                            Continue Learning
+                                        </Button>
+                                    </Link>
+                                ) : (
+                                    <Link href={`/enroll/${course.id}`} className="w-full">
+                                        <Button variant="outline" className="w-full">
+                                            <Lock className="mr-2 h-4 w-4" />
+                                            Enroll for ${(course.priceCents / 100).toFixed(2)}
+                                        </Button>
+                                    </Link>
+                                )}
+                            </CardContent>
+                        </Card>
+                    );
+                })}
+            </div>
+
+            {allCourses.length === 0 && (
+                <div className="text-center py-12 text-slate-500">
+                    No courses available at the moment.
+                </div>
+            )}
         </div>
     );
 }

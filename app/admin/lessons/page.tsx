@@ -75,22 +75,27 @@ export default async function AdminLessonsPage() {
                             ) : (
                                 lessons.map((lesson) => (
                                     <TableRow key={lesson.id}>
+                                        <TableCell className="font-medium">{lesson.orderIndex}</TableCell>
+                                        <TableCell>{lesson.title}</TableCell>
                                         <TableCell>
-                                            <GripVertical className="h-4 w-4 text-slate-400 cursor-move" />
-                                        </TableCell>
-                                        <TableCell>{lesson.orderIndex}</TableCell>
-                                        <TableCell className="font-medium">{lesson.title}</TableCell>
-                                        <TableCell>
-                                            {lesson.videoEmbedUrl ? (
-                                                <span className="text-green-600 text-xs bg-green-100 px-2 py-1 rounded">Configured</span>
+                                            {lesson.course ? (
+                                                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                                                    {lesson.course.title}
+                                                </span>
                                             ) : (
-                                                <span className="text-slate-400 text-xs bg-slate-100 px-2 py-1 rounded">Missing</span>
+                                                <span className="text-gray-400 italic">Unassigned</span>
                                             )}
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex gap-2">
+                                                {lesson.hasAttachment && <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">File</span>}
+                                                {lesson.hasAssessment && <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">Quiz</span>}
+                                            </div>
                                         </TableCell>
                                         <TableCell className="text-right space-x-2">
                                             <Link href={`/admin/lessons/${lesson.id}`}>
-                                                <Button variant="outline" size="sm">
-                                                    <Edit className="h-4 w-4" />
+                                                <Button variant="ghost" size="sm">
+                                                    Edit
                                                 </Button>
                                             </Link>
                                             <form action={handleDelete.bind(null, lesson.id)} className="inline-block">

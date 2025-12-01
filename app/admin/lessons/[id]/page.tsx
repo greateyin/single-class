@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { db } from '@/db';
+import { courses } from '@/db/schema';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
@@ -25,18 +27,22 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
         notFound();
     }
 
+    const allCourses = await db.query.courses.findMany();
+
     async function handleUpdate(formData: FormData) {
         'use server';
         const title = formData.get('title') as string;
         const videoEmbedUrl = formData.get('videoEmbedUrl') as string;
         const description = formData.get('description') as string;
         const orderIndex = parseInt(formData.get('orderIndex') as string);
+        const courseId = formData.get('courseId') ? parseInt(formData.get('courseId') as string) : undefined;
 
         await updateLesson(id, {
             title,
             videoEmbedUrl,
             description,
             orderIndex,
+            courseId,
         });
 
         redirect('/admin/lessons');
@@ -64,6 +70,22 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
                             <div className="space-y-2">
                                 <Label htmlFor="title">Title</Label>
                                 <Input id="title" name="title" defaultValue={lesson.title} required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="courseId">Course</Label>
+                                <select
+                                    id="courseId"
+                                    name="courseId"
+                                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    defaultValue={lesson.courseId || ''}
+                                >
+                                    <option value="">Select a course...</option>
+                                    {allCourses.map((course) => (
+                                        <option key={course.id} value={course.id}>
+                                            {course.title}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="orderIndex">Order Index</Label>

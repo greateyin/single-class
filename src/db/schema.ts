@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, serial, varchar, integer, boolean, pgEnum, primaryKey } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 // Enums
 export const userRoles = pgEnum('user_role', ['student', 'admin']);
@@ -17,9 +18,21 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
-// 2. Lessons (Implicit Course Structure)
+// 2. Courses (New)
+export const courses = pgTable('courses', {
+  id: serial('id').primaryKey(),
+  title: varchar('title', { length: 256 }).notNull(),
+  description: text('description'),
+  imageUrl: text('image_url'),
+  priceCents: integer('price_cents').notNull().default(0),
+  isPublished: boolean('is_published').default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+// 3. Lessons (Implicit Course Structure -> Explicit)
 export const lessons = pgTable('lessons', {
   id: serial('id').primaryKey(),
+  courseId: integer('course_id').references(() => courses.id), // Nullable for migration, should be Not Null later
   title: varchar('title', { length: 256 }).notNull(),
   orderIndex: integer('order_index').notNull(), // Determines sequence
   videoEmbedUrl: text('video_embed_url').notNull(), // Vimeo URL
@@ -29,10 +42,11 @@ export const lessons = pgTable('lessons', {
   hasAssessment: boolean('has_assessment').default(false),
 });
 
-// 3. Transactions (Sales History)
+// 4. Transactions (Sales History)
 export const transactions = pgTable('transactions', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => users.id).notNull(),
+  courseId: integer('course_id').references(() => courses.id), // Link transaction to course
   amountCents: integer('amount_cents').notNull(),
   status: transactionStatus('status').default('pending').notNull(),
   type: offerType('type').notNull(),
@@ -41,7 +55,7 @@ export const transactions = pgTable('transactions', {
   saleDate: timestamp('sale_date', { withTimezone: true }).defaultNow().notNull(),
 });
 
-// 4. Lesson Completion (Progress)
+// 5. Lesson Completion (Progress)
 export const lessonCompletion = pgTable('lesson_completion', {
   userId: text('user_id').references(() => users.id).notNull(),
   lessonId: integer('lesson_id').references(() => lessons.id).notNull(),
@@ -50,7 +64,7 @@ export const lessonCompletion = pgTable('lesson_completion', {
   pk: primaryKey({ columns: [t.userId, t.lessonId] }),
 }));
 
-// 5. Attachments
+// 6. Attachments
 export const attachments = pgTable('attachments', {
   id: serial('id').primaryKey(),
   lessonId: integer('lesson_id').references(() => lessons.id).notNull(),
@@ -58,7 +72,7 @@ export const attachments = pgTable('attachments', {
   storageUrl: text('storage_url').notNull(), // Vercel Blob URL (Hidden behind proxy)
 });
 
-// 6. Q&A Messages (Self-Referencing)
+// 7. Q&A Messages (Self-Referencing)
 export const qaMessages = pgTable('qa_messages', {
   id: serial('id').primaryKey(),
   authorId: text('author_id').references(() => users.id).notNull(),
@@ -68,7 +82,7 @@ export const qaMessages = pgTable('qa_messages', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
-// 7. Sales Periods (Scarcity)
+// 8. Sales Periods (Scarcity)
 export const salesPeriods = pgTable('sales_periods', {
   id: serial('id').primaryKey(),
   offerType: offerType('offer_type').notNull(),
@@ -76,7 +90,7 @@ export const salesPeriods = pgTable('sales_periods', {
   endTime: timestamp('end_time', { withTimezone: true }).notNull(),
 });
 
-// 8. Assessments
+// 9. Assessments
 export const assessments = pgTable('assessments', {
   id: serial('id').primaryKey(),
   lessonId: integer('lesson_id').references(() => lessons.id).notNull(),
@@ -92,8 +106,7 @@ export const userAttempts = pgTable('user_attempts', {
   attemptedAt: timestamp('attempted_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
-// 9. Relations
-import { relations } from 'drizzle-orm';
+// 10. Relations
 
 export const usersRelations = relations(users, ({ many }) => ({
   transactions: many(transactions),
@@ -102,10 +115,19 @@ export const usersRelations = relations(users, ({ many }) => ({
   userAttempts: many(userAttempts),
 }));
 
+export const coursesRelations = relations(courses, ({ many }) => ({
+  lessons: many(lessons),
+  transactions: many(transactions),
+}));
+
 export const transactionsRelations = relations(transactions, ({ one }) => ({
   user: one(users, {
     fields: [transactions.userId],
     references: [users.id],
+  }),
+  course: one(courses, {
+    fields: [transactions.courseId],
+    references: [courses.id],
   }),
 }));
 
@@ -120,7 +142,11 @@ export const lessonCompletionRelations = relations(lessonCompletion, ({ one }) =
   }),
 }));
 
-export const lessonsRelations = relations(lessons, ({ many }) => ({
+export const lessonsRelations = relations(lessons, ({ one, many }) => ({
+  course: one(courses, {
+    fields: [lessons.courseId],
+    references: [courses.id],
+  }),
   attachments: many(attachments),
   assessments: many(assessments),
   lessonCompletion: many(lessonCompletion),

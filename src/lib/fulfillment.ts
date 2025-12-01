@@ -10,9 +10,10 @@ export async function fulfillOrder(
     offerType: 'core' | 'upsell' | 'downsell',
     transactionRef: string,
     source: 'stripe' | 'paypal',
-    customerRef: string | null
+    customerRef: string | null,
+    courseId?: number
 ) {
-    console.log(`Fulfilling order for ${userId}, offer: ${offerType}`);
+    console.log(`Fulfilling order for ${userId}, offer: ${offerType}, course: ${courseId}`);
 
     // 1. Idempotency Check
     const existingTx = await db.query.transactions.findFirst({
@@ -37,6 +38,7 @@ export async function fulfillOrder(
             type: offerType,
             paymentIntentId: transactionRef,
             isVaulted: !!customerRef,
+            courseId,
         });
 
         // B. Update User (Save Stripe Customer ID for Core)

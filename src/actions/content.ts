@@ -8,12 +8,13 @@ import { revalidatePath } from 'next/cache';
 
 // --- Lesson Access & Progress ---
 
-export async function getStudentLessons() {
-    const session = await enforcePaidAccess();
+export async function getCourseLessons(courseId: number) {
+    const session = await enforcePaidAccess(courseId);
     const userId = session.user.id;
 
     // Fetch all lessons ordered by index
     const allLessons = await db.query.lessons.findMany({
+        where: eq(lessons.courseId, courseId),
         orderBy: [asc(lessons.orderIndex)],
     });
 
@@ -33,19 +34,20 @@ export async function getStudentLessons() {
 }
 
 export async function getLessonDetails(lessonId: number) {
-    const session = await enforcePaidAccess();
-    const userId = session.user.id;
-
+    // 1. Fetch lesson first to identify course
     const lesson = await db.query.lessons.findFirst({
         where: eq(lessons.id, lessonId),
         with: {
             attachments: true,
-            assessments: true, // We need to check if user attempted it, but maybe not send correct answer?
-            // Actually, for simple assessment, we might send the question and check answer on server.
+            assessments: true,
         }
     });
 
     if (!lesson) return null;
+
+    // 2. Enforce Access for this specific course
+    const session = await enforcePaidAccess(lesson.courseId!);
+    const userId = session.user.id;
 
     // Check completion
     const completion = await db.query.lessonCompletion.findFirst({
@@ -89,7 +91,10 @@ export async function getLessonDetails(lessonId: number) {
 }
 
 export async function markLessonCompleted(lessonId: number) {
-    const session = await enforcePaidAccess();
+    const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
+    if (!lesson || !lesson.courseId) return;
+
+    const session = await enforcePaidAccess(lesson.courseId);
     const userId = session.user.id;
 
     await db.insert(lessonCompletion).values({
@@ -104,15 +109,16 @@ export async function markLessonCompleted(lessonId: number) {
 // --- Attachments ---
 
 export async function getSecureAttachmentUrl(attachmentId: number) {
-    const session = await enforcePaidAccess();
-
     const attachment = await db.query.attachments.findFirst({
-        where: eq(attachments.id, attachmentId)
+        where: eq(attachments.id, attachmentId),
+        with: { lesson: true }
     });
 
-    if (!attachment) {
+    if (!attachment || !attachment.lesson || !attachment.lesson.courseId) {
         throw new Error('Attachment not found');
     }
+
+    const session = await enforcePaidAccess(attachment.lesson.courseId);
 
     // In a real scenario with private blobs, we would generate a signed URL here.
     // For Vercel Blob (public access + obscurity), we just return the URL 
@@ -125,7 +131,10 @@ export async function getSecureAttachmentUrl(attachmentId: number) {
 // --- Assessments ---
 
 export async function submitAssessment(lessonId: number, formData: FormData) {
-    const session = await enforcePaidAccess();
+    const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
+    if (!lesson || !lesson.courseId) return;
+
+    const session = await enforcePaidAccess(lesson.courseId);
     const userId = session.user.id;
 
     const assessmentId = parseInt(formData.get('assessmentId') as string);
@@ -156,8 +165,11 @@ export async function submitAssessment(lessonId: number, formData: FormData) {
 
 // --- Q&A ---
 
-export async function getQaMessages(lessonId?: number) {
-    const session = await enforcePaidAccess();
+export async function getQaMessages(lessonId: number) {
+    const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
+    if (!lesson || !lesson.courseId) return [];
+
+    const session = await enforcePaidAccess(lesson.courseId);
 
     // Fetch messages with author info
     const messages = await db.query.qaMessages.findMany({
@@ -182,7 +194,10 @@ export async function getQaMessages(lessonId?: number) {
 }
 
 export async function submitQaMessage(lessonId: number, formData: FormData) {
-    const session = await enforcePaidAccess();
+    const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
+    if (!lesson || !lesson.courseId) return;
+
+    const session = await enforcePaidAccess(lesson.courseId);
     const userId = session.user.id;
 
     const content = formData.get('content') as string;

@@ -9,13 +9,17 @@ import { revalidatePath } from 'next/cache';
 
 // --- Lesson Management ---
 
-export async function getLessons() {
+export async function getLessons(courseId?: number) {
     await enforceAdminRole();
+    const whereClause = courseId ? eq(lessons.courseId, courseId) : undefined;
+
     return await db.query.lessons.findMany({
+        where: whereClause,
         orderBy: [asc(lessons.orderIndex)],
         with: {
             attachments: true,
             assessments: true,
+            course: true,
         }
     });
 }
@@ -31,7 +35,7 @@ export async function getLessonById(id: number) {
     });
 }
 
-export async function createLesson(data: { title: string; orderIndex: number; videoEmbedUrl: string; description?: string }) {
+export async function createLesson(data: { title: string; orderIndex: number; videoEmbedUrl: string; description?: string; courseId?: number }) {
     await enforceAdminRole();
 
     await db.insert(lessons).values({
@@ -39,14 +43,18 @@ export async function createLesson(data: { title: string; orderIndex: number; vi
         orderIndex: data.orderIndex,
         videoEmbedUrl: data.videoEmbedUrl,
         description: data.description,
+        courseId: data.courseId,
         slug: data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
     });
 
     revalidatePath('/admin/lessons');
     revalidatePath('/dashboard');
+    if (data.courseId) {
+        revalidatePath(`/admin/courses/${data.courseId}`);
+    }
 }
 
-export async function updateLesson(id: number, data: { title?: string; videoEmbedUrl?: string; description?: string; orderIndex?: number }) {
+export async function updateLesson(id: number, data: { title?: string; videoEmbedUrl?: string; description?: string; orderIndex?: number; courseId?: number }) {
     await enforceAdminRole();
 
     await db.update(lessons)

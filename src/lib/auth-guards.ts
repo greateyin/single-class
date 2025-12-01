@@ -29,7 +29,10 @@ export async function enforceAdminRole() {
 /**
  * Checks if the user has paid (Core Offer status is completed).
  */
-export async function enforcePaidAccess() {
+/**
+ * Checks if the user has paid for the specific course.
+ */
+export async function enforcePaidAccess(courseId: number) {
     const session = await enforceAuthentication();
     const userId = session.user.id;
 
@@ -37,13 +40,13 @@ export async function enforcePaidAccess() {
     const paid = await db.query.transactions.findFirst({
         where: and(
             eq(transactions.userId, userId),
-            eq(transactions.type, 'core'),
+            eq(transactions.courseId, courseId),
             eq(transactions.status, 'completed')
         ),
     });
 
     if (!paid) {
-        redirect('/enroll'); // Redirect to core enrollment page
+        redirect('/enroll'); // Redirect to enrollment page (should probably be course specific later)
     }
     return session;
 }
