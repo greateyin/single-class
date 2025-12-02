@@ -12,17 +12,17 @@ export default async function CourseLayout({
     if (!session) redirect('/api/auth/signin');
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            <header className="bg-white border-b sticky top-0 z-10">
+        <div className="min-h-screen bg-[var(--brand-bg)]">
+            <header className="bg-[var(--brand-navy)] border-b border-blue-900 sticky top-0 z-10 shadow-md">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <Link href="/dashboard" className="font-bold text-xl text-slate-900">
+                    <Link href="/dashboard" className="font-bold text-xl text-[var(--brand-gold)] tracking-tight">
                         Single Course
                     </Link>
                     <div className="flex items-center gap-4">
-                        <Link href="/dashboard" className="text-sm font-medium text-slate-600 hover:text-slate-900">
+                        <Link href="/dashboard" className="text-sm font-medium text-blue-100 hover:text-white transition-colors">
                             Dashboard
                         </Link>
-                        <Link href="/qa" className="text-sm font-medium text-slate-600 hover:text-slate-900">
+                        <Link href="/qa" className="text-sm font-medium text-blue-100 hover:text-white transition-colors">
                             Q&A
                         </Link>
                         <form
@@ -31,7 +31,7 @@ export default async function CourseLayout({
                                 await signOut();
                             }}
                         >
-                            <Button variant="ghost" size="sm">
+                            <Button variant="ghost" size="sm" className="text-blue-100 hover:text-white hover:bg-blue-800">
                                 Sign Out
                             </Button>
                         </form>
