@@ -8,7 +8,9 @@ const configureEnvironment = function () {
         throw new Error('Missing PayPal credentials');
     }
 
-    return process.env.NODE_ENV === 'production'
+    const environment = process.env.PAYPAL_MODE || (process.env.NODE_ENV === 'production' ? 'live' : 'sandbox');
+
+    return environment === 'live'
         ? new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret)
         : new checkoutNodeJssdk.core.SandboxEnvironment(clientId, clientSecret);
 };

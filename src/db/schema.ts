@@ -22,10 +22,15 @@ export const users = pgTable('users', {
 export const courses = pgTable('courses', {
   id: serial('id').primaryKey(),
   title: varchar('title', { length: 256 }).notNull(),
+  subtitle: text('subtitle'),
   description: text('description'),
   imageUrl: text('image_url'),
   priceCents: integer('price_cents').notNull().default(0),
   isPublished: boolean('is_published').default(false),
+  language: text('language').default('English'),
+  level: text('level').default('All Levels'),
+  category: text('category'),
+  primaryTopic: text('primary_topic'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

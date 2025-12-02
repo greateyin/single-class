@@ -34,7 +34,15 @@ export async function updateCourse(courseId: number, formData: FormData) {
     await enforceAdminRole();
 
     const title = formData.get('title') as string;
+    const subtitle = formData.get('subtitle') as string;
     const description = formData.get('description') as string;
+    const language = formData.get('language') as string;
+    const level = formData.get('level') as string;
+    const category = formData.get('category') as string;
+    const primaryTopic = formData.get('primaryTopic') as string;
+    const imageUrl = formData.get('imageUrl') as string;
+
+    // Pricing & Publish (handled separately or together, keeping them here for now)
     const priceCents = parseInt(formData.get('priceCents') as string || '0');
     const isPublished = formData.get('isPublished') === 'on';
 
@@ -45,7 +53,13 @@ export async function updateCourse(courseId: number, formData: FormData) {
     await db.update(courses)
         .set({
             title,
+            subtitle,
             description,
+            language,
+            level,
+            category,
+            primaryTopic,
+            imageUrl,
             priceCents,
             isPublished,
         })

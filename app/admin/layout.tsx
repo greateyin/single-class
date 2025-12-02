@@ -13,32 +13,32 @@ export default async function AdminLayout({
     await enforceAdminRole();
 
     return (
-        <div className="flex min-h-screen bg-slate-50">
+        <div className="flex min-h-screen bg-[var(--brand-bg)]">
             {/* Sidebar */}
-            <aside className="w-64 bg-slate-900 text-white hidden md:block">
-                <div className="p-6">
-                    <h1 className="text-2xl font-bold">Admin</h1>
+            <aside className="w-64 bg-[var(--brand-navy)] text-white hidden md:block border-r border-blue-900">
+                <div className="p-6 border-b border-blue-800">
+                    <h1 className="text-2xl font-bold tracking-tight text-[var(--brand-gold)]">Admin</h1>
                 </div>
                 <nav className="mt-6 px-4 space-y-2">
-                    <Link href="/admin/dashboard" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-slate-800 transition-colors">
+                    <Link href="/admin/dashboard" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-800 transition-colors text-blue-100 hover:text-white">
                         <LayoutDashboard className="h-5 w-5" />
                         Dashboard
                     </Link>
-                    <Link href="/admin/users" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-slate-800 transition-colors">
+                    <Link href="/admin/users" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-800 transition-colors text-blue-100 hover:text-white">
                         <Users className="h-5 w-5" />
                         Users
                     </Link>
-                    <Link href="/admin/courses" className="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-500 transition-all hover:text-slate-900 hover:bg-slate-100">
+                    <Link href="/admin/courses" className="flex items-center gap-3 rounded-lg px-3 py-2 text-blue-100 transition-all hover:text-white hover:bg-blue-800">
                         <BookOpen className="h-4 w-4" />
                         Courses
                     </Link>
-                    <Link href="/admin/lessons" className="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-500 transition-all hover:text-slate-900 hover:bg-slate-100">
+                    <Link href="/admin/lessons" className="flex items-center gap-3 rounded-lg px-3 py-2 text-blue-100 transition-all hover:text-white hover:bg-blue-800">
                         <BookOpen className="h-4 w-4" />
                         Lessons
                     </Link>
                 </nav>
-                <div className="absolute bottom-0 w-64 p-4 border-t border-slate-800">
-                    <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-slate-800 transition-colors text-slate-400 hover:text-white">
+                <div className="absolute bottom-0 w-64 p-4 border-t border-blue-800">
+                    <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-800 transition-colors text-blue-300 hover:text-white">
                         <LogOut className="h-5 w-5" />
                         Exit to App
                     </Link>
