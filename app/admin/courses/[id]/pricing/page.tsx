@@ -7,6 +7,7 @@ import { courses } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { Save } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import { SuccessToast } from '@/components/success-toast';
 
 export default async function PricingPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: courseId } = await params;
@@ -21,6 +22,7 @@ export default async function PricingPage({ params }: { params: Promise<{ id: st
 
     return (
         <div className="space-y-6">
+            <SuccessToast message="Pricing updated successfully" />
             <div>
                 <h2 className="text-2xl font-bold tracking-tight">Pricing</h2>
                 <p className="text-muted-foreground">

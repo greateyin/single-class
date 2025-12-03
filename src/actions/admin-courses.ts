@@ -28,7 +28,7 @@ export async function createCourse(formData: FormData) {
     }).returning();
 
     revalidatePath('/admin/courses');
-    redirect(`/admin/courses/${newCourse.id}`);
+    redirect(`/admin/courses/${newCourse.id}?updated=true`);
 }
 
 export async function updateCourseLandingPage(courseId: string, formData: FormData) {
@@ -64,6 +64,7 @@ export async function updateCourseLandingPage(courseId: string, formData: FormDa
     revalidatePath(`/admin/courses/${courseId}/landing-page`);
     revalidatePath(`/admin/courses/${courseId}`);
     revalidatePath('/admin/courses');
+    redirect(`/admin/courses/${courseId}/landing-page?updated=true`);
 }
 
 export async function updateCoursePricing(courseId: string, formData: FormData) {
@@ -77,6 +78,7 @@ export async function updateCoursePricing(courseId: string, formData: FormData) 
 
     revalidatePath(`/admin/courses/${courseId}/pricing`);
     revalidatePath('/admin/courses');
+    redirect(`/admin/courses/${courseId}/pricing?updated=true`);
 }
 
 export async function updateCourseSettings(courseId: string, formData: FormData) {
@@ -94,6 +96,7 @@ export async function updateCourseSettings(courseId: string, formData: FormData)
 
     revalidatePath(`/admin/courses/${courseId}/settings`);
     revalidatePath('/admin/courses');
+    redirect(`/admin/courses/${courseId}/settings?updated=true`);
 }
 
 export async function deleteCourse(courseId: string) {
@@ -136,4 +139,5 @@ export async function uploadCourseImage(courseId: string, formData: FormData) {
         .where(eq(courses.id, courseId));
 
     revalidatePath(`/admin/courses/${courseId}/landing-page`);
+    redirect(`/admin/courses/${courseId}/landing-page?updated=true`);
 }

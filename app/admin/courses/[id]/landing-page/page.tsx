@@ -7,6 +7,7 @@ import { db } from '@/db';
 import { courses } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
+import { SuccessToast } from '@/components/success-toast';
 
 export default async function CourseLandingPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: courseId } = await params;
@@ -21,6 +22,7 @@ export default async function CourseLandingPage({ params }: { params: Promise<{ 
 
     return (
         <div className="space-y-6">
+            <SuccessToast message="Landing page updated successfully" />
             <div>
                 <h2 className="text-2xl font-bold tracking-tight">Course landing page</h2>
                 <p className="text-muted-foreground">

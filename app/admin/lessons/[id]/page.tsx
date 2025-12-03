@@ -9,7 +9,7 @@ import { courses } from '@/db/schema';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import { LessonSuccessToast } from '@/components/lesson-success-toast';
+import { SuccessToast } from '@/components/success-toast';
 
 export default async function EditLessonPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: lessonId } = await params;
@@ -49,7 +49,7 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
 
     return (
         <div className="space-y-6">
-            <LessonSuccessToast />
+            <SuccessToast message="Lesson updated successfully" />
             <div className="flex items-center gap-4">
                 <Link href="/admin/lessons">
                     <Button variant="ghost" size="sm">
