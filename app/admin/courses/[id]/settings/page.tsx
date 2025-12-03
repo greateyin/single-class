@@ -56,6 +56,17 @@ export default async function SettingsPage({ params }: { params: Promise<{ id: s
                             <label htmlFor="isPublished" className="text-sm font-medium">Published</label>
                         </div>
 
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="allowDownload"
+                                name="allowDownload"
+                                defaultChecked={course.allowDownload || false}
+                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <label htmlFor="allowDownload" className="text-sm font-medium">Allow Video Download</label>
+                        </div>
+
                         <div className="pt-4 flex justify-end">
                             <Button type="submit">
                                 <Save className="mr-2 h-4 w-4" />

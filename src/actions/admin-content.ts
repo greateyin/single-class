@@ -35,7 +35,7 @@ export async function getLessonById(id: string) {
     });
 }
 
-export async function createLesson(data: { title: string; orderIndex: number; videoEmbedUrl: string; description?: string; courseId?: string }) {
+export async function createLesson(data: { title: string; orderIndex: number; videoEmbedUrl: string; description?: string; courseId?: string; moduleId?: string; downloadUrl?: string }) {
     await enforceAdminRole();
 
     await db.insert(lessons).values({
@@ -44,6 +44,8 @@ export async function createLesson(data: { title: string; orderIndex: number; vi
         videoEmbedUrl: data.videoEmbedUrl,
         description: data.description,
         courseId: data.courseId,
+        moduleId: data.moduleId,
+        downloadUrl: data.downloadUrl,
         slug: data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
     }).returning(); // Ensure returning if needed, though not used here
 
@@ -54,7 +56,7 @@ export async function createLesson(data: { title: string; orderIndex: number; vi
     }
 }
 
-export async function updateLesson(id: string, data: { title?: string; videoEmbedUrl?: string; description?: string; orderIndex?: number; courseId?: string }) {
+export async function updateLesson(id: string, data: { title?: string; videoEmbedUrl?: string; description?: string; orderIndex?: number; courseId?: string; moduleId?: string; downloadUrl?: string }) {
     await enforceAdminRole();
 
     await db.update(lessons)

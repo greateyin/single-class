@@ -9,7 +9,7 @@ import { CheckCircle, Download, FileText, MessageSquare, ArrowLeft, ArrowRight }
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { db } from '@/db';
-import { lessons } from '@/db/schema';
+import { lessons, courses } from '@/db/schema';
 import { eq, and, asc, gt } from 'drizzle-orm';
 
 export default async function LessonPage({ params }: { params: Promise<{ id: string }> }) {
@@ -17,6 +17,10 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
 
     const lesson = await getLessonDetails(lessonId);
     if (!lesson) notFound();
+
+    const course = await db.query.courses.findFirst({
+        where: eq(courses.id, lesson.courseId!),
+    });
 
     const qaMessages = await getQaMessages(lessonId);
 
@@ -52,6 +56,15 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
                     <div>
                         <h1 className="text-2xl font-bold">{lesson.title}</h1>
                         <p className="text-muted-foreground">Lesson {lesson.orderIndex}</p>
+                        {course?.allowDownload && lesson.downloadUrl && (
+                            <div className="mt-2">
+                                <Link href={lesson.downloadUrl} target="_blank" download>
+                                    <Button variant="outline" size="sm" className="gap-2 text-blue-600 border-blue-200 hover:bg-blue-50">
+                                        <Download className="h-4 w-4" /> Download Video
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
                     </div>
                     <div className="flex items-center gap-3">
                         {nextLesson && (

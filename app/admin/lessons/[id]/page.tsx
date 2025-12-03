@@ -27,6 +27,7 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
         const description = formData.get('description') as string;
         const orderIndex = parseInt(formData.get('orderIndex') as string);
         const courseId = formData.get('courseId') as string || undefined;
+        const downloadUrl = formData.get('downloadUrl') as string || undefined;
 
         await updateLesson(lessonId, {
             title,
@@ -34,6 +35,7 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
             description,
             orderIndex,
             courseId,
+            downloadUrl,
         });
 
         redirect('/admin/lessons');
@@ -94,6 +96,19 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
                             />
                             <p className="text-xs text-muted-foreground">
                                 Only Vimeo URLs are secure. Ensure domain privacy is set on Vimeo.
+                            </p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="downloadUrl">Video Download URL (Optional)</Label>
+                            <Input
+                                id="downloadUrl"
+                                name="downloadUrl"
+                                defaultValue={lesson.downloadUrl || ''}
+                                placeholder="https://..."
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Direct link to the video file (e.g. S3, Dropbox). Only shown if "Allow Video Download" is enabled in Course Settings.
                             </p>
                         </div>
 

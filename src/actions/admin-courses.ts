@@ -43,8 +43,10 @@ export async function updateCourse(courseId: string, formData: FormData) {
     const imageUrl = formData.get('imageUrl') as string;
 
     // Pricing & Publish (handled separately or together, keeping them here for now)
+    // Pricing & Publish (handled separately or together, keeping them here for now)
     const priceCents = parseInt(formData.get('priceCents') as string || '0');
     const isPublished = formData.get('isPublished') === 'on';
+    const allowDownload = formData.get('allowDownload') === 'on';
 
     if (!title) {
         throw new Error('Title is required');
@@ -62,6 +64,7 @@ export async function updateCourse(courseId: string, formData: FormData) {
             imageUrl,
             priceCents,
             isPublished,
+            allowDownload,
         })
         .where(eq(courses.id, courseId));
 

@@ -31,18 +31,30 @@ export const courses = pgTable('courses', {
   level: text('level').default('All Levels'),
   category: text('category'),
   primaryTopic: text('primary_topic'),
+  allowDownload: boolean('allow_download').default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
-// 3. Lessons (Implicit Course Structure -> Explicit)
+// 3. Modules (Sections)
+export const modules = pgTable('modules', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  courseId: uuid('course_id').references(() => courses.id).notNull(),
+  title: varchar('title', { length: 256 }).notNull(),
+  orderIndex: integer('order_index').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+// 4. Lessons
 export const lessons = pgTable('lessons', {
   id: uuid('id').defaultRandom().primaryKey(),
-  courseId: uuid('course_id').references(() => courses.id), // Nullable for migration, should be Not Null later
+  courseId: uuid('course_id').references(() => courses.id), // Kept for easier querying, but modules is the structural parent
+  moduleId: uuid('module_id').references(() => modules.id), // New structural parent
   title: varchar('title', { length: 256 }).notNull(),
-  orderIndex: integer('order_index').notNull(), // Determines sequence
+  orderIndex: integer('order_index').notNull(), // Determines sequence within module
   videoEmbedUrl: text('video_embed_url').notNull(), // Vimeo URL
   description: text('description'),
   slug: text('slug').unique(),
+  downloadUrl: text('download_url'),
   hasAttachment: boolean('has_attachment').default(false),
   hasAssessment: boolean('has_assessment').default(false),
 });
@@ -121,8 +133,17 @@ export const usersRelations = relations(users, ({ many }) => ({
 }));
 
 export const coursesRelations = relations(courses, ({ many }) => ({
+  modules: many(modules),
   lessons: many(lessons),
   transactions: many(transactions),
+}));
+
+export const modulesRelations = relations(modules, ({ one, many }) => ({
+  course: one(courses, {
+    fields: [modules.courseId],
+    references: [courses.id],
+  }),
+  lessons: many(lessons),
 }));
 
 export const transactionsRelations = relations(transactions, ({ one }) => ({
@@ -151,6 +172,10 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   course: one(courses, {
     fields: [lessons.courseId],
     references: [courses.id],
+  }),
+  module: one(modules, {
+    fields: [lessons.moduleId],
+    references: [modules.id],
   }),
   attachments: many(attachments),
   assessments: many(assessments),
