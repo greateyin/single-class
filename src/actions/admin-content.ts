@@ -56,7 +56,7 @@ export async function createLesson(data: { title: string; orderIndex: number; vi
     }
 }
 
-export async function updateLesson(id: string, data: { title?: string; videoEmbedUrl?: string; description?: string; orderIndex?: number; courseId?: string; moduleId?: string; downloadUrl?: string }) {
+export async function updateLesson(id: string, data: { title?: string; videoEmbedUrl?: string; description?: string; orderIndex?: number; courseId?: string | null; moduleId?: string; downloadUrl?: string }) {
     await enforceAdminRole();
 
     await db.update(lessons)

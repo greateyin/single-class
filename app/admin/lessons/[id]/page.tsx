@@ -25,8 +25,10 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
         const title = formData.get('title') as string;
         const videoEmbedUrl = formData.get('videoEmbedUrl') as string;
         const description = formData.get('description') as string;
-        const orderIndex = parseInt(formData.get('orderIndex') as string);
-        const courseId = formData.get('courseId') as string || undefined;
+        const orderIndexRaw = formData.get('orderIndex') as string;
+        const orderIndex = orderIndexRaw ? parseInt(orderIndexRaw) : 0;
+        const courseIdRaw = formData.get('courseId') as string;
+        const courseId = courseIdRaw === '' ? null : courseIdRaw;
         const downloadUrl = formData.get('downloadUrl') as string || undefined;
 
         await updateLesson(lessonId, {
