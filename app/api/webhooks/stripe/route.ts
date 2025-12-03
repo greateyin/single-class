@@ -50,7 +50,7 @@ export async function POST(req: Request) {
                 session.payment_intent || session.id, // Use PI ID or Session ID as ref
                 'stripe',
                 customerRef,
-                courseId ? parseInt(courseId) : undefined,
+                courseId || undefined,
                 customerEmail
             );
             return NextResponse.json({ received: true });

@@ -10,7 +10,7 @@ import { courses } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { fulfillOrder } from '@/lib/fulfillment';
 
-export async function createPayPalOrder(courseId: number) {
+export async function createPayPalOrder(courseId: string) {
     const session = await auth();
     const userId = session?.user?.id;
 
@@ -28,7 +28,7 @@ export async function createPayPalOrder(courseId: number) {
     request.requestBody({
         intent: 'CAPTURE',
         purchase_units: [{
-            reference_id: courseId.toString(),
+            reference_id: courseId,
             amount: {
                 currency_code: 'USD',
                 value: (course.priceCents / 100).toFixed(2),
@@ -58,7 +58,7 @@ export async function createPayPalOrder(courseId: number) {
     }
 }
 
-export async function capturePayPalOrder(orderId: string, courseId: number) {
+export async function capturePayPalOrder(orderId: string, courseId: string) {
     const session = await enforceAuthentication();
     const currentUserId = session.user.id; // Renamed to avoid shadowing
 

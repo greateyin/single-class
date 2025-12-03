@@ -13,9 +13,7 @@ import { lessons } from '@/db/schema';
 import { eq, and, asc, gt } from 'drizzle-orm';
 
 export default async function LessonPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id: idString } = await params;
-    const lessonId = parseInt(idString);
-    if (isNaN(lessonId)) notFound();
+    const { id: lessonId } = await params;
 
     const lesson = await getLessonDetails(lessonId);
     if (!lesson) notFound();

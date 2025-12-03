@@ -16,7 +16,7 @@ const PRICES = {
     downsell: 2700, // $27.00
 };
 
-export async function createCoreCheckoutSession(courseId: number) {
+export async function createCoreCheckoutSession(courseId: string) {
     const session = await auth();
     console.log('createCoreCheckoutSession Session:', session);
     const userId = session?.user?.id;
@@ -53,14 +53,14 @@ export async function createCoreCheckoutSession(courseId: number) {
         metadata: {
             userId: userId || '', // Empty string if guest
             offerType: 'core',
-            courseId: courseId.toString(),
+            courseId: courseId,
         },
         payment_intent_data: {
             setup_future_usage: 'off_session', // Save card for upsells
             metadata: {
                 userId: userId || '',
                 offerType: 'core',
-                courseId: courseId.toString(),
+                courseId: courseId,
             }
         }
     });
@@ -72,7 +72,7 @@ export async function createCoreCheckoutSession(courseId: number) {
     redirect(checkoutSession.url);
 }
 
-export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseId: number | null | undefined, formData: FormData) {
+export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseId: string | null | undefined, formData: FormData) {
     const session = await enforceAuthentication();
     const userId = session.user.id;
     // For now, use fixed prices or fetch from courseId if provided
@@ -116,7 +116,7 @@ export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseI
             metadata: {
                 userId,
                 offerType: offer,
-                courseId: courseId ? courseId.toString() : '',
+                courseId: courseId ? courseId : '',
             },
             description: `Single Class Platform - ${offer === 'upsell' ? 'Advanced Module' : 'Lite Pack'}`,
         });

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, serial, varchar, integer, boolean, pgEnum, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, varchar, integer, boolean, pgEnum, primaryKey, uuid } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Enums
@@ -20,7 +20,7 @@ export const users = pgTable('users', {
 
 // 2. Courses (New)
 export const courses = pgTable('courses', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   title: varchar('title', { length: 256 }).notNull(),
   subtitle: text('subtitle'),
   description: text('description'),
@@ -36,8 +36,8 @@ export const courses = pgTable('courses', {
 
 // 3. Lessons (Implicit Course Structure -> Explicit)
 export const lessons = pgTable('lessons', {
-  id: serial('id').primaryKey(),
-  courseId: integer('course_id').references(() => courses.id), // Nullable for migration, should be Not Null later
+  id: uuid('id').defaultRandom().primaryKey(),
+  courseId: uuid('course_id').references(() => courses.id), // Nullable for migration, should be Not Null later
   title: varchar('title', { length: 256 }).notNull(),
   orderIndex: integer('order_index').notNull(), // Determines sequence
   videoEmbedUrl: text('video_embed_url').notNull(), // Vimeo URL
@@ -49,9 +49,9 @@ export const lessons = pgTable('lessons', {
 
 // 4. Transactions (Sales History)
 export const transactions = pgTable('transactions', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id').references(() => users.id).notNull(),
-  courseId: integer('course_id').references(() => courses.id), // Link transaction to course
+  courseId: uuid('course_id').references(() => courses.id), // Link transaction to course
   amountCents: integer('amount_cents').notNull(),
   status: transactionStatus('status').default('pending').notNull(),
   type: offerType('type').notNull(),
@@ -63,7 +63,7 @@ export const transactions = pgTable('transactions', {
 // 5. Lesson Completion (Progress)
 export const lessonCompletion = pgTable('lesson_completion', {
   userId: text('user_id').references(() => users.id).notNull(),
-  lessonId: integer('lesson_id').references(() => lessons.id).notNull(),
+  lessonId: uuid('lesson_id').references(() => lessons.id).notNull(),
   completedAt: timestamp('completed_at', { withTimezone: true }).defaultNow().notNull(),
 }, (t) => ({
   pk: primaryKey({ columns: [t.userId, t.lessonId] }),
@@ -71,25 +71,25 @@ export const lessonCompletion = pgTable('lesson_completion', {
 
 // 6. Attachments
 export const attachments = pgTable('attachments', {
-  id: serial('id').primaryKey(),
-  lessonId: integer('lesson_id').references(() => lessons.id).notNull(),
+  id: uuid('id').defaultRandom().primaryKey(),
+  lessonId: uuid('lesson_id').references(() => lessons.id).notNull(),
   fileName: varchar('file_name', { length: 256 }).notNull(),
   storageUrl: text('storage_url').notNull(), // Vercel Blob URL (Hidden behind proxy)
 });
 
 // 7. Q&A Messages (Self-Referencing)
 export const qaMessages = pgTable('qa_messages', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   authorId: text('author_id').references(() => users.id).notNull(),
-  lessonId: integer('lesson_id').references(() => lessons.id).notNull(),
-  parentId: integer('parent_id'), // Self-reference for replies
+  lessonId: uuid('lesson_id').references(() => lessons.id).notNull(),
+  parentId: uuid('parent_id'), // Self-reference for replies
   content: text('content').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
 // 8. Sales Periods (Scarcity)
 export const salesPeriods = pgTable('sales_periods', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   offerType: offerType('offer_type').notNull(),
   startTime: timestamp('start_time', { withTimezone: true }).notNull(),
   endTime: timestamp('end_time', { withTimezone: true }).notNull(),
@@ -97,16 +97,16 @@ export const salesPeriods = pgTable('sales_periods', {
 
 // 9. Assessments
 export const assessments = pgTable('assessments', {
-  id: serial('id').primaryKey(),
-  lessonId: integer('lesson_id').references(() => lessons.id).notNull(),
+  id: uuid('id').defaultRandom().primaryKey(),
+  lessonId: uuid('lesson_id').references(() => lessons.id).notNull(),
   questionText: text('question_text').notNull(),
   correctAnswer: text('correct_answer').notNull(), // Server-only!
 });
 
 export const userAttempts = pgTable('user_attempts', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id').references(() => users.id).notNull(),
-  assessmentId: integer('assessment_id').references(() => assessments.id).notNull(),
+  assessmentId: uuid('assessment_id').references(() => assessments.id).notNull(),
   score: integer('score').notNull(),
   attemptedAt: timestamp('attempted_at', { withTimezone: true }).defaultNow().notNull(),
 });

@@ -4,7 +4,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { createPayPalOrder, capturePayPalOrder } from '@/actions/paypal';
 
 interface PayPalButtonProps {
-    courseId: number;
+    courseId: string;
     clientId: string;
 }
 

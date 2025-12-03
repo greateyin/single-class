@@ -30,7 +30,7 @@ export async function createCourse(formData: FormData) {
     redirect(`/admin/courses/${newCourse.id}`);
 }
 
-export async function updateCourse(courseId: number, formData: FormData) {
+export async function updateCourse(courseId: string, formData: FormData) {
     await enforceAdminRole();
 
     const title = formData.get('title') as string;
@@ -70,7 +70,7 @@ export async function updateCourse(courseId: number, formData: FormData) {
     redirect('/admin/courses');
 }
 
-export async function deleteCourse(courseId: number) {
+export async function deleteCourse(courseId: string) {
     await enforceAdminRole();
 
     await db.delete(courses).where(eq(courses.id, courseId));

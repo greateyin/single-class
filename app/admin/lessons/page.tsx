@@ -25,7 +25,7 @@ export default async function AdminLessonsPage() {
         });
     }
 
-    async function handleDelete(id: number) {
+    async function handleDelete(id: string) {
         'use server';
         await deleteLesson(id);
     }

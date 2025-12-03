@@ -12,7 +12,7 @@ export async function fulfillOrder(
     transactionRef: string,
     source: 'stripe' | 'paypal',
     customerRef: string | null,
-    courseId?: number,
+    courseId?: string,
     userEmail?: string
 ) {
     console.log(`Fulfilling order for ${userId || userEmail}, offer: ${offerType}, course: ${courseId}`);

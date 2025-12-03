@@ -21,7 +21,7 @@ export default async function DashboardPage() {
 
     const purchasedCourseIds = userTransactions
         .map(tx => tx.courseId)
-        .filter((id): id is number => id !== null);
+        .filter((id): id is string => id !== null);
 
     // 2. Get All Published Courses
     const allCourses = await db.query.courses.findMany({

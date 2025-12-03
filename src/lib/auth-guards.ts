@@ -32,7 +32,7 @@ export async function enforceAdminRole() {
 /**
  * Checks if the user has paid for the specific course.
  */
-export async function enforcePaidAccess(courseId: number) {
+export async function enforcePaidAccess(courseId: string) {
     const session = await enforceAuthentication();
     const userId = session.user.id;
 

@@ -11,19 +11,10 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 
 export default async function EditLessonPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id: idString } = await params;
-    console.log('EditLessonPage params resolved:', idString);
-    const id = parseInt(idString);
-    console.log('EditLessonPage parsed id:', id);
-    if (isNaN(id)) {
-        console.log('EditLessonPage: Invalid ID');
-        notFound();
-    }
+    const { id: lessonId } = await params;
 
-    const lesson = await getLessonById(id);
-    console.log('EditLessonPage lesson:', lesson);
+    const lesson = await getLessonById(lessonId);
     if (!lesson) {
-        console.log('EditLessonPage: Lesson not found');
         notFound();
     }
 
@@ -35,9 +26,9 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
         const videoEmbedUrl = formData.get('videoEmbedUrl') as string;
         const description = formData.get('description') as string;
         const orderIndex = parseInt(formData.get('orderIndex') as string);
-        const courseId = formData.get('courseId') ? parseInt(formData.get('courseId') as string) : undefined;
+        const courseId = formData.get('courseId') as string || undefined;
 
-        await updateLesson(id, {
+        await updateLesson(lessonId, {
             title,
             videoEmbedUrl,
             description,

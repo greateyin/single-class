@@ -9,12 +9,7 @@ import { Save } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
 export default async function PricingPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
-    const courseId = parseInt(id);
-
-    if (isNaN(courseId)) {
-        redirect('/admin/courses');
-    }
+    const { id: courseId } = await params;
 
     const course = await db.query.courses.findFirst({
         where: eq(courses.id, courseId),

@@ -17,10 +17,7 @@ export async function generateMetadata(
     { params }: Props,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
-    const { courseId: courseIdStr } = await params;
-    const courseId = parseInt(courseIdStr);
-
-    if (isNaN(courseId)) return {};
+    const { courseId } = await params;
 
     const course = await db.query.courses.findFirst({
         where: eq(courses.id, courseId),
@@ -40,12 +37,7 @@ export async function generateMetadata(
 }
 
 export default async function EnrollPage({ params }: Props) {
-    const { courseId: courseIdStr } = await params;
-    const courseId = parseInt(courseIdStr);
-
-    if (isNaN(courseId)) {
-        notFound();
-    }
+    const { courseId } = await params;
 
     // Fetch Course
     const course = await db.query.courses.findFirst({

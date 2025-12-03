@@ -12,12 +12,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
 export default async function CurriculumPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
-    const courseId = parseInt(id);
-
-    if (isNaN(courseId)) {
-        redirect('/admin/courses');
-    }
+    const { id: courseId } = await params;
 
     const course = await db.query.courses.findFirst({
         where: eq(courses.id, courseId),
@@ -50,7 +45,7 @@ export default async function CurriculumPage({ params }: { params: Promise<{ id:
         revalidatePath(`/admin/courses/${courseId}/curriculum`);
     }
 
-    async function handleDeleteLesson(lessonId: number) {
+    async function handleDeleteLesson(lessonId: string) {
         'use server';
         await deleteLesson(lessonId);
         revalidatePath(`/admin/courses/${courseId}/curriculum`);

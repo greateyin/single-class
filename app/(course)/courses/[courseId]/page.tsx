@@ -9,10 +9,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 export default async function CoursePage({ params }: { params: Promise<{ courseId: string }> }) {
-    const { courseId: idString } = await params;
-    const courseId = parseInt(idString);
-
-    if (isNaN(courseId)) notFound();
+    const { courseId } = await params;
 
     const session = await enforcePaidAccess(courseId);
     const userId = session.user.id;

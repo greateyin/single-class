@@ -4,7 +4,7 @@ import { eq, and } from 'drizzle-orm';
 
 async function main() {
     const userEmail = 'student@example.com';
-    const courseId = 1;
+    const courseId = '123e4567-e89b-12d3-a456-426614174000'; // Replace with actual UUID
 
     console.log(`Deleting transaction for ${userEmail} - courseId ${courseId}...`);
 

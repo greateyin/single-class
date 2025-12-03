@@ -9,7 +9,7 @@ import { revalidatePath } from 'next/cache';
 
 // --- Lesson Management ---
 
-export async function getLessons(courseId?: number) {
+export async function getLessons(courseId?: string) {
     await enforceAdminRole();
     const whereClause = courseId ? eq(lessons.courseId, courseId) : undefined;
 
@@ -24,7 +24,7 @@ export async function getLessons(courseId?: number) {
     });
 }
 
-export async function getLessonById(id: number) {
+export async function getLessonById(id: string) {
     await enforceAdminRole();
     return await db.query.lessons.findFirst({
         where: eq(lessons.id, id),
@@ -35,7 +35,7 @@ export async function getLessonById(id: number) {
     });
 }
 
-export async function createLesson(data: { title: string; orderIndex: number; videoEmbedUrl: string; description?: string; courseId?: number }) {
+export async function createLesson(data: { title: string; orderIndex: number; videoEmbedUrl: string; description?: string; courseId?: string }) {
     await enforceAdminRole();
 
     await db.insert(lessons).values({
@@ -45,7 +45,7 @@ export async function createLesson(data: { title: string; orderIndex: number; vi
         description: data.description,
         courseId: data.courseId,
         slug: data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
-    });
+    }).returning(); // Ensure returning if needed, though not used here
 
     revalidatePath('/admin/lessons');
     revalidatePath('/dashboard');
@@ -54,7 +54,7 @@ export async function createLesson(data: { title: string; orderIndex: number; vi
     }
 }
 
-export async function updateLesson(id: number, data: { title?: string; videoEmbedUrl?: string; description?: string; orderIndex?: number; courseId?: number }) {
+export async function updateLesson(id: string, data: { title?: string; videoEmbedUrl?: string; description?: string; orderIndex?: number; courseId?: string }) {
     await enforceAdminRole();
 
     await db.update(lessons)
@@ -69,7 +69,7 @@ export async function updateLesson(id: number, data: { title?: string; videoEmbe
     revalidatePath('/dashboard');
 }
 
-export async function deleteLesson(id: number) {
+export async function deleteLesson(id: string) {
     await enforceAdminRole();
 
     // Cascade delete related records manually if DB cascade isn't set up or to be safe
@@ -96,7 +96,7 @@ export async function deleteLesson(id: number) {
     revalidatePath('/dashboard');
 }
 
-export async function reorderLessons(items: { id: number; orderIndex: number }[]) {
+export async function reorderLessons(items: { id: string; orderIndex: number }[]) {
     await enforceAdminRole();
 
     // Use a transaction for safety
@@ -114,7 +114,7 @@ export async function reorderLessons(items: { id: number; orderIndex: number }[]
 
 // --- Attachment Management ---
 
-export async function uploadAttachment(lessonId: number, formData: FormData) {
+export async function uploadAttachment(lessonId: string, formData: FormData) {
     await enforceAdminRole();
 
     const file = formData.get('file') as File;
@@ -151,7 +151,7 @@ export async function uploadAttachment(lessonId: number, formData: FormData) {
     revalidatePath(`/admin/lessons/${lessonId}`);
 }
 
-export async function deleteAttachment(id: number) {
+export async function deleteAttachment(id: string) {
     await enforceAdminRole();
 
     const attachment = await db.query.attachments.findFirst({
@@ -184,7 +184,7 @@ export async function deleteAttachment(id: number) {
 
 // --- Assessment Management ---
 
-export async function createAssessment(lessonId: number, formData: FormData) {
+export async function createAssessment(lessonId: string, formData: FormData) {
     await enforceAdminRole();
 
     const questionText = formData.get('questionText') as string;
@@ -205,7 +205,7 @@ export async function createAssessment(lessonId: number, formData: FormData) {
     revalidatePath(`/admin/lessons/${lessonId}`);
 }
 
-export async function deleteAssessment(id: number) {
+export async function deleteAssessment(id: string) {
     await enforceAdminRole();
 
     const assessment = await db.query.assessments.findFirst({

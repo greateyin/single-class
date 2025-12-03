@@ -8,7 +8,7 @@ import { revalidatePath } from 'next/cache';
 
 // --- Lesson Access & Progress ---
 
-export async function getCourseLessons(courseId: number) {
+export async function getCourseLessons(courseId: string) {
     const session = await enforcePaidAccess(courseId);
     const userId = session.user.id;
 
@@ -33,7 +33,7 @@ export async function getCourseLessons(courseId: number) {
     }));
 }
 
-export async function getLessonDetails(lessonId: number) {
+export async function getLessonDetails(lessonId: string) {
     // 1. Fetch lesson first to identify course
     const lesson = await db.query.lessons.findFirst({
         where: eq(lessons.id, lessonId),
@@ -90,7 +90,7 @@ export async function getLessonDetails(lessonId: number) {
     };
 }
 
-export async function markLessonCompleted(lessonId: number) {
+export async function markLessonCompleted(lessonId: string) {
     const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
     if (!lesson || !lesson.courseId) return;
 
@@ -108,7 +108,7 @@ export async function markLessonCompleted(lessonId: number) {
 
 // --- Attachments ---
 
-export async function getSecureAttachmentUrl(attachmentId: number) {
+export async function getSecureAttachmentUrl(attachmentId: string) {
     const attachment = await db.query.attachments.findFirst({
         where: eq(attachments.id, attachmentId),
         with: { lesson: true }
@@ -130,14 +130,14 @@ export async function getSecureAttachmentUrl(attachmentId: number) {
 
 // --- Assessments ---
 
-export async function submitAssessment(lessonId: number, formData: FormData) {
+export async function submitAssessment(lessonId: string, formData: FormData) {
     const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
     if (!lesson || !lesson.courseId) return;
 
     const session = await enforcePaidAccess(lesson.courseId);
     const userId = session.user.id;
 
-    const assessmentId = parseInt(formData.get('assessmentId') as string);
+    const assessmentId = formData.get('assessmentId') as string;
     const answer = formData.get('answer') as string;
 
     if (!assessmentId || !answer) {
@@ -165,7 +165,7 @@ export async function submitAssessment(lessonId: number, formData: FormData) {
 
 // --- Q&A ---
 
-export async function getQaMessages(lessonId?: number) {
+export async function getQaMessages(lessonId?: string) {
     if (lessonId) {
         const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
         if (!lesson || !lesson.courseId) return [];
@@ -196,7 +196,7 @@ export async function getQaMessages(lessonId?: number) {
     }));
 }
 
-export async function submitQaMessage(lessonId: number, formData: FormData) {
+export async function submitQaMessage(lessonId: string, formData: FormData) {
     const lesson = await db.query.lessons.findFirst({ where: eq(lessons.id, lessonId) });
     if (!lesson || !lesson.courseId) return;
 
@@ -204,8 +204,7 @@ export async function submitQaMessage(lessonId: number, formData: FormData) {
     const userId = session.user.id;
 
     const content = formData.get('content') as string;
-    const parentIdStr = formData.get('parentId') as string;
-    const parentId = parentIdStr ? parseInt(parentIdStr) : null;
+    const parentId = formData.get('parentId') as string;
 
     if (!content) return;
 
@@ -213,7 +212,7 @@ export async function submitQaMessage(lessonId: number, formData: FormData) {
         authorId: userId,
         lessonId,
         content,
-        parentId,
+        parentId: parentId || undefined,
     });
 
     revalidatePath(`/lessons/${lessonId}`);
