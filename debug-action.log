@@ -1,0 +1,216 @@
+[2025-12-03T15:51:26.469Z] handleUpdate started {
+  "lessonId": "d85de37c-bc30-4f5b-afcc-518c924a282e"
+}
+[2025-12-03T15:51:26.470Z] handleUpdate form data {
+  "title": "Updated Title 1764776876705",
+  "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+  "description": "",
+  "orderIndex": 1,
+  "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+}
+[2025-12-03T15:51:26.475Z] updateLesson called {
+  "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+  "data": {
+    "title": "Updated Title 1764776876705",
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+    "description": "",
+    "orderIndex": 1,
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+  }
+}
+[2025-12-03T15:51:26.733Z] updateLesson result [
+  {
+    "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28",
+    "moduleId": "194e0c32-466e-4f8e-8693-f583b8f22089",
+    "title": "Updated Title 1764776876705",
+    "orderIndex": 1,
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+    "description": "",
+    "slug": "updated-title-1764776876705",
+    "downloadUrl": null,
+    "hasAttachment": false,
+    "hasAssessment": true
+  }
+]
+[2025-12-03T15:51:26.733Z] handleUpdate success 
+[2025-12-03T15:51:26.938Z] handleUpdate started {
+  "lessonId": "d85de37c-bc30-4f5b-afcc-518c924a282e"
+}
+[2025-12-03T15:51:26.938Z] handleUpdate form data {
+  "title": "Updated Title 1764776876705",
+  "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+  "description": "",
+  "orderIndex": 1,
+  "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+}
+[2025-12-03T15:51:26.942Z] updateLesson called {
+  "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+  "data": {
+    "title": "Updated Title 1764776876705",
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+    "description": "",
+    "orderIndex": 1,
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+  }
+}
+[2025-12-03T15:51:28.772Z] updateLesson result [
+  {
+    "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28",
+    "moduleId": "194e0c32-466e-4f8e-8693-f583b8f22089",
+    "title": "Updated Title 1764776876705",
+    "orderIndex": 1,
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+    "description": "",
+    "slug": "updated-title-1764776876705",
+    "downloadUrl": null,
+    "hasAttachment": false,
+    "hasAssessment": true
+  }
+]
+[2025-12-03T15:51:28.772Z] handleUpdate success 
+[2025-12-03T15:51:28.846Z] handleUpdate started {
+  "lessonId": "d85de37c-bc30-4f5b-afcc-518c924a282e"
+}
+[2025-12-03T15:51:28.846Z] handleUpdate form data {
+  "title": "Updated Title 1764776876705",
+  "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+  "description": "",
+  "orderIndex": 1,
+  "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+}
+[2025-12-03T15:51:28.850Z] updateLesson called {
+  "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+  "data": {
+    "title": "Updated Title 1764776876705",
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+    "description": "",
+    "orderIndex": 1,
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+  }
+}
+[2025-12-03T15:51:29.082Z] updateLesson result [
+  {
+    "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28",
+    "moduleId": "194e0c32-466e-4f8e-8693-f583b8f22089",
+    "title": "Updated Title 1764776876705",
+    "orderIndex": 1,
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+    "description": "",
+    "slug": "updated-title-1764776876705",
+    "downloadUrl": null,
+    "hasAttachment": false,
+    "hasAssessment": true
+  }
+]
+[2025-12-03T15:51:29.082Z] handleUpdate success 
+[2025-12-03T15:51:30.945Z] handleUpdate started {
+  "lessonId": "d85de37c-bc30-4f5b-afcc-518c924a282e"
+}
+[2025-12-03T15:51:30.945Z] handleUpdate form data {
+  "title": "Updated Title 1764776876705",
+  "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+  "description": "",
+  "orderIndex": 1,
+  "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+}
+[2025-12-03T15:51:30.951Z] updateLesson called {
+  "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+  "data": {
+    "title": "Updated Title 1764776876705",
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+    "description": "",
+    "orderIndex": 1,
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+  }
+}
+[2025-12-03T15:51:31.194Z] updateLesson result [
+  {
+    "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28",
+    "moduleId": "194e0c32-466e-4f8e-8693-f583b8f22089",
+    "title": "Updated Title 1764776876705",
+    "orderIndex": 1,
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=3",
+    "description": "",
+    "slug": "updated-title-1764776876705",
+    "downloadUrl": null,
+    "hasAttachment": false,
+    "hasAssessment": true
+  }
+]
+[2025-12-03T15:51:31.194Z] handleUpdate success 
+[2025-12-03T15:51:35.192Z] handleUpdate started {
+  "lessonId": "d85de37c-bc30-4f5b-afcc-518c924a282e"
+}
+[2025-12-03T15:51:35.192Z] handleUpdate form data {
+  "title": "Updated Title 1764776876705",
+  "videoEmbedUrl": "https://www.youtube.com/watch?v=2",
+  "description": "",
+  "orderIndex": 1,
+  "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+}
+[2025-12-03T15:51:35.200Z] updateLesson called {
+  "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+  "data": {
+    "title": "Updated Title 1764776876705",
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=2",
+    "description": "",
+    "orderIndex": 1,
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+  }
+}
+[2025-12-03T15:51:35.441Z] updateLesson result [
+  {
+    "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28",
+    "moduleId": "194e0c32-466e-4f8e-8693-f583b8f22089",
+    "title": "Updated Title 1764776876705",
+    "orderIndex": 1,
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=2",
+    "description": "",
+    "slug": "updated-title-1764776876705",
+    "downloadUrl": null,
+    "hasAttachment": false,
+    "hasAssessment": true
+  }
+]
+[2025-12-03T15:51:35.441Z] handleUpdate success 
+[2025-12-03T15:51:43.974Z] handleUpdate started {
+  "lessonId": "d85de37c-bc30-4f5b-afcc-518c924a282e"
+}
+[2025-12-03T15:51:43.975Z] handleUpdate form data {
+  "title": "Updated Title 2",
+  "videoEmbedUrl": "https://www.youtube.com/watch?v=2",
+  "description": "",
+  "orderIndex": 1,
+  "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+}
+[2025-12-03T15:51:43.983Z] updateLesson called {
+  "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+  "data": {
+    "title": "Updated Title 2",
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=2",
+    "description": "",
+    "orderIndex": 1,
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28"
+  }
+}
+[2025-12-03T15:51:44.211Z] updateLesson result [
+  {
+    "id": "d85de37c-bc30-4f5b-afcc-518c924a282e",
+    "courseId": "bc90f5df-1248-4bc9-b9c8-2d2927e49d28",
+    "moduleId": "194e0c32-466e-4f8e-8693-f583b8f22089",
+    "title": "Updated Title 2",
+    "orderIndex": 1,
+    "videoEmbedUrl": "https://www.youtube.com/watch?v=2",
+    "description": "",
+    "slug": "updated-title-2",
+    "downloadUrl": null,
+    "hasAttachment": false,
+    "hasAssessment": true
+  }
+]
+[2025-12-03T15:51:44.211Z] handleUpdate success 
