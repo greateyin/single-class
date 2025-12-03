@@ -6,7 +6,6 @@ import { lessons, attachments, assessments, userAttempts, lessonCompletion, qaMe
 import { enforceAdminRole } from '@/lib/auth-guards';
 import { eq, asc, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { logDebug } from '@/lib/debug-logger';
 
 // --- Lesson Management ---
 
@@ -60,20 +59,15 @@ export async function createLesson(data: { title: string; orderIndex: number; vi
 export async function updateLesson(id: string, data: { title?: string; videoEmbedUrl?: string; description?: string; orderIndex?: number; courseId?: string | null; moduleId?: string; downloadUrl?: string }) {
     await enforceAdminRole();
 
-    logDebug('updateLesson called', { id, data });
-
     try {
-        const result = await db.update(lessons)
+        await db.update(lessons)
             .set({
                 ...data,
                 slug: data.title ? data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') : undefined,
             })
-            .where(eq(lessons.id, id))
-            .returning();
-
-        logDebug('updateLesson result', result);
+            .where(eq(lessons.id, id));
     } catch (error) {
-        logDebug('updateLesson error', error);
+        console.error('updateLesson error:', error);
         throw error;
     }
 

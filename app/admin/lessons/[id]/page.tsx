@@ -9,7 +9,6 @@ import { courses } from '@/db/schema';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import { logDebug } from '@/lib/debug-logger';
 import { LessonSuccessToast } from '@/components/lesson-success-toast';
 
 export default async function EditLessonPage({ params }: { params: Promise<{ id: string }> }) {
@@ -24,7 +23,6 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
 
     async function handleUpdate(formData: FormData) {
         'use server';
-        logDebug('handleUpdate started', { lessonId });
 
         const title = formData.get('title') as string;
         const videoEmbedUrl = formData.get('videoEmbedUrl') as string;
@@ -35,22 +33,16 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
         const courseId = courseIdRaw === '' ? null : courseIdRaw;
         const downloadUrl = formData.get('downloadUrl') as string || undefined;
 
-        logDebug('handleUpdate form data', { title, videoEmbedUrl, description, orderIndex, courseId, downloadUrl });
 
-        try {
-            await updateLesson(lessonId, {
-                title,
-                videoEmbedUrl,
-                description,
-                orderIndex,
-                courseId,
-                downloadUrl,
-            });
-            logDebug('handleUpdate success');
-        } catch (e) {
-            logDebug('handleUpdate error', e);
-            throw e;
-        }
+        await updateLesson(lessonId, {
+            title,
+            videoEmbedUrl,
+            description,
+            orderIndex,
+            courseId,
+            downloadUrl,
+        });
+
 
         redirect(`/admin/lessons/${lessonId}?updated=true`);
     }
