@@ -6,6 +6,7 @@ import { enforceAdminRole } from '@/lib/auth-guards';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { put } from '@vercel/blob';
 
 export async function createCourse(formData: FormData) {
     await enforceAdminRole();
@@ -30,7 +31,7 @@ export async function createCourse(formData: FormData) {
     redirect(`/admin/courses/${newCourse.id}`);
 }
 
-export async function updateCourse(courseId: string, formData: FormData) {
+export async function updateCourseLandingPage(courseId: string, formData: FormData) {
     await enforceAdminRole();
 
     const title = formData.get('title') as string;
@@ -40,13 +41,8 @@ export async function updateCourse(courseId: string, formData: FormData) {
     const level = formData.get('level') as string;
     const category = formData.get('category') as string;
     const primaryTopic = formData.get('primaryTopic') as string;
+    // Image URL can be updated here manually too
     const imageUrl = formData.get('imageUrl') as string;
-
-    // Pricing & Publish (handled separately or together, keeping them here for now)
-    // Pricing & Publish (handled separately or together, keeping them here for now)
-    const priceCents = parseInt(formData.get('priceCents') as string || '0');
-    const isPublished = formData.get('isPublished') === 'on';
-    const allowDownload = formData.get('allowDownload') === 'on';
 
     if (!title) {
         throw new Error('Title is required');
@@ -62,15 +58,42 @@ export async function updateCourse(courseId: string, formData: FormData) {
             category,
             primaryTopic,
             imageUrl,
-            priceCents,
+        })
+        .where(eq(courses.id, courseId));
+
+    revalidatePath(`/admin/courses/${courseId}/landing-page`);
+    revalidatePath(`/admin/courses/${courseId}`);
+    revalidatePath('/admin/courses');
+}
+
+export async function updateCoursePricing(courseId: string, formData: FormData) {
+    await enforceAdminRole();
+
+    const priceCents = parseInt(formData.get('priceCents') as string || '0');
+
+    await db.update(courses)
+        .set({ priceCents })
+        .where(eq(courses.id, courseId));
+
+    revalidatePath(`/admin/courses/${courseId}/pricing`);
+    revalidatePath('/admin/courses');
+}
+
+export async function updateCourseSettings(courseId: string, formData: FormData) {
+    await enforceAdminRole();
+
+    const isPublished = formData.get('isPublished') === 'on';
+    const allowDownload = formData.get('allowDownload') === 'on';
+
+    await db.update(courses)
+        .set({
             isPublished,
             allowDownload,
         })
         .where(eq(courses.id, courseId));
 
+    revalidatePath(`/admin/courses/${courseId}/settings`);
     revalidatePath('/admin/courses');
-    revalidatePath(`/admin/courses/${courseId}`);
-    redirect('/admin/courses');
 }
 
 export async function deleteCourse(courseId: string) {
@@ -80,4 +103,37 @@ export async function deleteCourse(courseId: string) {
 
     revalidatePath('/admin/courses');
     redirect('/admin/courses');
+}
+
+export async function uploadCourseImage(courseId: string, formData: FormData) {
+    await enforceAdminRole();
+
+    const file = formData.get('file') as File;
+    const url = formData.get('imageUrl') as string;
+
+    let imageUrl = url || '';
+
+    if (file && file.size > 0 && file.name !== 'undefined') {
+        if (process.env.BLOB_READ_WRITE_TOKEN) {
+            try {
+                const blob = await put(file.name, file, {
+                    access: 'public',
+                });
+                imageUrl = blob.url;
+            } catch (error) {
+                console.error('Vercel Blob upload failed:', error);
+                throw new Error('Upload failed');
+            }
+        } else {
+            // Mock upload for development
+            console.warn('BLOB_READ_WRITE_TOKEN not set. Using mock URL.');
+            imageUrl = `https://mock-storage.com/${file.name}`;
+        }
+    }
+
+    await db.update(courses)
+        .set({ imageUrl })
+        .where(eq(courses.id, courseId));
+
+    revalidatePath(`/admin/courses/${courseId}/landing-page`);
 }

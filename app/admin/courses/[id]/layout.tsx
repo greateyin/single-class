@@ -2,6 +2,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { SidebarNav } from './sidebar-nav';
+import { db } from '@/db';
+import { courses } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { notFound } from 'next/navigation';
 
 export default async function CourseEditorLayout({
     children,
@@ -11,6 +15,14 @@ export default async function CourseEditorLayout({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
+
+    const course = await db.query.courses.findFirst({
+        where: eq(courses.id, id),
+    });
+
+    if (!course) {
+        notFound();
+    }
 
     return (
         <div className="space-y-6 p-6 pb-16 block">
@@ -22,8 +34,10 @@ export default async function CourseEditorLayout({
                     </Button>
                 </Link>
                 <div className="flex items-center gap-2">
-                    <h1 className="text-xl font-bold tracking-tight">Weebly 2016 架站實務</h1>
-                    <span className="bg-slate-200 text-slate-600 text-xs px-2 py-0.5 rounded">DRAFT</span>
+                    <h1 className="text-xl font-bold tracking-tight">{course.title}</h1>
+                    <span className={`text-xs px-2 py-0.5 rounded ${course.isPublished ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}>
+                        {course.isPublished ? 'PUBLISHED' : 'DRAFT'}
+                    </span>
                 </div>
             </div>
 

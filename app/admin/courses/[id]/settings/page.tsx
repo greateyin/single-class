@@ -1,4 +1,4 @@
-import { deleteCourse, updateCourse } from '@/actions/admin-courses';
+import { deleteCourse, updateCourseSettings } from '@/actions/admin-courses';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { db } from '@/db';
@@ -33,17 +33,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ id: s
                     <CardDescription>Control the visibility of your course.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form action={updateCourse.bind(null, courseId)} className="space-y-4">
-                        {/* Hidden fields to preserve other data */}
-                        <input type="hidden" name="title" value={course.title} />
-                        <input type="hidden" name="subtitle" value={course.subtitle || ''} />
-                        <input type="hidden" name="description" value={course.description || ''} />
-                        <input type="hidden" name="language" value={course.language || ''} />
-                        <input type="hidden" name="level" value={course.level || ''} />
-                        <input type="hidden" name="category" value={course.category || ''} />
-                        <input type="hidden" name="primaryTopic" value={course.primaryTopic || ''} />
-                        <input type="hidden" name="imageUrl" value={course.imageUrl || ''} />
-                        <input type="hidden" name="priceCents" value={course.priceCents} />
+                    <form action={updateCourseSettings.bind(null, courseId)} className="space-y-4">
 
                         <div className="flex items-center gap-2">
                             <input

@@ -1,4 +1,4 @@
-import { updateCourse } from '@/actions/admin-courses';
+import { updateCourseLandingPage, uploadCourseImage } from '@/actions/admin-courses';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -28,9 +28,13 @@ export default async function CourseLandingPage({ params }: { params: Promise<{ 
                 </p>
             </div>
 
-            <form action={updateCourse.bind(null, courseId)} className="space-y-8">
+            {/* Main Course Details Form */}
+            <form action={updateCourseLandingPage.bind(null, courseId)} className="space-y-8">
                 <Card>
                     <CardContent className="space-y-6 pt-6">
+                        {/* Hidden ImageUrl to preserve it when saving main details */}
+                        <input type="hidden" name="imageUrl" value={course.imageUrl || ''} />
+
                         <div className="space-y-2">
                             <label htmlFor="title" className="text-sm font-medium">Course title</label>
                             <Input id="title" name="title" defaultValue={course.title} placeholder="Insert your course title." required />
@@ -92,32 +96,56 @@ export default async function CourseLandingPage({ params }: { params: Promise<{ 
                             <label htmlFor="primaryTopic" className="text-sm font-medium">What is primarily taught in your course?</label>
                             <Input id="primaryTopic" name="primaryTopic" defaultValue={course.primaryTopic || ''} placeholder="e.g. Landscape Photography" />
                         </div>
-
-                        <div className="space-y-2">
-                            <label htmlFor="imageUrl" className="text-sm font-medium">Course Image</label>
-                            <div className="flex gap-4 items-start">
-                                <div className="w-1/2 aspect-video bg-slate-100 rounded-md border flex items-center justify-center overflow-hidden">
-                                    {course.imageUrl ? (
-                                        <img src={course.imageUrl} alt="Course" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <span className="text-slate-400">No image selected</span>
-                                    )}
-                                </div>
-                                <div className="flex-1 space-y-2">
-                                    <p className="text-sm text-muted-foreground">
-                                        Upload your course image here. It must meet our course image quality standards to be accepted. Important guidelines: 750x422 pixels; .jpg, .jpeg,. gif, or .png. no text on the image.
-                                    </p>
-                                    <Input id="imageUrl" name="imageUrl" defaultValue={course.imageUrl || ''} placeholder="https://..." />
-                                </div>
-                            </div>
-                        </div>
                     </CardContent>
                 </Card>
 
                 <div className="flex justify-end">
-                    <Button type="submit" size="lg">Save</Button>
+                    <Button type="submit" size="lg">Save Details</Button>
                 </div>
             </form>
+
+            {/* Course Image Form */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Course Image</CardTitle>
+                    <CardDescription>
+                        Upload your course image here. It must meet our course image quality standards to be accepted. Important guidelines: 750x422 pixels; .jpg, .jpeg,. gif, or .png. no text on the image.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form action={uploadCourseImage.bind(null, courseId)} className="space-y-6">
+                        <div className="flex flex-col md:flex-row gap-6 items-start">
+                            <div className="w-full md:w-1/2 aspect-video bg-slate-100 rounded-md border flex items-center justify-center overflow-hidden relative group">
+                                {course.imageUrl ? (
+                                    <img src={course.imageUrl} alt="Course" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="flex flex-col items-center text-slate-400">
+                                        <span className="text-sm">No image selected</span>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex-1 space-y-4 w-full">
+                                <div className="space-y-2">
+                                    <label htmlFor="file" className="text-sm font-medium">Upload Image File</label>
+                                    <Input id="file" type="file" name="file" accept="image/*" />
+                                </div>
+                                <div className="relative flex items-center py-2">
+                                    <div className="flex-grow border-t border-slate-200"></div>
+                                    <span className="flex-shrink-0 mx-4 text-slate-400 text-xs uppercase">Or use URL</span>
+                                    <div className="flex-grow border-t border-slate-200"></div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label htmlFor="imageUrl" className="text-sm font-medium">Image URL</label>
+                                    <Input id="imageUrl" name="imageUrl" defaultValue={course.imageUrl || ''} placeholder="https://..." />
+                                </div>
+                                <div className="pt-2">
+                                    <Button type="submit">Save Image</Button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     );
 }

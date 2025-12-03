@@ -38,7 +38,7 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
             downloadUrl,
         });
 
-        redirect('/admin/lessons');
+        // redirect('/admin/lessons'); // Keep on page
     }
 
     return (
