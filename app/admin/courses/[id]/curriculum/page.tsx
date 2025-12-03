@@ -54,8 +54,10 @@ export default async function CurriculumPage({ params }: { params: Promise<{ id:
         const title = formData.get('title') as string;
         if (!title) return;
 
-        // Calculate order index
-        const moduleLessons = course?.modules.find(m => m.id === moduleId)?.lessons || [];
+        // Calculate order index by fetching from DB instead of using closure
+        const moduleLessons = await db.query.lessons.findMany({
+            where: eq(lessons.moduleId, moduleId),
+        });
         const maxOrder = moduleLessons.reduce((max, l) => Math.max(max, l.orderIndex), -1);
 
         await createLesson({
