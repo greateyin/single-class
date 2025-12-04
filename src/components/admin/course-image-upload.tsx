@@ -12,6 +12,7 @@ interface CourseImageUploadProps {
 export function CourseImageUpload({ courseId, currentImageUrl }: CourseImageUploadProps) {
     const [imageUrl, setImageUrl] = useState(currentImageUrl);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleUploadComplete = async (url: string, _fileName: string) => {
         await uploadCourseImage(courseId, url);
         setImageUrl(url);

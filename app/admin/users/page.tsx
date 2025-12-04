@@ -14,6 +14,8 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { Eye } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminUsersPage() {
     const allUsers = await db.query.users.findMany({
         orderBy: [desc(users.createdAt)],

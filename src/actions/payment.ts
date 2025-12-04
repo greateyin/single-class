@@ -72,6 +72,7 @@ export async function createCoreCheckoutSession(courseId: string) {
     redirect(checkoutSession.url);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseId: string | null | undefined, _formData: FormData) {
     const session = await enforceAuthentication();
     const userId = session.user.id;

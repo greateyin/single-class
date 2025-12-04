@@ -8,6 +8,7 @@ declare module '@paypal/checkout-server-sdk' {
         }
         class PayPalHttpClient {
             constructor(environment: unknown);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             execute(request: unknown): Promise<any>;
         }
     }
