@@ -9,5 +9,5 @@
     "app/api/**/*.ts": {
       "maxDuration": 30
     }
-  },
+  }
 }
