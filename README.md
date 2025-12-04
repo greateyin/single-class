@@ -28,6 +28,7 @@ cp .env.example .env.local
 -   **`DATABASE_URL`**: Connection string for your PostgreSQL database (e.g., Neon).
 -   **`AUTH_SECRET`**: Random string for NextAuth encryption.
 -   **`AUTH_GOOGLE_CLIENT_ID` / `SECRET`**: Google OAuth credentials.
+-   **`BLOB_READ_WRITE_TOKEN`**: (Required for Image Uploads) Token for Vercel Blob storage. You can find this in your Vercel Storage dashboard.
 
 ## 🗺️ URL Structure & Routes
 
