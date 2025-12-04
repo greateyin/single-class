@@ -9,7 +9,7 @@ import { CheckCircle, Download, FileText, MessageSquare, ArrowLeft, ArrowRight }
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { db } from '@/db';
-import { lessons, courses } from '@/db/schema';
+import { lessons, courses, modules } from '@/db/schema';
 import { eq, and, asc, gt } from 'drizzle-orm';
 import { getEmbedUrl } from '@/lib/utils';
 import { auth } from '@/lib/auth';
@@ -48,6 +48,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
         id: l.id,
         title: l.title,
         orderIndex: l.orderIndex,
+        moduleId: l.moduleId,
         isCompleted: l.lessonCompletion.length > 0,
     }));
 
@@ -60,6 +61,12 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
             gt(lessons.orderIndex, lesson.orderIndex)
         ),
         orderBy: [asc(lessons.orderIndex)],
+    });
+
+    // Fetch modules for sidebar structure
+    const modules = await db.query.modules.findMany({
+        where: eq(modules.courseId, course.id),
+        orderBy: [asc(modules.orderIndex)],
     });
 
     return (
@@ -247,6 +254,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
                     <CourseSidebar
                         course={{ id: course.id, title: course.title }}
                         lessons={sidebarLessons}
+                        modules={modules}
                         currentLessonId={lessonId}
                     />
                 </div>
