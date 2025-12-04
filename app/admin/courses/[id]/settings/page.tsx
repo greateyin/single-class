@@ -76,6 +76,35 @@ export default async function SettingsPage({ params }: { params: Promise<{ id: s
                             />
                         </div>
 
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
+                            <div className="space-y-2">
+                                <label htmlFor="startDate" className="text-sm font-medium">Start Date</label>
+                                <p className="text-xs text-muted-foreground">
+                                    When the course becomes available.
+                                </p>
+                                <input
+                                    id="startDate"
+                                    name="startDate"
+                                    type="date"
+                                    defaultValue={course.startDate ? new Date(course.startDate).toISOString().split('T')[0] : ''}
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label htmlFor="endDate" className="text-sm font-medium">End Date</label>
+                                <p className="text-xs text-muted-foreground">
+                                    When the course stops being available.
+                                </p>
+                                <input
+                                    id="endDate"
+                                    name="endDate"
+                                    type="date"
+                                    defaultValue={course.endDate ? new Date(course.endDate).toISOString().split('T')[0] : ''}
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                />
+                            </div>
+                        </div>
+
                         <div className="pt-4 flex justify-end">
                             <Button type="submit">
                                 <Save className="mr-2 h-4 w-4" />

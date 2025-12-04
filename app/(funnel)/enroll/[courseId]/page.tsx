@@ -46,6 +46,7 @@ export async function generateMetadata(
 }
 
 import Link from 'next/link';
+import { FlipClock } from '@/components/flip-clock';
 
 // ... imports
 
@@ -207,33 +208,77 @@ export default async function EnrollPage({ params }: Props) {
                                     </div>
                                 </div>
 
-                                {/* Payment Buttons */}
+                                {/* Payment Buttons or Countdown */}
                                 <div className="space-y-4">
-                                    <form action={createCoreCheckoutSession.bind(null, course.id)} className="w-full">
-                                        <Button size="lg" className="w-full bg-[var(--brand-red)] hover:opacity-90 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-[#9b2c2c]">
-                                            <div className="flex items-center gap-2 flex-wrap justify-center">
-                                                <span>YES! Upgrade My Skills Now</span>
-                                                <ArrowRight className="h-6 w-6 shrink-0" />
+                                    {(() => {
+                                        const now = new Date();
+                                        const startDate = course.startDate ? new Date(course.startDate) : new Date();
+                                        // Set start date time to 23:59:59
+                                        startDate.setHours(23, 59, 59, 999);
+
+                                        const endDate = course.endDate ? new Date(course.endDate) : new Date('2100-12-31');
+                                        // Set end date time to 23:59:59
+                                        endDate.setHours(23, 59, 59, 999);
+
+                                        // 1. Pre-launch: Now < Start Date
+                                        if (now < startDate) {
+                                            return (
+                                                <div className="w-full">
+                                                    <FlipClock targetDate={startDate} label="距離開賣時間" />
+                                                    <p className="text-center text-sm text-slate-500 mt-4">
+                                                        Enrollment opens soon. Mark your calendar!
+                                                    </p>
+                                                </div>
+                                            );
+                                        }
+
+                                        // 2. Open: Start Date <= Now < End Date
+                                        if (now < endDate) {
+                                            return (
+                                                <div className="space-y-6">
+                                                    <div className="w-full">
+                                                        <FlipClock targetDate={endDate} label="距離停售時間" />
+                                                    </div>
+
+                                                    <form action={createCoreCheckoutSession.bind(null, course.id)} className="w-full">
+                                                        <Button size="lg" className="w-full bg-[var(--brand-red)] hover:opacity-90 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-[#9b2c2c]">
+                                                            <div className="flex items-center gap-2 flex-wrap justify-center">
+                                                                <span>YES! Upgrade My Skills Now</span>
+                                                                <ArrowRight className="h-6 w-6 shrink-0" />
+                                                            </div>
+                                                            <span className="text-xs font-normal opacity-90 uppercase tracking-wider">Secure 256-bit SSL Encryption</span>
+                                                        </Button>
+                                                    </form>
+
+                                                    <div className="relative py-2">
+                                                        <div className="absolute inset-0 flex items-center">
+                                                            <span className="w-full border-t border-slate-200" />
+                                                        </div>
+                                                        <div className="relative flex justify-center text-xs uppercase">
+                                                            <span className="bg-white px-2 text-slate-400 font-semibold">Or pay with PayPal</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="w-full">
+                                                        <PayPalButton
+                                                            courseId={course.id}
+                                                            clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+
+                                        // 3. Closed: Now >= End Date
+                                        return (
+                                            <div className="w-full p-8 bg-slate-100 rounded-xl text-center border border-slate-200">
+                                                <h3 className="text-xl font-bold text-slate-600 mb-2">Enrollment Closed</h3>
+                                                <p className="text-slate-500">
+                                                    This course is currently not accepting new students.
+                                                </p>
                                             </div>
-                                            <span className="text-xs font-normal opacity-90 uppercase tracking-wider">Secure 256-bit SSL Encryption</span>
-                                        </Button>
-                                    </form>
-
-                                    <div className="relative py-2">
-                                        <div className="absolute inset-0 flex items-center">
-                                            <span className="w-full border-t border-slate-200" />
-                                        </div>
-                                        <div className="relative flex justify-center text-xs uppercase">
-                                            <span className="bg-white px-2 text-slate-400 font-semibold">Or pay with PayPal</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="w-full">
-                                        <PayPalButton
-                                            courseId={course.id}
-                                            clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
-                                        />
-                                    </div>
+                                        );
+                                    })()}
                                 </div>
 
                                 {/* Security Seals */}

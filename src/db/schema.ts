@@ -35,6 +35,8 @@ export const courses = pgTable('courses', {
   allowDownload: boolean('allow_download').default(false),
   features: json('features').$type<{ label: string; value: string }[]>(),
   accessMonths: integer('access_months'),
+  startDate: timestamp('start_date', { withTimezone: true }).defaultNow(),
+  endDate: timestamp('end_date', { withTimezone: true }).default(new Date('2100-12-31')),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

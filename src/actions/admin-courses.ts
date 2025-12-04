@@ -98,14 +98,21 @@ export async function updateCourseSettings(courseId: string, formData: FormData)
 
     const isPublished = formData.get('isPublished') === 'on';
     const allowDownload = formData.get('allowDownload') === 'on';
-    const accessMonthsStr = formData.get('accessMonths') as string;
-    const accessMonths = accessMonthsStr ? parseInt(accessMonthsStr) : null;
+    const accessMonths = parseInt(formData.get('accessMonths') as string) || null;
+
+    const startDateStr = formData.get('startDate') as string;
+    const endDateStr = formData.get('endDate') as string;
+
+    const startDate = startDateStr ? new Date(startDateStr) : new Date();
+    const endDate = endDateStr ? new Date(endDateStr) : new Date('2100-12-31');
 
     await db.update(courses)
         .set({
             isPublished,
             allowDownload,
             accessMonths,
+            startDate,
+            endDate
         })
         .where(eq(courses.id, courseId));
 
