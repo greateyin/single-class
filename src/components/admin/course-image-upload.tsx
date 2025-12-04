@@ -1,7 +1,7 @@
 'use client';
 
 import { FileUpload } from '@/components/admin/file-upload';
-import { updateCourseImage } from '@/actions/admin-courses';
+import { uploadCourseImage } from '@/actions/admin-courses';
 import { useState } from 'react';
 
 interface CourseImageUploadProps {
@@ -13,7 +13,7 @@ export function CourseImageUpload({ courseId, currentImageUrl }: CourseImageUplo
     const [imageUrl, setImageUrl] = useState(currentImageUrl);
 
     const handleUploadComplete = async (url: string, fileName: string) => {
-        await updateCourseImage(courseId, url);
+        await uploadCourseImage(courseId, url);
         setImageUrl(url);
     };
 

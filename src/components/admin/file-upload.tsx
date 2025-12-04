@@ -5,7 +5,7 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Upload } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from "sonner";
 
 interface FileUploadProps {
     onUploadComplete: (url: string, fileName: string) => Promise<void>;
@@ -17,17 +17,12 @@ interface FileUploadProps {
 export function FileUpload({ onUploadComplete, accept, label = "Upload", className }: FileUploadProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [isUploading, setIsUploading] = useState(false);
-    const { toast } = useToast();
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         if (!inputFileRef.current?.files?.length) {
-            toast({
-                title: "Error",
-                description: "Please select a file first",
-                variant: "destructive",
-            });
+            toast.error("Please select a file first");
             return;
         }
 
@@ -42,10 +37,7 @@ export function FileUpload({ onUploadComplete, accept, label = "Upload", classNa
 
             await onUploadComplete(newBlob.url, file.name);
 
-            toast({
-                title: "Success",
-                description: "File uploaded successfully",
-            });
+            toast.success("File uploaded successfully");
 
             // Reset form
             if (inputFileRef.current) {
@@ -53,11 +45,7 @@ export function FileUpload({ onUploadComplete, accept, label = "Upload", classNa
             }
         } catch (error) {
             console.error('Upload failed:', error);
-            toast({
-                title: "Error",
-                description: "Upload failed. Please try again.",
-                variant: "destructive",
-            });
+            toast.error("Upload failed. Please try again.");
         } finally {
             setIsUploading(false);
         }
