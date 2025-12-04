@@ -64,7 +64,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
     });
 
     // Fetch modules for sidebar structure
-    const modules = await db.query.modules.findMany({
+    const courseModules = await db.query.modules.findMany({
         where: eq(modules.courseId, course.id),
         orderBy: [asc(modules.orderIndex)],
     });
@@ -254,7 +254,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
                     <CourseSidebar
                         course={{ id: course.id, title: course.title }}
                         lessons={sidebarLessons}
-                        modules={modules}
+                        modules={courseModules}
                         currentLessonId={lessonId}
                     />
                 </div>
