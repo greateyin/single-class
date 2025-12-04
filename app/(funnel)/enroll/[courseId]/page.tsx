@@ -48,7 +48,26 @@ export async function generateMetadata(
 import Link from 'next/link';
 import { FlipClock } from '@/components/flip-clock';
 
-// ... imports
+// Helper to convert standard URLs to embed URLs
+function getEmbedUrl(url: string): string {
+    if (!url) return '';
+
+    // YouTube (Standard, Short, Embed, etc.)
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const youtubeMatch = url.match(youtubeRegex);
+    if (youtubeMatch && youtubeMatch[1]) {
+        return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+    }
+
+    // Vimeo (Standard, Channels, Groups, etc.)
+    const vimeoRegex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:$|\/|\?)/;
+    const vimeoMatch = url.match(vimeoRegex);
+    if (vimeoMatch && vimeoMatch[1]) {
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+
+    return url;
+}
 
 export default async function EnrollPage({ params }: Props) {
     const { courseId } = await params;
@@ -132,7 +151,7 @@ export default async function EnrollPage({ params }: Props) {
                         <div className="mt-12 max-w-4xl mx-auto">
                             <div className="relative aspect-video rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/10 bg-black">
                                 <iframe
-                                    src={course.videoEmbedUrl}
+                                    src={getEmbedUrl(course.videoEmbedUrl)}
                                     className="absolute inset-0 w-full h-full"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen

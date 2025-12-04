@@ -29,6 +29,19 @@ cp .env.example .env.local
 -   **`AUTH_SECRET`**: Random string for NextAuth encryption.
 -   **`AUTH_GOOGLE_CLIENT_ID` / `SECRET`**: Google OAuth credentials.
 -   **`BLOB_READ_WRITE_TOKEN`**: (Required for Image Uploads) Token for Vercel Blob storage. You can find this in your Vercel Storage dashboard.
+-   **`NEXT_PUBLIC_GOOGLE_ANALYTICS_ID`**: (Optional) GA4 Measurement ID for Google Analytics.
+-   **`NEXT_PUBLIC_FACEBOOK_PIXEL_ID`**: (Optional) Pixel ID for Facebook/Meta tracking.
+-   **`NEXT_PUBLIC_MICROSOFT_CLARITY_ID`**: (Optional) Project ID for Microsoft Clarity heatmaps and session recording.
+
+## 📊 Analytics & Tracking
+
+The platform supports built-in integration for popular analytics tools. Simply add the corresponding ID to your environment variables to enable them.
+
+- **Google Analytics**: Adds the GA4 tag (`gtag.js`) to all pages.
+- **Facebook Pixel**: Adds the standard Facebook Pixel base code for page view tracking.
+- **Microsoft Clarity**: Adds the Clarity tracking script for user behavior analysis.
+
+If an ID is missing or left empty, the corresponding script will not be loaded.
 
 ## 🗺️ URL Structure & Routes
 
