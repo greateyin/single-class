@@ -101,7 +101,7 @@ export function FlipClock({ targetDate, label }: FlipClockProps) {
                 </div>
             </div>
             <div className="text-sm text-gray-400 pt-2">
-                {targetDate.getFullYear()}年{targetDate.getMonth() + 1}月{targetDate.getDate()}日 23:59 截止
+                Until {targetDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} 23:59
             </div>
         </div>
     );
