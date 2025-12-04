@@ -69,7 +69,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
 
                     return (
                         <div key={module.id} className="space-y-4">
-                            <h2 className="text-xl font-bold text-[var(--brand-navy)] pl-2 border-l-4 border-[var(--brand-gold)]">
+                            <h2 className="text-2xl font-bold text-[var(--brand-navy)] pl-2 border-l-4 border-[var(--brand-gold)] mb-4">
                                 {module.title}
                             </h2>
                             <div className="grid gap-4 pl-6">
@@ -110,15 +110,15 @@ function LessonCard({ lesson, courseId }: { lesson: any, courseId: string }) {
     return (
         <Link href={`/lessons/${lesson.id}?courseId=${courseId}`}>
             <Card className={`hover:shadow-md transition-all duration-200 border-l-4 ${isCompleted ? 'border-l-green-500 bg-green-50/30' : 'border-l-[var(--brand-navy)] hover:border-l-[var(--brand-gold)]'}`}>
-                <CardContent className="p-6 flex items-center gap-6">
+                <CardContent className="p-4 flex items-center gap-4">
                     <div className="flex-shrink-0">
                         {isCompleted ? (
-                            <div className="bg-green-100 p-2 rounded-full">
-                                <CheckCircle className="h-6 w-6 text-green-600" />
+                            <div className="bg-green-100 p-1.5 rounded-full">
+                                <CheckCircle className="h-5 w-5 text-green-600" />
                             </div>
                         ) : (
-                            <div className="bg-blue-50 p-2 rounded-full">
-                                <PlayCircle className="h-6 w-6 text-[var(--brand-navy)]" />
+                            <div className="bg-blue-50 p-1.5 rounded-full">
+                                <PlayCircle className="h-5 w-5 text-[var(--brand-navy)]" />
                             </div>
                         )}
                     </div>
