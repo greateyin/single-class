@@ -63,7 +63,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ id: s
                         <div className="space-y-2 pt-4 border-t">
                             <label htmlFor="guarantee" className="text-sm font-medium">Money Back Guarantee</label>
                             <p className="text-xs text-muted-foreground">
-                                Text to display for the guarantee policy (e.g. "30-Day Money-Back Guarantee"). Leave empty to hide.
+                                Text to display for the guarantee policy (e.g. &quot;30-Day Money-Back Guarantee&quot;). Leave empty to hide.
                             </p>
                             <input
                                 id="guarantee"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface FlipClockProps {
     targetDate: Date;
@@ -8,38 +8,36 @@ interface FlipClockProps {
 }
 
 export function FlipClock({ targetDate, label }: FlipClockProps) {
+    const calculateTimeLeft = useCallback(() => {
+        const difference = +targetDate - +new Date();
+
+        if (difference > 0) {
+            return {
+                months: Math.floor(difference / (1000 * 60 * 60 * 24 * 30)),
+                days: Math.floor((difference / (1000 * 60 * 60 * 24)) % 30),
+                hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+                minutes: Math.floor((difference / 1000 / 60) % 60),
+                seconds: Math.floor((difference / 1000) % 60),
+            };
+        }
+        return null;
+    }, [targetDate]);
+
     const [timeLeft, setTimeLeft] = useState<{
         months: number;
         days: number;
         hours: number;
         minutes: number;
         seconds: number;
-    } | null>(null);
+    } | null>(() => calculateTimeLeft());
 
     useEffect(() => {
-        const calculateTimeLeft = () => {
-            const difference = +targetDate - +new Date();
-
-            if (difference > 0) {
-                return {
-                    months: Math.floor(difference / (1000 * 60 * 60 * 24 * 30)),
-                    days: Math.floor((difference / (1000 * 60 * 60 * 24)) % 30),
-                    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-                    minutes: Math.floor((difference / 1000 / 60) % 60),
-                    seconds: Math.floor((difference / 1000) % 60),
-                };
-            }
-            return null;
-        };
-
-        setTimeLeft(calculateTimeLeft());
-
         const timer = setInterval(() => {
             setTimeLeft(calculateTimeLeft());
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [targetDate]);
+    }, [calculateTimeLeft]);
 
     if (!timeLeft) return null;
 

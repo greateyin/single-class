@@ -21,6 +21,11 @@ export default async function CourseLayout({
         return redirect("/api/auth/signin");
     }
 
+    // Allow admins to bypass enrollment check
+    if (session?.user?.role === 'admin') {
+        return <>{children}</>;
+    }
+
     // 1. Check Enrollment
     const enrollment = await db.query.enrollments.findFirst({
         where: and(

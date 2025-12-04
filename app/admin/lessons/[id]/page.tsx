@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { db } from '@/db';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { SuccessToast } from '@/components/success-toast';
@@ -50,13 +50,6 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
         <div className="space-y-6">
             <SuccessToast message="Lesson updated successfully" />
             <div className="flex items-center gap-4">
-                <Link href="/admin/lessons">
-                    <Button variant="ghost" size="sm">
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back
-                    </Button>
-                </Link>
-                <h1 className="text-3xl font-bold text-slate-900">Edit Lesson</h1>
             </div>
 
             <Card>
