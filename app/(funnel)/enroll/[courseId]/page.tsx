@@ -188,9 +188,7 @@ export default async function EnrollPage({ params }: Props) {
                                 <h3 className="text-2xl font-black text-[#b45309] uppercase tracking-wide leading-tight">
                                     Yes! I Want Instant Access!
                                 </h3>
-                                <p className="text-[#92400e] text-sm mt-2 font-bold">
-                                    One-Time Payment • Lifetime Access
-                                </p>
+
                             </div>
 
                             {/* Order Box Body */}
@@ -289,20 +287,15 @@ export default async function EnrollPage({ params }: Props) {
                                         <CreditCard className="h-6 w-6" />
                                     </div>
                                     <p className="text-center text-xs text-slate-400 font-medium">
-                                        Guaranteed Safe & Secure Checkout<br />
-                                        30-Day Money-Back Guarantee
+                                        Guaranteed Safe & Secure Checkout
+                                        {course.guarantee && (
+                                            <>
+                                                <br />
+                                                {course.guarantee}
+                                            </>
+                                        )}
                                     </p>
                                 </div>
-                            </div>
-
-                            {/* Guarantee Badge */}
-                            <div className="mt-8 text-center">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/30-day-money-back-guarantee-badge.png/640px-30-day-money-back-guarantee-badge.png"
-                                    alt="Money Back Guarantee"
-                                    className="h-28 mx-auto drop-shadow-md hover:scale-105 transition-transform duration-300"
-                                />
                             </div>
                         </div>
                     </div>

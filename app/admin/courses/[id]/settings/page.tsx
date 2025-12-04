@@ -61,6 +61,21 @@ export default async function SettingsPage({ params }: { params: Promise<{ id: s
                         </div>
 
                         <div className="space-y-2 pt-4 border-t">
+                            <label htmlFor="guarantee" className="text-sm font-medium">Money Back Guarantee</label>
+                            <p className="text-xs text-muted-foreground">
+                                Text to display for the guarantee policy (e.g. "30-Day Money-Back Guarantee"). Leave empty to hide.
+                            </p>
+                            <input
+                                id="guarantee"
+                                name="guarantee"
+                                type="text"
+                                placeholder="e.g. 30-Day Money-Back Guarantee"
+                                defaultValue={course.guarantee || ''}
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                        </div>
+
+                        <div className="space-y-2 pt-4 border-t">
                             <label htmlFor="accessMonths" className="text-sm font-medium">Access Duration (Months)</label>
                             <p className="text-xs text-muted-foreground">
                                 Set the number of months a user has access to the course after their first view. Leave empty for lifetime access.
