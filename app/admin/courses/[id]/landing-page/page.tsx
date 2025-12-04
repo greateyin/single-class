@@ -1,5 +1,6 @@
 import { updateCourseLandingPage } from '@/actions/admin-courses';
 import { CourseImageUpload } from '@/components/admin/course-image-upload';
+import { FeaturesList } from './_components/features-list';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -98,6 +99,10 @@ export default async function CourseLandingPage({ params }: { params: Promise<{ 
                         <div className="space-y-2">
                             <label htmlFor="primaryTopic" className="text-sm font-medium">What is primarily taught in your course?</label>
                             <Input id="primaryTopic" name="primaryTopic" defaultValue={course.primaryTopic || ''} placeholder="e.g. Landscape Photography" />
+                        </div>
+
+                        <div className="pt-4 border-t">
+                            <FeaturesList initialFeatures={course.features as { label: string; value: string }[] || []} />
                         </div>
                     </CardContent>
                 </Card>

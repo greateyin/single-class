@@ -161,17 +161,19 @@ export default async function EnrollPage({ params }: Props) {
                                     Everything Included:
                                 </h3>
                                 <ul className="space-y-4">
-                                    {[
-                                        "Complete Course Access (Value: $197)",
-                                        "Mobile & TV Compatible (Value: $47)",
-                                        "Certificate of Completion (Value: $27)",
-                                        "Lifetime Updates (Value: Priceless)"
-                                    ].map((item, i) => (
+                                    {(course.features as { label: string; value: string }[] || [
+                                        { label: "Complete Course Access", value: "Value: $197" },
+                                        { label: "Mobile & TV Compatible", value: "Value: $47" },
+                                        { label: "Certificate of Completion", value: "Value: $27" },
+                                        { label: "Lifetime Updates", value: "Value: Priceless" }
+                                    ]).map((item, i) => (
                                         <li key={i} className="flex items-start gap-3">
                                             <div className="bg-green-500 rounded-full p-1 mt-0.5 flex-shrink-0">
                                                 <Check className="h-3 w-3 text-white" />
                                             </div>
-                                            <span className="font-semibold text-slate-700 text-lg">{item}</span>
+                                            <span className="font-semibold text-slate-700 text-lg">
+                                                {item.label} {item.value && <span className="text-slate-500 text-base font-normal">({item.value})</span>}
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, varchar, integer, boolean, pgEnum, primaryKey, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, varchar, integer, boolean, pgEnum, primaryKey, uuid, json } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Enums
@@ -32,6 +32,7 @@ export const courses = pgTable('courses', {
   category: text('category'),
   primaryTopic: text('primary_topic'),
   allowDownload: boolean('allow_download').default(false),
+  features: json('features').$type<{ label: string; value: string }[]>(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

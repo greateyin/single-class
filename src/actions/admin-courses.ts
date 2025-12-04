@@ -44,6 +44,17 @@ export async function updateCourseLandingPage(courseId: string, formData: FormDa
     // Image URL can be updated here manually too
     const imageUrl = formData.get('imageUrl') as string;
 
+    // Parse features JSON
+    let features = [];
+    try {
+        const featuresJson = formData.get('features') as string;
+        if (featuresJson) {
+            features = JSON.parse(featuresJson);
+        }
+    } catch (e) {
+        console.error('Failed to parse features JSON', e);
+    }
+
     if (!title) {
         throw new Error('Title is required');
     }
@@ -58,6 +69,7 @@ export async function updateCourseLandingPage(courseId: string, formData: FormDa
             category,
             primaryTopic,
             imageUrl,
+            features,
         })
         .where(eq(courses.id, courseId));
 
