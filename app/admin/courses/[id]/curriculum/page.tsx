@@ -1,4 +1,5 @@
 import { createLesson, deleteLesson, reorderLessons } from '@/actions/admin-content';
+import { ConfirmModal } from '@/components/confirm-modal';
 import { createModule, deleteModule, updateModule, reorderModules } from '@/actions/admin-modules';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -109,11 +110,11 @@ export default async function CurriculumPage({ params }: { params: Promise<{ id:
                                 <span>Section {module.orderIndex + 1}: {module.title}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <form action={handleDeleteModule.bind(null, module.id)}>
+                                <ConfirmModal onConfirm={handleDeleteModule.bind(null, module.id)}>
                                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50">
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
-                                </form>
+                                </ConfirmModal>
                             </div>
                         </CardHeader>
                         <CardContent className="p-0">
@@ -137,11 +138,11 @@ export default async function CurriculumPage({ params }: { params: Promise<{ id:
                                                     <Edit className="h-3 w-3 mr-1" /> Edit Content
                                                 </Button>
                                             </Link>
-                                            <form action={handleDeleteLesson.bind(null, lesson.id)}>
+                                            <ConfirmModal onConfirm={handleDeleteLesson.bind(null, lesson.id)}>
                                                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500">
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
-                                            </form>
+                                            </ConfirmModal>
                                         </div>
                                     </div>
                                 ))}
@@ -178,9 +179,9 @@ export default async function CurriculumPage({ params }: { params: Promise<{ id:
                                         <Link href={`/admin/lessons/${lesson.id}`}>
                                             <Button variant="ghost" size="sm">Edit</Button>
                                         </Link>
-                                        <form action={handleDeleteLesson.bind(null, lesson.id)}>
+                                        <ConfirmModal onConfirm={handleDeleteLesson.bind(null, lesson.id)}>
                                             <Button variant="ghost" size="sm" className="text-red-500">Delete</Button>
-                                        </form>
+                                        </ConfirmModal>
                                     </div>
                                 </div>
                             ))}

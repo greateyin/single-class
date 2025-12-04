@@ -1,4 +1,5 @@
 import { deleteCourse, updateCourseSettings } from '@/actions/admin-courses';
+import { ConfirmModal } from '@/components/confirm-modal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { db } from '@/db';
@@ -75,12 +76,16 @@ export default async function SettingsPage({ params }: { params: Promise<{ id: s
                     <CardDescription>Irreversible actions.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form action={deleteCourse.bind(null, courseId)}>
+                    <ConfirmModal
+                        onConfirm={deleteCourse.bind(null, courseId)}
+                        title="Delete Course"
+                        description="Are you sure you want to delete this course? This action cannot be undone and will remove all modules, lessons, and student progress."
+                    >
                         <Button variant="destructive" className="w-full">
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete Course
                         </Button>
-                    </form>
+                    </ConfirmModal>
                 </CardContent>
             </Card>
         </div>
