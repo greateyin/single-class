@@ -28,7 +28,7 @@ export const authConfig = {
             if (new URL(url).origin === baseUrl) return url;
 
             // Allow callback URLs that match the configured app URL (e.g. custom domain)
-            const allowedOrigin = process.env.NEXT_PUBLIC_APP_URL;
+            const allowedOrigin = process.env.NEXT_PUBLIC_BASE_URL;
             if (allowedOrigin && url.startsWith(allowedOrigin)) return url;
 
             return baseUrl;
