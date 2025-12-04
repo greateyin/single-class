@@ -19,11 +19,21 @@ export async function generateMetadata(
 ): Promise<Metadata> {
     const { courseId } = await params;
 
-    const course = await db.query.courses.findFirst({
-        where: eq(courses.id, courseId),
-    });
+    let course;
+    if (courseId === 'core') {
+        course = await db.query.courses.findFirst();
+    } else {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseId);
+        if (isUuid) {
+            course = await db.query.courses.findFirst({
+                where: eq(courses.id, courseId),
+            });
+        }
+    }
 
-    if (!course) return {};
+    if (!course) return {
+        title: 'Course Not Found',
+    };
 
     return {
         title: course.title,
@@ -36,16 +46,47 @@ export async function generateMetadata(
     };
 }
 
+import Link from 'next/link';
+
+// ... imports
+
 export default async function EnrollPage({ params }: Props) {
     const { courseId } = await params;
 
-    // Fetch Course
-    const course = await db.query.courses.findFirst({
-        where: eq(courses.id, courseId),
-    });
+    let course;
+    if (courseId === 'core') {
+        course = await db.query.courses.findFirst();
+    } else {
+        // Simple UUID validation to prevent DB errors
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseId);
+        if (isUuid) {
+            course = await db.query.courses.findFirst({
+                where: eq(courses.id, courseId),
+            });
+        }
+    }
 
     if (!course) {
-        notFound();
+        return (
+            <div className="min-h-screen w-full bg-[var(--brand-bg)] flex items-center justify-center p-4">
+                <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center space-y-6">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+                        <Lock className="h-8 w-8 text-slate-400" />
+                    </div>
+                    <div className="space-y-2">
+                        <h1 className="text-2xl font-bold text-[var(--brand-navy)]">Course Not Found</h1>
+                        <p className="text-slate-500">
+                            The course you are looking for does not exist or is currently unavailable.
+                        </p>
+                    </div>
+                    <Button asChild className="w-full bg-[var(--brand-navy)] hover:bg-blue-900">
+                        <Link href="/">
+                            Return to Home
+                        </Link>
+                    </Button>
+                </div>
+            </div>
+        );
     }
 
     const session = await auth();
