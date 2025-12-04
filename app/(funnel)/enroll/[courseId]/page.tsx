@@ -56,14 +56,16 @@ function getEmbedUrl(url: string): string {
     const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const youtubeMatch = url.match(youtubeRegex);
     if (youtubeMatch && youtubeMatch[1]) {
-        return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+        const videoId = youtubeMatch[1];
+        // YouTube requires 'playlist' param with the same video ID for looping to work on single videos
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`;
     }
 
     // Vimeo (Standard, Channels, Groups, etc.)
     const vimeoRegex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:$|\/|\?)/;
     const vimeoMatch = url.match(vimeoRegex);
     if (vimeoMatch && vimeoMatch[1]) {
-        return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=1&loop=1`;
     }
 
     return url;
