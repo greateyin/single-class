@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { SidebarNav } from './sidebar-nav';
 import { db } from '@/db';
@@ -38,6 +39,12 @@ export default async function CourseEditorLayout({
                     <span className={`text-xs px-2 py-0.5 rounded ${course.isPublished ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}>
                         {course.isPublished ? 'PUBLISHED' : 'DRAFT'}
                     </span>
+                    <Link href={`/courses/${course.id}`} target="_blank">
+                        <Button variant="outline" size="sm" className="ml-2">
+                            <Eye className="h-4 w-4 mr-2" />
+                            Preview
+                        </Button>
+                    </Link>
                 </div>
             </div>
 
