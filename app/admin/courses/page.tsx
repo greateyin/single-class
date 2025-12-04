@@ -58,7 +58,11 @@ export default async function AdminCoursesPage() {
                         <TableBody>
                             {allCourses.map((course) => (
                                 <TableRow key={course.id}>
-                                    <TableCell className="font-medium">{course.title}</TableCell>
+                                    <TableCell className="font-medium">
+                                        <Link href={`/admin/courses/${course.id}`} className="hover:underline">
+                                            {course.title}
+                                        </Link>
+                                    </TableCell>
                                     <TableCell>${(course.priceCents / 100).toFixed(2)}</TableCell>
                                     <TableCell>
                                         <span className={`px-2 py-1 rounded-full text-xs ${course.isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>

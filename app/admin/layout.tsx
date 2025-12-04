@@ -1,6 +1,7 @@
 import { enforceAdminRole } from '@/lib/auth-guards';
 import Link from 'next/link';
 import { LayoutDashboard, Users, LogOut, BookOpen } from 'lucide-react';
+import { MobileHeader } from '@/components/admin/mobile-header';
 // Actually, for simplicity, let's just use a link to api/auth/signout or a server action form
 
 export default async function AdminLayout({
@@ -11,7 +12,9 @@ export default async function AdminLayout({
     await enforceAdminRole();
 
     return (
-        <div className="flex min-h-screen bg-[var(--brand-bg)]">
+        <div className="flex min-h-screen bg-[var(--brand-bg)] flex-col md:flex-row">
+            <MobileHeader />
+
             {/* Sidebar */}
             <aside className="w-64 bg-[var(--brand-navy)] text-white hidden md:block border-r border-blue-900">
                 <div className="p-6 border-b border-blue-800">
