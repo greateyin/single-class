@@ -98,11 +98,14 @@ export async function updateCourseSettings(courseId: string, formData: FormData)
 
     const isPublished = formData.get('isPublished') === 'on';
     const allowDownload = formData.get('allowDownload') === 'on';
+    const accessMonthsStr = formData.get('accessMonths') as string;
+    const accessMonths = accessMonthsStr ? parseInt(accessMonthsStr) : null;
 
     await db.update(courses)
         .set({
             isPublished,
             allowDownload,
+            accessMonths,
         })
         .where(eq(courses.id, courseId));
 

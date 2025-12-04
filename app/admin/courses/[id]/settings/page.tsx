@@ -60,6 +60,22 @@ export default async function SettingsPage({ params }: { params: Promise<{ id: s
                             <label htmlFor="allowDownload" className="text-sm font-medium">Allow Video Download</label>
                         </div>
 
+                        <div className="space-y-2 pt-4 border-t">
+                            <label htmlFor="accessMonths" className="text-sm font-medium">Access Duration (Months)</label>
+                            <p className="text-xs text-muted-foreground">
+                                Set the number of months a user has access to the course after their first view. Leave empty for lifetime access.
+                            </p>
+                            <input
+                                id="accessMonths"
+                                name="accessMonths"
+                                type="number"
+                                min="1"
+                                placeholder="e.g. 12"
+                                defaultValue={course.accessMonths || ''}
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                        </div>
+
                         <div className="pt-4 flex justify-end">
                             <Button type="submit">
                                 <Save className="mr-2 h-4 w-4" />

@@ -15,6 +15,7 @@ export const users = pgTable('users', {
   hashedPassword: text('hashed_password'), // For Credentials provider
   role: userRoles('role').default('student').notNull(),
   stripeCustomerId: text('stripe_customer_id'), // Critical for One-Click Upsell
+  lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
@@ -33,6 +34,7 @@ export const courses = pgTable('courses', {
   primaryTopic: text('primary_topic'),
   allowDownload: boolean('allow_download').default(false),
   features: json('features').$type<{ label: string; value: string }[]>(),
+  accessMonths: integer('access_months'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
@@ -131,12 +133,14 @@ export const usersRelations = relations(users, ({ many }) => ({
   lessonCompletion: many(lessonCompletion),
   qaMessages: many(qaMessages),
   userAttempts: many(userAttempts),
+  enrollments: many(enrollments),
 }));
 
 export const coursesRelations = relations(courses, ({ many }) => ({
   modules: many(modules),
   lessons: many(lessons),
   transactions: many(transactions),
+  enrollments: many(enrollments),
 }));
 
 export const modulesRelations = relations(modules, ({ one, many }) => ({
@@ -226,5 +230,26 @@ export const qaMessagesRelations = relations(qaMessages, ({ one, many }) => ({
   }),
   replies: many(qaMessages, {
     relationName: 'replies',
+  }),
+}));
+
+// 11. Enrollments (Access Control)
+export const enrollments = pgTable('enrollments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id').references(() => users.id).notNull(),
+  courseId: uuid('course_id').references(() => courses.id).notNull(),
+  enrolledAt: timestamp('enrolled_at', { withTimezone: true }).defaultNow().notNull(),
+  firstAccessedAt: timestamp('first_accessed_at', { withTimezone: true }),
+  expiresAt: timestamp('expires_at', { withTimezone: true }),
+});
+
+export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
+  user: one(users, {
+    fields: [enrollments.userId],
+    references: [users.id],
+  }),
+  course: one(courses, {
+    fields: [enrollments.courseId],
+    references: [courses.id],
   }),
 }));
