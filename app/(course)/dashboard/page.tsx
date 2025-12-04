@@ -1,11 +1,11 @@
 import { enforceAuthentication } from '@/lib/auth-guards';
 import { db } from '@/db';
 import { courses, transactions } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { BookOpen, Lock } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 
 export default async function DashboardPage() {
     const session = await enforceAuthentication();
@@ -23,10 +23,14 @@ export default async function DashboardPage() {
         .map(tx => tx.courseId)
         .filter((id): id is string => id !== null);
 
-    // 2. Get All Published Courses
-    const allCourses = await db.query.courses.findMany({
-        where: eq(courses.isPublished, true),
-    });
+    // 2. Get Purchased Courses
+    let myCourses: typeof courses.$inferSelect[] = [];
+
+    if (purchasedCourseIds.length > 0) {
+        myCourses = await db.query.courses.findMany({
+            where: inArray(courses.id, purchasedCourseIds),
+        });
+    }
 
     return (
         <div className="space-y-8">
@@ -38,38 +42,25 @@ export default async function DashboardPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {allCourses.map((course) => {
-                    const isPurchased = purchasedCourseIds.includes(course.id);
-
-                    return (
-                        <Card key={course.id} className={`flex flex-col ${!isPurchased ? 'opacity-75' : ''}`}>
-                            <CardHeader>
-                                <CardTitle className="line-clamp-2">{course.title}</CardTitle>
-                                <CardDescription className="line-clamp-2">{course.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="mt-auto pt-0">
-                                {isPurchased ? (
-                                    <Link href={`/courses/${course.id}`} className="w-full">
-                                        <Button className="w-full">
-                                            <BookOpen className="mr-2 h-4 w-4" />
-                                            Continue Learning
-                                        </Button>
-                                    </Link>
-                                ) : (
-                                    <Link href={`/enroll/${course.id}`} className="w-full">
-                                        <Button variant="outline" className="w-full">
-                                            <Lock className="mr-2 h-4 w-4" />
-                                            Enroll for ${(course.priceCents / 100).toFixed(2)}
-                                        </Button>
-                                    </Link>
-                                )}
-                            </CardContent>
-                        </Card>
-                    );
-                })}
+                {myCourses.map((course) => (
+                    <Card key={course.id} className="flex flex-col">
+                        <CardHeader>
+                            <CardTitle className="line-clamp-2">{course.title}</CardTitle>
+                            <CardDescription className="line-clamp-2">{course.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="mt-auto pt-0">
+                            <Link href={`/courses/${course.id}`} className="w-full">
+                                <Button className="w-full">
+                                    <BookOpen className="mr-2 h-4 w-4" />
+                                    Continue Learning
+                                </Button>
+                            </Link>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
 
-            {allCourses.length === 0 && (
+            {myCourses.length === 0 && (
                 <div className="text-center py-12 text-slate-500">
                     No courses available at the moment.
                 </div>

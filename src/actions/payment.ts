@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth';
 import { enforceAuthentication } from '@/lib/auth-guards';
 import { db } from '@/db';
 import { transactions, users, courses } from '@/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
 // import { revalidateTag, revalidatePath } from 'next/cache';
 import { stripe } from '@/lib/stripe';
 import { fulfillOrder } from '@/lib/fulfillment';
@@ -153,4 +153,44 @@ export async function getFunnelState() {
         hasCore: lastTx?.type === 'core' || lastTx?.type === 'upsell' || lastTx?.type === 'downsell',
         lastOffer: lastTx?.type,
     };
+}
+
+export async function enrollForFree(courseId: string) {
+    const session = await enforceAuthentication();
+    const userId = session.user.id;
+
+    const course = await db.query.courses.findFirst({
+        where: eq(courses.id, courseId),
+    });
+
+    if (!course) {
+        throw new Error('Course not found');
+    }
+
+    if (course.priceCents > 0) {
+        throw new Error('This course is not free');
+    }
+
+    // Check if already enrolled
+    const existingTx = await db.query.transactions.findFirst({
+        where: and(
+            eq(transactions.userId, userId),
+            eq(transactions.courseId, courseId),
+            eq(transactions.status, 'completed')
+        ),
+    });
+
+    if (existingTx) {
+        redirect(`/courses/${courseId}`);
+    }
+
+    await db.insert(transactions).values({
+        userId,
+        courseId,
+        amountCents: 0,
+        status: 'completed',
+        type: 'core',
+    });
+
+    redirect(`/courses/${courseId}`);
 }
