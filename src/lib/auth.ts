@@ -7,10 +7,11 @@ import { db } from '@/db'; // Drizzle DB Client
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { compare } from 'bcrypt'; // Must run in Node.js Runtime
+import { authConfig } from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+    ...authConfig,
     adapter: DrizzleAdapter(db) as any,
-    session: { strategy: "jwt" }, // Recommended JWT strategy
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_CLIENT_ID,
@@ -49,22 +50,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
         }),
     ],
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                // Persist role and ID to JWT Token
-                token.role = user.role;
-                token.id = user.id;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            // Expose role and ID to client useSession
-            if (session.user) {
-                session.user.role = token.role as 'student' | 'admin';
-                session.user.id = token.sub as string; // 'sub' is the default subject (ID) in JWT
-            }
-            return session;
-        },
-    },
 });
