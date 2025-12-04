@@ -5,9 +5,14 @@ const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
     const isLoggedIn = !!req.auth;
-    const isOnAdmin = req.nextUrl.pathname.startsWith("/admin");
+    const isProtectedRoute =
+        req.nextUrl.pathname.startsWith("/admin") ||
+        req.nextUrl.pathname.startsWith("/dashboard") ||
+        req.nextUrl.pathname.startsWith("/courses") ||
+        req.nextUrl.pathname.startsWith("/lessons") ||
+        req.nextUrl.pathname.startsWith("/qa");
 
-    if (isOnAdmin && !isLoggedIn) {
+    if (isProtectedRoute && !isLoggedIn) {
         let callbackUrl = req.nextUrl.pathname;
         if (req.nextUrl.search) {
             callbackUrl += req.nextUrl.search;
@@ -20,5 +25,11 @@ export default auth((req) => {
 });
 
 export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+    matcher: [
+        '/admin/:path*',
+        '/dashboard/:path*',
+        '/courses/:path*',
+        '/lessons/:path*',
+        '/qa/:path*',
+    ],
 };
