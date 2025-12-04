@@ -4,7 +4,7 @@ import { put, del } from '@vercel/blob';
 import { db } from '@/db';
 import { lessons, attachments, assessments, userAttempts, lessonCompletion, qaMessages } from '@/db/schema';
 import { enforceAdminRole } from '@/lib/auth-guards';
-import { eq, asc, desc } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 // --- Lesson Management ---

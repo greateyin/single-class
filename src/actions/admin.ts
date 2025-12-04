@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { transactions, users, lessonCompletion, lessons } from '@/db/schema';
+import { transactions, users, lessons } from '@/db/schema';
 import { enforceAdminRole } from '@/lib/auth-guards';
 import { sql, eq, desc, count } from 'drizzle-orm';
 

@@ -255,7 +255,7 @@ export default async function EnrollPage({ params }: Props) {
 
                             {/* Guarantee Badge */}
                             <div className="mt-8 text-center">
-                                /* eslint-disable-next-line @next/next/no-img-element */
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/30-day-money-back-guarantee-badge.png/640px-30-day-money-back-guarantee-badge.png"
                                     alt="Money Back Guarantee"

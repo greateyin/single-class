@@ -1,10 +1,10 @@
 import { enforcePaidAccess } from '@/lib/auth-guards';
 import { db } from '@/db';
 import { courses, lessons, lessonCompletion, modules } from '@/db/schema';
-import { eq, asc, and } from 'drizzle-orm';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { eq, asc } from 'drizzle-orm';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, PlayCircle, Lock } from 'lucide-react';
+import { CheckCircle, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 
@@ -105,6 +105,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function LessonCard({ lesson, courseId }: { lesson: any, courseId: string }) {
     const isCompleted = lesson.lessonCompletion.length > 0;
     return (

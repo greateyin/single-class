@@ -22,7 +22,7 @@ async function main() {
         console.log('Successfully created PayPal Order!');
         console.log('Order ID:', order.result.id);
         console.log('Status:', order.result.status);
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('PayPal API Error:', err);
         process.exit(1);
     }

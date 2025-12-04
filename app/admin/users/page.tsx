@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import { users } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import {
     Table,

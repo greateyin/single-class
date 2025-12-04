@@ -14,11 +14,11 @@ declare module '@paypal/checkout-server-sdk' {
     namespace orders {
         class OrdersCreateRequest {
             prefer(prefer: string): void;
-            requestBody(body: any): void;
+            requestBody(body: unknown): void;
         }
         class OrdersCaptureRequest {
             constructor(orderId: string);
-            requestBody(body: any): void;
+            requestBody(body: unknown): void;
         }
     }
 }

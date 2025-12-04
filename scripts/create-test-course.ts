@@ -26,7 +26,7 @@ async function main() {
 
     // 2. Create Lesson
     const lessonTitle = 'Intro to Testing';
-    let lesson = await db.query.lessons.findFirst({
+    const lesson = await db.query.lessons.findFirst({
         where: eq(lessons.title, lessonTitle),
     });
 

@@ -10,6 +10,7 @@ async function main() {
       WHERE table_schema = 'public';
     `);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         console.log('Tables found:', result.rows.map((r: any) => r.table_name));
 
         if (result.rows.length > 0) {

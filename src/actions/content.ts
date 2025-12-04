@@ -118,7 +118,7 @@ export async function getSecureAttachmentUrl(attachmentId: string) {
         throw new Error('Attachment not found');
     }
 
-    const session = await enforcePaidAccess(attachment.lesson.courseId);
+    await enforcePaidAccess(attachment.lesson.courseId);
 
     // In a real scenario with private blobs, we would generate a signed URL here.
     // For Vercel Blob (public access + obscurity), we just return the URL 

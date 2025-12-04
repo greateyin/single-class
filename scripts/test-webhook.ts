@@ -1,4 +1,4 @@
-import { stripe } from '@/lib/stripe';
+// import { stripe } from '@/lib/stripe';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -49,6 +49,7 @@ async function main() {
         process.exit(1);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const stripe = require('stripe');
     const header = stripe.webhooks.generateTestHeaderString({
         payload: payloadString,

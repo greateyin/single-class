@@ -30,6 +30,7 @@ export const FeaturesList = ({ initialFeatures }: FeaturesListProps) => {
     );
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMounted(true);
     }, []);
 
@@ -143,7 +144,7 @@ export const FeaturesList = ({ initialFeatures }: FeaturesListProps) => {
             </DragDropContext>
             {features.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-4 border border-dashed rounded-md">
-                    No features added yet. Click "Add Feature" to start.
+                    No features added yet. Click &quot;Add Feature&quot; to start.
                 </p>
             )}
         </div>

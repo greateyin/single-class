@@ -1,6 +1,6 @@
 import { db } from '@/db';
-import { courses, users } from '@/db/schema';
-import { v4 as uuidv4 } from 'uuid';
+import { courses } from '@/db/schema';
+// import { v4 as uuidv4 } from 'uuid';
 
 async function main() {
     console.log('🌱 Seeding database...');

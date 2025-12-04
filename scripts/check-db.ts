@@ -9,6 +9,7 @@ async function main() {
             FROM information_schema.tables 
             WHERE table_schema = 'public'
         `);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         console.log('Tables found:', result.rows.map((r: any) => r.table_name));
     } catch (error) {
         console.error('Failed to connect or query DB:', error);
