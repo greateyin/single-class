@@ -32,10 +32,7 @@ export default async function AdminLayout({
                         <BookOpen className="h-4 w-4" />
                         Courses
                     </Link>
-                    <Link href="/admin/lessons" className="flex items-center gap-3 rounded-lg px-3 py-2 text-blue-100 transition-all hover:text-white hover:bg-blue-800">
-                        <BookOpen className="h-4 w-4" />
-                        Lessons
-                    </Link>
+
                 </nav>
                 <div className="absolute bottom-0 w-64 p-4 border-t border-blue-800">
                     <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-800 transition-colors text-blue-300 hover:text-white">
