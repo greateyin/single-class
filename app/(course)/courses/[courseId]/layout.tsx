@@ -1,9 +1,10 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { courses, enrollments } from "@/db/schema";
+import { enrollments } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { addMonths, isAfter } from "date-fns";
+import Link from "next/link";
 
 export default async function CourseLayout({
     children,
@@ -69,9 +70,9 @@ export default async function CourseLayout({
                     <p className="text-sm text-slate-500">
                         Expired on: {enrollment.expiresAt.toLocaleDateString()}
                     </p>
-                    <a href="/" className="inline-block bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                    <Link href="/" className="inline-block bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-800 transition-colors">
                         Return to Home
-                    </a>
+                    </Link>
                 </div>
             </div>
         );

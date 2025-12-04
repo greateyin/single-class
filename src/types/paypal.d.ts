@@ -7,8 +7,8 @@ declare module '@paypal/checkout-server-sdk' {
             constructor(clientId: string, clientSecret: string);
         }
         class PayPalHttpClient {
-            constructor(environment: any);
-            execute(request: any): Promise<any>;
+            constructor(environment: unknown);
+            execute(request: unknown): Promise<any>;
         }
     }
     namespace orders {

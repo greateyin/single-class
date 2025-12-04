@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { db } from '@/db';
 import { courses, lessons, modules } from '@/db/schema';
 import { eq, asc } from 'drizzle-orm';
-import { Plus, Edit, Trash2, GripVertical, Save, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';

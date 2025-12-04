@@ -10,7 +10,7 @@ export default function ConfirmationPage() {
                 <CheckCircle className="h-20 w-20 text-green-500" />
             </div>
 
-            <h1 className="text-4xl font-bold">You're In!</h1>
+            <h1 className="text-4xl font-bold">You&apos;re In!</h1>
             <p className="text-xl text-slate-400">
                 Thank you for your purchase. Your account has been upgraded.
             </p>

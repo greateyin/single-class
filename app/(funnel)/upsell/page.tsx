@@ -47,7 +47,7 @@ export default function UpsellPage() {
                     </form>
                     <form action={rejectUpsell} className="w-full">
                         <Button variant="ghost" className="w-full text-slate-500 hover:text-slate-700">
-                            No thanks, I don't need advanced training
+                            No thanks, I don&apos;t need advanced training
                         </Button>
                     </form>
                 </CardFooter>

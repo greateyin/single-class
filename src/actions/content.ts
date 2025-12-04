@@ -1,9 +1,9 @@
 'use server';
 
 import { db } from '@/db';
-import { lessons, lessonCompletion, attachments, assessments, userAttempts, qaMessages, users } from '@/db/schema';
+import { lessons, lessonCompletion, attachments, assessments, userAttempts, qaMessages } from '@/db/schema';
 import { enforcePaidAccess, enforceAuthentication } from '@/lib/auth-guards';
-import { eq, and, asc, desc, sql } from 'drizzle-orm';
+import { eq, and, asc, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 // --- Lesson Access & Progress ---

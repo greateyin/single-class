@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { db } from '@/db';
-import { courses } from '@/db/schema';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
@@ -116,7 +115,7 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
                                 placeholder="https://..."
                             />
                             <p className="text-xs text-muted-foreground">
-                                Direct link to the video file (e.g. S3, Dropbox). Only shown if "Allow Video Download" is enabled in Course Settings.
+                                Direct link to the video file (e.g. S3, Dropbox). Only shown if &quot;Allow Video Download&quot; is enabled in Course Settings.
                             </p>
                         </div>
 

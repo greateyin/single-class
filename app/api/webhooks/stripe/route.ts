@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { fulfillOrder } from '@/lib/fulfillment';
+import Stripe from 'stripe';
 
 // Disable Next.js body parsing to allow signature verification
 // Note: In App Router, bodyParser is disabled by default for Route Handlers when reading the body manually.
@@ -21,22 +22,33 @@ export async function POST(req: Request) {
             signature!,
             process.env.STRIPE_WEBHOOK_SECRET!
         );
-    } catch (err: any) {
-        console.error(`Webhook signature verification failed: ${err.message}`);
-        return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+    } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        console.error(`Webhook signature verification failed: ${errorMessage}`);
+        return new NextResponse(`Webhook Error: ${errorMessage}`, { status: 400 });
     }
 
     // 2. Handle Events
     if (event.type === 'checkout.session.completed' || event.type === 'payment_intent.succeeded') {
-        const session = event.data.object as any;
-        const { userId, offerType, courseId } = session.metadata;
+        const session = event.data.object as Stripe.Checkout.Session | Stripe.PaymentIntent;
+        const metadata = session.metadata || {};
+        const { userId, offerType, courseId } = metadata;
 
-        // For PaymentIntents, customer is a direct field. For Checkout Sessions, it might be in customer_details or customer.
-        // We prioritize the 'customer' field which is the ID.
-        const customerRef = session.customer as string | null;
+        let customerRef: string | null = null;
+        let customerEmail: string | null = null;
+        let paymentIntentId: string | null = null;
 
-        // Extract email from customer_details or customer_email
-        const customerEmail = session.customer_details?.email || session.customer_email;
+        if (event.type === 'checkout.session.completed') {
+            const checkoutSession = session as Stripe.Checkout.Session;
+            customerRef = checkoutSession.customer as string | null;
+            customerEmail = checkoutSession.customer_details?.email || checkoutSession.customer_email || null;
+            paymentIntentId = checkoutSession.payment_intent as string | null || checkoutSession.id;
+        } else {
+            const paymentIntent = session as Stripe.PaymentIntent;
+            customerRef = paymentIntent.customer as string | null;
+            paymentIntentId = paymentIntent.id;
+            // PaymentIntent might not have email directly, usually passed in metadata or we rely on userId
+        }
 
         if ((!userId && !customerEmail) || !offerType) {
             console.error('Missing metadata or email in webhook event');
@@ -46,12 +58,12 @@ export async function POST(req: Request) {
         try {
             await fulfillOrder(
                 userId || null, // Pass null if empty string
-                offerType,
-                session.payment_intent || session.id, // Use PI ID or Session ID as ref
+                offerType as "core" | "upsell" | "downsell",
+                paymentIntentId!, // Use PI ID or Session ID as ref
                 'stripe',
                 customerRef,
                 courseId || undefined,
-                customerEmail
+                customerEmail || undefined
             );
             return NextResponse.json({ received: true });
         } catch (error) {

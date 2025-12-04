@@ -5,17 +5,16 @@ import { auth } from '@/lib/auth';
 import { db } from '@/db';
 import { transactions, courses } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { redirect, notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { PayPalButton } from '@/components/paypal-button';
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 
 type Props = {
     params: Promise<{ courseId: string }>
 }
 
 export async function generateMetadata(
-    { params }: Props,
-    parent: ResolvingMetadata
+    { params }: Props
 ): Promise<Metadata> {
     const { courseId } = await params;
 
@@ -136,6 +135,7 @@ export default async function EnrollPage({ params }: Props) {
                         {/* VSL / Image Placeholder */}
                         <div className="bg-white rounded-xl shadow-2xl overflow-hidden border-4 border-white">
                             {course.imageUrl ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
                                 <img src={course.imageUrl} alt={course.title} className="w-full h-auto object-cover" />
                             ) : (
                                 <div className="aspect-video flex items-center justify-center bg-slate-100 text-slate-400">
@@ -147,7 +147,7 @@ export default async function EnrollPage({ params }: Props) {
                         {/* What You Will Get */}
                         <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-100 space-y-6">
                             <h2 className="text-3xl font-bold text-[var(--brand-navy)] border-b-2 border-slate-100 pb-4">
-                                Here's What You're Going To Get...
+                                Here&apos;s What You&apos;re Going To Get...
                             </h2>
                             <div className="prose prose-lg text-slate-600 leading-relaxed max-w-none">
                                 <p className="whitespace-pre-wrap">
@@ -255,6 +255,7 @@ export default async function EnrollPage({ params }: Props) {
 
                             {/* Guarantee Badge */}
                             <div className="mt-8 text-center">
+                                /* eslint-disable-next-line @next/next/no-img-element */
                                 <img
                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/30-day-money-back-guarantee-badge.png/640px-30-day-money-back-guarantee-badge.png"
                                     alt="Money Back Guarantee"

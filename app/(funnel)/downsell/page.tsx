@@ -44,7 +44,7 @@ export default function DownsellPage() {
                     </form>
                     <Link href="/confirmation" className="w-full">
                         <Button variant="ghost" className="w-full text-slate-500 hover:text-slate-700">
-                            No thanks, I'll stick with the core course
+                            No thanks, I&apos;ll stick with the core course
                         </Button>
                     </Link>
                 </CardFooter>

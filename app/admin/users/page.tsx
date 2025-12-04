@@ -1,6 +1,5 @@
 import { db } from "@/db";
-import { users, transactions } from "@/db/schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import {
     Table,
     TableBody,
@@ -59,8 +58,8 @@ export default async function AdminUsersPage() {
                                     </TableCell>
                                     <TableCell>
                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin'
-                                                ? 'bg-purple-100 text-purple-700'
-                                                : 'bg-slate-100 text-slate-700'
+                                            ? 'bg-purple-100 text-purple-700'
+                                            : 'bg-slate-100 text-slate-700'
                                             }`}>
                                             {user.role}
                                         </span>

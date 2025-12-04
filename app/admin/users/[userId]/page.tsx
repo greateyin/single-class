@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { users, enrollments, courses } from "@/db/schema";
+import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";

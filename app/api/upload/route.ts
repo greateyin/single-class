@@ -9,7 +9,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         const jsonResponse = await handleUpload({
             body,
             request,
-            onBeforeGenerateToken: async (pathname, clientPayload) => {
+            onBeforeGenerateToken: async (_pathname, _clientPayload) => {
                 // Ensure user is admin before allowing upload
                 await enforceAdminRole();
 
@@ -21,7 +21,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                     }),
                 };
             },
-            onUploadCompleted: async ({ blob, tokenPayload }) => {
+            onUploadCompleted: async ({ blob, tokenPayload: _tokenPayload }) => {
                 // This is called via webhook after upload completes
                 // You can use this to update DB if you want to trust the webhook
                 // But for simplicity we will update DB from client action for now

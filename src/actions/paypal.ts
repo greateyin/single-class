@@ -52,7 +52,7 @@ export async function createPayPalOrder(courseId: string) {
     try {
         const order = await client().execute(request);
         return { id: order.result.id };
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('PayPal Create Order Error:', err);
         throw new Error('Failed to create PayPal order');
     }
@@ -92,7 +92,7 @@ export async function capturePayPalOrder(orderId: string, courseId: string) {
         );
 
         return { success: true, orderId: orderId };
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('PayPal Capture Order Error:', err);
         throw new Error('Failed to capture PayPal order');
     }

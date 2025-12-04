@@ -34,23 +34,23 @@ export async function updateModule(moduleId: string, title: string) {
         .where(eq(modules.id, moduleId));
 
     // We need to find the courseId to revalidate
-    const module = await db.query.modules.findFirst({
+    const targetModule = await db.query.modules.findFirst({
         where: eq(modules.id, moduleId),
     });
 
-    if (module) {
-        revalidatePath(`/admin/courses/${module.courseId}/curriculum`);
+    if (targetModule) {
+        revalidatePath(`/admin/courses/${targetModule.courseId}/curriculum`);
     }
 }
 
 export async function deleteModule(moduleId: string) {
     await enforceAdminRole();
 
-    const module = await db.query.modules.findFirst({
+    const targetModule = await db.query.modules.findFirst({
         where: eq(modules.id, moduleId),
     });
 
-    if (!module) return;
+    if (!targetModule) return;
 
     // Fetch all lessons in this module
     const moduleLessons = await db.query.lessons.findMany({
@@ -64,7 +64,7 @@ export async function deleteModule(moduleId: string) {
 
     await db.delete(modules).where(eq(modules.id, moduleId));
 
-    revalidatePath(`/admin/courses/${module.courseId}/curriculum`);
+    revalidatePath(`/admin/courses/${targetModule.courseId}/curriculum`);
 }
 
 export async function reorderModules(items: { id: string; orderIndex: number }[]) {
@@ -80,11 +80,11 @@ export async function reorderModules(items: { id: string; orderIndex: number }[]
 
     // Revalidate for the first item's course (assuming all are in same course)
     if (items.length > 0) {
-        const module = await db.query.modules.findFirst({
+        const targetModule = await db.query.modules.findFirst({
             where: eq(modules.id, items[0].id),
         });
-        if (module) {
-            revalidatePath(`/admin/courses/${module.courseId}/curriculum`);
+        if (targetModule) {
+            revalidatePath(`/admin/courses/${targetModule.courseId}/curriculum`);
         }
     }
 }

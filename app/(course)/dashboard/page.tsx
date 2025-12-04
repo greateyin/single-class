@@ -1,7 +1,7 @@
 import { enforceAuthentication } from '@/lib/auth-guards';
 import { db } from '@/db';
 import { courses, transactions } from '@/db/schema';
-import { eq, and, inArray } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

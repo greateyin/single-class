@@ -6,7 +6,7 @@ import { enforceAuthentication } from '@/lib/auth-guards';
 import { db } from '@/db';
 import { transactions, users, courses } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
-import { revalidateTag, revalidatePath } from 'next/cache';
+// import { revalidateTag, revalidatePath } from 'next/cache';
 import { stripe } from '@/lib/stripe';
 import { fulfillOrder } from '@/lib/fulfillment';
 
@@ -72,7 +72,7 @@ export async function createCoreCheckoutSession(courseId: string) {
     redirect(checkoutSession.url);
 }
 
-export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseId: string | null | undefined, formData: FormData) {
+export async function handleOneClickCharge(offer: 'upsell' | 'downsell', courseId: string | null | undefined, _formData: FormData) {
     const session = await enforceAuthentication();
     const userId = session.user.id;
     // For now, use fixed prices or fetch from courseId if provided

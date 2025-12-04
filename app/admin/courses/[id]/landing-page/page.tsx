@@ -28,7 +28,7 @@ export default async function CourseLandingPage({ params }: { params: Promise<{ 
             <div>
                 <h2 className="text-2xl font-bold tracking-tight">Course landing page</h2>
                 <p className="text-muted-foreground">
-                    Your course landing page is crucial to your success. If it's done right, it can also help you gain visibility in search engines like Google.
+                    Your course landing page is crucial to your success. If it&apos;s done right, it can also help you gain visibility in search engines like Google.
                 </p>
             </div>
 
@@ -48,7 +48,7 @@ export default async function CourseLandingPage({ params }: { params: Promise<{ 
                         <div className="space-y-2">
                             <label htmlFor="subtitle" className="text-sm font-medium">Course subtitle</label>
                             <Input id="subtitle" name="subtitle" defaultValue={course.subtitle || ''} placeholder="Insert your course subtitle." />
-                            <p className="text-xs text-muted-foreground">Use 1 or 2 related keywords, and mention 3-4 of the most important areas that you've covered during your course.</p>
+                            <p className="text-xs text-muted-foreground">Use 1 or 2 related keywords, and mention 3-4 of the most important areas that you&apos;ve covered during your course.</p>
                         </div>
 
                         <div className="space-y-2">

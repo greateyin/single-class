@@ -12,7 +12,7 @@ interface CourseImageUploadProps {
 export function CourseImageUpload({ courseId, currentImageUrl }: CourseImageUploadProps) {
     const [imageUrl, setImageUrl] = useState(currentImageUrl);
 
-    const handleUploadComplete = async (url: string, fileName: string) => {
+    const handleUploadComplete = async (url: string, _fileName: string) => {
         await uploadCourseImage(courseId, url);
         setImageUrl(url);
     };
@@ -21,6 +21,7 @@ export function CourseImageUpload({ courseId, currentImageUrl }: CourseImageUplo
         <div className="space-y-4">
             <div className="w-full md:w-1/2 aspect-video bg-slate-100 rounded-md border flex items-center justify-center overflow-hidden relative group">
                 {imageUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={imageUrl} alt="Course" className="w-full h-full object-cover" />
                 ) : (
                     <div className="flex flex-col items-center text-slate-400">
