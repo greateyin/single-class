@@ -76,6 +76,21 @@ export default async function SettingsPage({ params }: { params: Promise<{ id: s
                         </div>
 
                         <div className="space-y-2 pt-4 border-t">
+                            <label htmlFor="videoEmbedUrl" className="text-sm font-medium">Course Video Link</label>
+                            <p className="text-xs text-muted-foreground">
+                                Embed URL for the course video (e.g. YouTube, Vimeo). If provided, it will be displayed at the top of the enrollment page.
+                            </p>
+                            <input
+                                id="videoEmbedUrl"
+                                name="videoEmbedUrl"
+                                type="text"
+                                placeholder="e.g. https://www.youtube.com/embed/..."
+                                defaultValue={course.videoEmbedUrl || ''}
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                        </div>
+
+                        <div className="space-y-2 pt-4 border-t">
                             <label htmlFor="accessMonths" className="text-sm font-medium">Access Duration (Months)</label>
                             <p className="text-xs text-muted-foreground">
                                 Set the number of months a user has access to the course after their first view. Leave empty for lifetime access.

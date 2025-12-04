@@ -108,74 +108,85 @@ export default async function EnrollPage({ params }: Props) {
     }
 
     return (
-        <div className="min-h-screen w-full bg-[var(--brand-bg)] font-sans text-[#2d3748] overflow-x-hidden">
-            {/* 1. Headline Bar (Expert Secrets Blue) */}
-            <div className="bg-[var(--brand-navy)] text-white pt-12 pb-24 px-4 text-center relative overflow-hidden">
+        <div className="min-h-screen w-full bg-[#f8fafc] font-sans text-[#2d3748] overflow-x-hidden">
+            {/* 1. Headline Bar (Dark Theme) */}
+            <div className="bg-[#111] text-white pt-12 pb-32 px-4 text-center relative overflow-hidden">
+                {/* Background Pattern/Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#111] via-[#1a1a1a] to-[#111] opacity-80"></div>
+
                 <div className="max-w-5xl mx-auto space-y-6 relative z-10">
-                    <div className="inline-block bg-[#fbbf24] text-[#8d4b0e] font-extrabold px-6 py-2 uppercase tracking-widest text-sm rounded shadow-md mb-2 transform -rotate-1">
+                    <div className="inline-block bg-[#dc2626] text-white font-extrabold px-6 py-2 uppercase tracking-widest text-sm rounded shadow-[0_0_20px_rgba(220,38,38,0.5)] mb-4 transform -rotate-1">
                         Limited Time Special Offer
                     </div>
-                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight drop-shadow-sm">
-                        {course.title}
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight drop-shadow-2xl uppercase">
+                        {course.title} <span className="text-[#dc2626]">Masterclass!</span>
                     </h1>
                     {course.subtitle && (
-                        <p className="text-lg md:text-2xl text-blue-100 font-medium max-w-4xl mx-auto leading-relaxed">
+                        <p className="text-xl md:text-3xl text-slate-300 font-medium max-w-4xl mx-auto leading-relaxed">
                             {course.subtitle}
                         </p>
                     )}
+
+                    {/* Video Embed */}
+                    {course.videoEmbedUrl && (
+                        <div className="mt-12 max-w-4xl mx-auto">
+                            <div className="relative aspect-video rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/10 bg-black">
+                                <iframe
+                                    src={course.videoEmbedUrl}
+                                    className="absolute inset-0 w-full h-full"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
+                        </div>
+                    )}
                 </div>
-                {/* Decorative curve at bottom */}
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#f4f7fa] rounded-t-[50%] transform scale-x-150 translate-y-8"></div>
             </div>
 
-            <div className="container mx-auto px-4 -mt-16 pb-20 relative z-20 max-w-6xl">
+            <div className="container mx-auto px-4 -mt-20 pb-20 relative z-20 max-w-6xl">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
 
                     {/* 2. Left Column: Content & VSL (lg:col-span-7) */}
                     <div className="lg:col-span-7 space-y-8">
-                        {/* VSL / Image Placeholder */}
-                        <div className="bg-white rounded-xl shadow-2xl overflow-hidden border-4 border-white">
-                            {course.imageUrl ? (
-                                /* eslint-disable-next-line @next/next/no-img-element */
-                                <img src={course.imageUrl} alt={course.title} className="w-full h-auto object-cover" />
-                            ) : (
-                                <div className="aspect-video flex items-center justify-center bg-slate-100 text-slate-400">
-                                    <span className="text-xl font-bold text-slate-500">Course Preview Video</span>
-                                </div>
-                            )}
-                        </div>
-
                         {/* What You Will Get */}
-                        <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-100 space-y-6">
-                            <h2 className="text-3xl font-bold text-[var(--brand-navy)] border-b-2 border-slate-100 pb-4">
-                                Here&apos;s What You&apos;re Going To Get...
-                            </h2>
-                            <div className="prose prose-lg text-slate-600 leading-relaxed max-w-none">
-                                <p className="whitespace-pre-wrap">
-                                    {course.description || 'No description available.'}
-                                </p>
-                            </div>
+                        <div className="bg-white p-8 rounded-xl shadow-xl border border-slate-100 space-y-6 relative overflow-hidden">
+                            {/* Dotted border effect */}
+                            <div className="absolute inset-0 border-2 border-dashed border-slate-200 rounded-xl pointer-events-none m-2"></div>
 
-                            {course.features && (course.features as { label: string; value: string }[]).length > 0 && (
-                                <div className="bg-[#eff6ff] p-6 rounded-lg border border-blue-100">
-                                    <h3 className="text-xl font-bold text-[var(--brand-navy)] mb-4 flex items-center gap-2">
-                                        <ShieldCheck className="h-6 w-6" />
-                                        Everything Included:
-                                    </h3>
-                                    <ul className="space-y-4">
-                                        {(course.features as { label: string; value: string }[]).map((item, i) => (
-                                            <li key={i} className="flex items-start gap-3">
-                                                <div className="bg-green-500 rounded-full p-1 mt-0.5 flex-shrink-0">
-                                                    <Check className="h-3 w-3 text-white" />
-                                                </div>
-                                                <span className="font-semibold text-slate-700 text-lg">
-                                                    {item.label} {item.value && <span className="text-slate-500 text-base font-normal">({item.value})</span>}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
+                            <div className="relative z-10">
+                                <h2 className="text-3xl font-black text-[#111] border-b-4 border-[#dc2626] pb-4 inline-block mb-6 uppercase">
+                                    Start Now!! <span className="font-medium text-slate-600 normal-case block text-xl mt-2">Here's Everything You Get...</span>
+                                </h2>
+                                <div className="prose prose-lg text-slate-600 leading-relaxed max-w-none">
+                                    <p className="whitespace-pre-wrap">
+                                        {course.description || 'No description available.'}
+                                    </p>
                                 </div>
-                            )}
+
+                                {course.features && (course.features as { label: string; value: string }[]).length > 0 && (
+                                    <div className="mt-8 space-y-4">
+                                        {(course.features as { label: string; value: string }[]).map((item, i) => (
+                                            <div key={i} className="flex items-start gap-3 group">
+                                                <div className="bg-red-100 rounded-full p-1 mt-0.5 flex-shrink-0 group-hover:bg-red-200 transition-colors">
+                                                    <div className="bg-[#dc2626] rounded-full p-1">
+                                                        <Check className="h-3 w-3 text-white" />
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <span className="font-bold text-[#111] text-lg block">
+                                                        {item.label}
+                                                    </span>
+                                                    {item.value && (
+                                                        <span className="text-[#dc2626] font-bold text-sm">
+                                                            ({item.value})
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -183,12 +194,11 @@ export default async function EnrollPage({ params }: Props) {
                     <div className="lg:col-span-5">
                         <div className="sticky top-8">
                             {/* Order Box Header */}
-                            <div className="bg-[#fffbeb] border-2 border-dashed border-[var(--brand-gold)] rounded-t-xl p-6 text-center relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-gold)]"></div>
-                                <h3 className="text-2xl font-black text-[#b45309] uppercase tracking-wide leading-tight">
-                                    Yes! I Want Instant Access!
+                            <div className="bg-[#dc2626] rounded-t-xl p-6 text-center relative overflow-hidden shadow-lg">
+                                <h3 className="text-2xl font-black text-white uppercase tracking-wide leading-tight">
+                                    Get Access Now
                                 </h3>
-
+                                <p className="text-red-100 text-sm font-medium mt-1">Limited Time Special Pricing</p>
                             </div>
 
                             {/* Order Box Body */}
@@ -201,8 +211,8 @@ export default async function EnrollPage({ params }: Props) {
                                         <span className="font-bold text-slate-400 line-through decoration-red-500 decoration-2">$297.00</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-xl font-bold text-[#2d3748]">Your Price:</span>
-                                        <span className="text-4xl font-extrabold text-[var(--brand-navy)]">${(course.priceCents / 100).toFixed(2)}</span>
+                                        <span className="text-xl font-bold text-[#111]">Your Price:</span>
+                                        <span className="text-4xl font-black text-[#dc2626]">${(course.priceCents / 100).toFixed(2)}</span>
                                     </div>
                                 </div>
 
@@ -246,7 +256,7 @@ export default async function EnrollPage({ params }: Props) {
                                                     {course.priceCents === 0 ? (
                                                         session?.user ? (
                                                             <form action={enrollForFree.bind(null, course.id)} className="w-full">
-                                                                <Button size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-green-800">
+                                                                <Button size="lg" className="w-full bg-[#dc2626] hover:bg-red-700 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-red-900">
                                                                     <div className="flex items-center gap-2 flex-wrap justify-center">
                                                                         <span>Enroll for Free</span>
                                                                         <ArrowRight className="h-6 w-6 shrink-0" />
@@ -255,7 +265,7 @@ export default async function EnrollPage({ params }: Props) {
                                                                 </Button>
                                                             </form>
                                                         ) : (
-                                                            <Button asChild size="lg" className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-slate-950">
+                                                            <Button asChild size="lg" className="w-full bg-[#dc2626] hover:bg-red-700 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-red-900">
                                                                 <Link href={`/api/auth/signin?callbackUrl=/enroll/${course.id}`}>
                                                                     <div className="flex items-center gap-2 flex-wrap justify-center">
                                                                         <span>Sign in to Enroll</span>
@@ -268,9 +278,9 @@ export default async function EnrollPage({ params }: Props) {
                                                     ) : (
                                                         <>
                                                             <form action={createCoreCheckoutSession.bind(null, course.id)} className="w-full">
-                                                                <Button size="lg" className="w-full bg-[var(--brand-red)] hover:opacity-90 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-[#9b2c2c]">
+                                                                <Button size="lg" className="w-full bg-[#dc2626] hover:bg-red-700 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-red-900">
                                                                     <div className="flex items-center gap-2 flex-wrap justify-center">
-                                                                        <span>YES! Upgrade My Skills Now</span>
+                                                                        <span>Get Access Now</span>
                                                                         <ArrowRight className="h-6 w-6 shrink-0" />
                                                                     </div>
                                                                     <span className="text-xs font-normal opacity-90 uppercase tracking-wider">Secure 256-bit SSL Encryption</span>

@@ -100,6 +100,7 @@ export async function updateCourseSettings(courseId: string, formData: FormData)
     const allowDownload = formData.get('allowDownload') === 'on';
     const accessMonths = parseInt(formData.get('accessMonths') as string) || null;
     const guarantee = formData.get('guarantee') as string;
+    const videoEmbedUrl = formData.get('videoEmbedUrl') as string;
 
     const startDateStr = formData.get('startDate') as string;
     const endDateStr = formData.get('endDate') as string;
@@ -113,6 +114,7 @@ export async function updateCourseSettings(courseId: string, formData: FormData)
             allowDownload,
             accessMonths,
             guarantee,
+            videoEmbedUrl,
             startDate,
             endDate
         })

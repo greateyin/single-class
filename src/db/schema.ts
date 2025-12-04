@@ -35,6 +35,7 @@ export const courses = pgTable('courses', {
   allowDownload: boolean('allow_download').default(false),
   features: json('features').$type<{ label: string; value: string }[]>(),
   guarantee: text('guarantee'),
+  videoEmbedUrl: text('video_embed_url'),
   accessMonths: integer('access_months'),
   startDate: timestamp('start_date', { withTimezone: true }).defaultNow(),
   endDate: timestamp('end_date', { withTimezone: true }).default(new Date('2100-12-31')),
