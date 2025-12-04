@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { transactions, users } from '@/db/schema';
+import { transactions, users, enrollments } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { Resend } from 'resend';
 import { v4 as uuidv4 } from 'uuid';
@@ -77,6 +77,27 @@ export async function fulfillOrder(
             await tx.update(users)
                 .set({ stripeCustomerId: customerRef })
                 .where(eq(users.id, targetUserId!));
+        }
+
+        // C. Create Enrollment
+        if (courseId) {
+            // Check if already enrolled
+            const existingEnrollment = await tx.query.enrollments.findFirst({
+                where: and(
+                    eq(enrollments.userId, targetUserId!),
+                    eq(enrollments.courseId, courseId)
+                )
+            });
+
+            if (!existingEnrollment) {
+                await tx.insert(enrollments).values({
+                    userId: targetUserId!,
+                    courseId: courseId,
+                    // enrolledAt defaults to now
+                    // firstAccessedAt is null initially
+                    // expiresAt is null initially (calculated on first access)
+                });
+            }
         }
     });
 

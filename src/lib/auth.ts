@@ -49,5 +49,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 return null; // Validation failed
             },
         }),
+
     ],
+    callbacks: {
+        async signIn({ user }) {
+            if (user.id) {
+                await db.update(users)
+                    .set({ lastLoginAt: new Date() })
+                    .where(eq(users.id, user.id));
+            }
+            return true;
+        },
+        async session({ session, token }) {
+            if (session.user && token.sub) {
+                session.user.id = token.sub;
+            }
+            return session;
+        }
+    },
 });

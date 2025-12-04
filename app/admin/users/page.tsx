@@ -1,4 +1,6 @@
-import { getUsersList } from '@/actions/admin';
+import { db } from "@/db";
+import { users, transactions } from "@/db/schema";
+import { desc, eq, sql } from "drizzle-orm";
 import {
     Table,
     TableBody,
@@ -6,61 +8,88 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { format } from "date-fns";
+import { Eye } from "lucide-react";
 
 export default async function AdminUsersPage() {
-    const users = await getUsersList();
+    const allUsers = await db.query.users.findMany({
+        orderBy: [desc(users.createdAt)],
+        with: {
+            transactions: true
+        }
+    });
 
     return (
-        <div className="space-y-8">
-            <h1 className="text-3xl font-bold text-slate-900">Users</h1>
+        <div className="space-y-6">
+            <div>
+                <h2 className="text-2xl font-bold tracking-tight">Users</h2>
+                <p className="text-muted-foreground">
+                    Manage registered users and view their activity.
+                </p>
+            </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Registered Students</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Progress</TableHead>
-                                <TableHead>Joined</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {users.map((user) => (
+            <div className="rounded-md border bg-white">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>User</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Last Login</TableHead>
+                            <TableHead>Joined</TableHead>
+                            <TableHead className="text-right">Total Spend</TableHead>
+                            <TableHead className="w-[100px]"></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {allUsers.map((user) => {
+                            const totalSpend = user.transactions
+                                .filter(t => t.status === 'completed')
+                                .reduce((acc, t) => acc + t.amountCents, 0);
+
+                            return (
                                 <TableRow key={user.id}>
-                                    <TableCell className="font-medium">{user.email}</TableCell>
                                     <TableCell>
-                                        <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                                            {user.role}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline" className={user.status === 'Paid' ? 'bg-green-100 text-green-800 hover:bg-green-100' : ''}>
-                                            {user.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="w-full bg-slate-200 rounded-full h-2.5 dark:bg-slate-700 max-w-[100px]">
-                                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${user.progress}%` }}></div>
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{user.name || 'No Name'}</span>
+                                            <span className="text-xs text-muted-foreground">{user.email}</span>
                                         </div>
-                                        <span className="text-xs text-muted-foreground mt-1 block">{user.progress}%</span>
                                     </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {new Date(user.joinedAt).toLocaleDateString()}
+                                    <TableCell>
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin'
+                                                ? 'bg-purple-100 text-purple-700'
+                                                : 'bg-slate-100 text-slate-700'
+                                            }`}>
+                                            {user.role}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>
+                                        {user.lastLoginAt
+                                            ? format(user.lastLoginAt, 'MMM d, yyyy HH:mm')
+                                            : <span className="text-muted-foreground">-</span>}
+                                    </TableCell>
+                                    <TableCell>
+                                        {format(user.createdAt, 'MMM d, yyyy')}
+                                    </TableCell>
+                                    <TableCell className="text-right font-medium">
+                                        ${(totalSpend / 100).toFixed(2)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Button asChild variant="ghost" size="sm">
+                                            <Link href={`/admin/users/${user.id}`}>
+                                                <Eye className="h-4 w-4" />
+                                                <span className="sr-only">View</span>
+                                            </Link>
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+            </div>
         </div>
     );
 }
