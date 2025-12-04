@@ -20,5 +20,18 @@ export const authConfig = {
             }
             return session;
         },
+        async redirect({ url, baseUrl }) {
+            // Allows relative callback URLs
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+
+            // Allows callback URLs on the same origin
+            if (new URL(url).origin === baseUrl) return url;
+
+            // Allow callback URLs that match the configured app URL (e.g. custom domain)
+            const allowedOrigin = process.env.NEXT_PUBLIC_APP_URL;
+            if (allowedOrigin && url.startsWith(allowedOrigin)) return url;
+
+            return baseUrl;
+        },
     },
 } satisfies NextAuthConfig;

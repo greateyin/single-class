@@ -4,9 +4,7 @@
   "framework": "nextjs",
   "installCommand": "npm install",
   "devCommand": "npm run dev",
-  "env": {
-    "NEXTAUTH_URL": "https://single-class-dennis-yins-projects.vercel.app"
-  },
+  "env": {},
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30

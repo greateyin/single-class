@@ -14,6 +14,21 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## ⚙️ Setup & Environment Variables
+
+Copy the example environment file and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+### Key Environment Variables
+
+-   **`NEXT_PUBLIC_APP_URL`**: (Required for Production) The full URL of your application (e.g., `https://uat-class.most.tw`). This is used to validate login redirects and prevent Vercel Authentication issues.
+-   **`DATABASE_URL`**: Connection string for your PostgreSQL database (e.g., Neon).
+-   **`AUTH_SECRET`**: Random string for NextAuth encryption.
+-   **`AUTH_GOOGLE_CLIENT_ID` / `SECRET`**: Google OAuth credentials.
+
 ## 🗺️ URL Structure & Routes
 
 ### 🟢 Public Funnel (Sales & Checkout)
