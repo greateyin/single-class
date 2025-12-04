@@ -9,6 +9,8 @@ import { desc } from 'drizzle-orm';
 import { PlusCircle, Edit } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminCoursesPage() {
     const allCourses = await db.query.courses.findMany({
         orderBy: [desc(courses.createdAt)],
