@@ -1,6 +1,6 @@
 import { enforcePaidAccess } from '@/lib/auth-guards';
 import { db } from '@/db';
-import { courses, lessons, lessonCompletion } from '@/db/schema';
+import { courses, lessons, lessonCompletion, modules } from '@/db/schema';
 import { eq, asc, and } from 'drizzle-orm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -41,6 +41,11 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
         },
     });
 
+    const courseModules = await db.query.modules.findMany({
+        where: eq(modules.courseId, course.id),
+        orderBy: [asc(modules.orderIndex)],
+    });
+
     const completedCount = courseLessons.filter(l => l.lessonCompletion.length > 0).length;
     const progress = courseLessons.length > 0 ? (completedCount / courseLessons.length) * 100 : 0;
 
@@ -56,44 +61,83 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
                 </div>
             </div>
 
-            <div className="grid gap-4">
-                {courseLessons.map((lesson) => {
-                    const isCompleted = lesson.lessonCompletion.length > 0;
+            <div className="space-y-8">
+                {/* Modules */}
+                {courseModules.map((module) => {
+                    const moduleLessons = courseLessons.filter(l => l.moduleId === module.id);
+                    if (moduleLessons.length === 0) return null;
+
                     return (
-                        <Link key={lesson.id} href={`/lessons/${lesson.id}?courseId=${course.id}`}>
-                            <Card className={`hover:shadow-md transition-all duration-200 border-l-4 ${isCompleted ? 'border-l-green-500 bg-green-50/30' : 'border-l-[var(--brand-navy)] hover:border-l-[var(--brand-gold)]'}`}>
-                                <CardContent className="p-6 flex items-center gap-6">
-                                    <div className="flex-shrink-0">
-                                        {isCompleted ? (
-                                            <div className="bg-green-100 p-2 rounded-full">
-                                                <CheckCircle className="h-6 w-6 text-green-600" />
-                                            </div>
-                                        ) : (
-                                            <div className="bg-blue-50 p-2 rounded-full">
-                                                <PlayCircle className="h-6 w-6 text-[var(--brand-navy)]" />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className={`text-lg font-semibold ${isCompleted ? 'text-slate-700' : 'text-[var(--brand-navy)]'}`}>
-                                            {lesson.title}
-                                        </h3>
-                                        {lesson.description && (
-                                            <p className="text-sm text-slate-500 mt-1 line-clamp-1">{lesson.description}</p>
-                                        )}
-                                    </div>
-                                    <div className="text-xs font-medium px-3 py-1 bg-slate-100 rounded-full text-slate-500">
-                                        Lesson {lesson.orderIndex}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </Link>
+                        <div key={module.id} className="space-y-4">
+                            <h2 className="text-xl font-bold text-[var(--brand-navy)] pl-2 border-l-4 border-[var(--brand-gold)]">
+                                {module.title}
+                            </h2>
+                            <div className="grid gap-4">
+                                {moduleLessons.map((lesson) => (
+                                    <LessonCard key={lesson.id} lesson={lesson} courseId={course.id} />
+                                ))}
+                            </div>
+                        </div>
                     );
                 })}
+
+                {/* Orphaned Lessons (No Module) */}
+                {courseLessons.filter(l => !l.moduleId).length > 0 && (
+                    <div className="space-y-4">
+                        {courseModules.length > 0 && (
+                            <h2 className="text-xl font-bold text-[var(--brand-navy)] pl-2 border-l-4 border-slate-300">
+                                General
+                            </h2>
+                        )}
+                        <div className="grid gap-4">
+                            {courseLessons.filter(l => !l.moduleId).map((lesson) => (
+                                <LessonCard key={lesson.id} lesson={lesson} courseId={course.id} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {courseLessons.length === 0 && (
                     <p className="text-slate-500 italic">No lessons available yet.</p>
                 )}
             </div>
         </div>
+    );
+}
+
+function LessonCard({ lesson, courseId }: { lesson: any, courseId: string }) {
+    const isCompleted = lesson.lessonCompletion.length > 0;
+    return (
+        <Link href={`/lessons/${lesson.id}?courseId=${courseId}`}>
+            <Card className={`hover:shadow-md transition-all duration-200 border-l-4 ${isCompleted ? 'border-l-green-500 bg-green-50/30' : 'border-l-[var(--brand-navy)] hover:border-l-[var(--brand-gold)]'}`}>
+                <CardContent className="p-6 flex items-center gap-6">
+                    <div className="flex-shrink-0">
+                        {isCompleted ? (
+                            <div className="bg-green-100 p-2 rounded-full">
+                                <CheckCircle className="h-6 w-6 text-green-600" />
+                            </div>
+                        ) : (
+                            <div className="bg-blue-50 p-2 rounded-full">
+                                <PlayCircle className="h-6 w-6 text-[var(--brand-navy)]" />
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex-1">
+                        <h3 className={`text-lg font-semibold ${isCompleted ? 'text-slate-700' : 'text-[var(--brand-navy)]'}`}>
+                            {lesson.title}
+                        </h3>
+                        {lesson.description && (
+                            <p className="text-sm text-slate-500 mt-1 line-clamp-1">{lesson.description}</p>
+                        )}
+                    </div>
+                    <div className="text-xs font-medium px-3 py-1 bg-slate-100 rounded-full text-slate-500">
+                        Lesson {lesson.orderIndex}
+                    </div>
+                </CardContent>
+            </Card>
+        </Link>
+    );
+}
+        </div >
     );
 }
