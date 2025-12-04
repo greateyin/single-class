@@ -1,4 +1,5 @@
-import { getLessonById, updateLesson, uploadAttachment, deleteAttachment, createAssessment, deleteAssessment } from '@/actions/admin-content';
+import { getLessonById, updateLesson, deleteAttachment, createAssessment, deleteAssessment } from '@/actions/admin-content';
+import { LessonAttachmentUpload } from '@/components/admin/lesson-attachment-upload';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -173,10 +174,7 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
 
                         {/* Upload Form */}
                         <div className="pt-4 border-t">
-                            <form action={uploadAttachment.bind(null, lesson.id)} className="flex gap-2">
-                                <Input type="file" name="file" required className="text-sm" />
-                                <Button type="submit" size="sm">Upload</Button>
-                            </form>
+                            <LessonAttachmentUpload lessonId={lesson.id} />
                         </div>
                     </CardContent>
                 </Card>

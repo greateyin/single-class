@@ -1,4 +1,5 @@
-import { updateCourseLandingPage, uploadCourseImage } from '@/actions/admin-courses';
+import { updateCourseLandingPage } from '@/actions/admin-courses';
+import { CourseImageUpload } from '@/components/admin/course-image-upload';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -115,37 +116,9 @@ export default async function CourseLandingPage({ params }: { params: Promise<{ 
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form action={uploadCourseImage.bind(null, courseId)} className="space-y-6">
-                        <div className="flex flex-col md:flex-row gap-6 items-start">
-                            <div className="w-full md:w-1/2 aspect-video bg-slate-100 rounded-md border flex items-center justify-center overflow-hidden relative group">
-                                {course.imageUrl ? (
-                                    <img src={course.imageUrl} alt="Course" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="flex flex-col items-center text-slate-400">
-                                        <span className="text-sm">No image selected</span>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex-1 space-y-4 w-full">
-                                <div className="space-y-2">
-                                    <label htmlFor="file" className="text-sm font-medium">Upload Image File</label>
-                                    <Input id="file" type="file" name="file" accept="image/*" />
-                                </div>
-                                <div className="relative flex items-center py-2">
-                                    <div className="flex-grow border-t border-slate-200"></div>
-                                    <span className="flex-shrink-0 mx-4 text-slate-400 text-xs uppercase">Or use URL</span>
-                                    <div className="flex-grow border-t border-slate-200"></div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label htmlFor="imageUrl" className="text-sm font-medium">Image URL</label>
-                                    <Input id="imageUrl" name="imageUrl" defaultValue={course.imageUrl || ''} placeholder="https://..." />
-                                </div>
-                                <div className="pt-2">
-                                    <Button type="submit">Save Image</Button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                    <CardContent>
+                        <CourseImageUpload courseId={courseId} currentImageUrl={course.imageUrl} />
+                    </CardContent>
                 </CardContent>
             </Card>
         </div>

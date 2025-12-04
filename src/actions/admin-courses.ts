@@ -108,36 +108,46 @@ export async function deleteCourse(courseId: string) {
     redirect('/admin/courses');
 }
 
-export async function uploadCourseImage(courseId: string, formData: FormData) {
+export async function uploadCourseImage(courseId: string, imageUrl: string | FormData) {
     await enforceAdminRole();
 
-    const file = formData.get('file') as File;
-    const url = formData.get('imageUrl') as string;
+    let url = '';
 
-    let imageUrl = url || '';
+    if (typeof imageUrl === 'string') {
+        url = imageUrl;
+    } else {
+        // Legacy FormData support
+        const formData = imageUrl;
+        const file = formData.get('file') as File;
+        const urlFromForm = formData.get('imageUrl') as string;
 
-    if (file && file.size > 0 && file.name !== 'undefined') {
-        if (process.env.BLOB_READ_WRITE_TOKEN) {
-            try {
-                const blob = await put(file.name, file, {
-                    access: 'public',
-                });
-                imageUrl = blob.url;
-            } catch (error) {
-                console.error('Vercel Blob upload failed:', error);
-                throw new Error('Upload failed');
+        url = urlFromForm || '';
+
+        if (file && file.size > 0 && file.name !== 'undefined') {
+            if (process.env.BLOB_READ_WRITE_TOKEN) {
+                try {
+                    const blob = await put(file.name, file, {
+                        access: 'public',
+                    });
+                    url = blob.url;
+                } catch (error) {
+                    console.error('Vercel Blob upload failed:', error);
+                    throw new Error('Upload failed');
+                }
+            } else {
+                console.warn('BLOB_READ_WRITE_TOKEN not set. Using mock URL.');
+                url = `https://mock-storage.com/${file.name}`;
             }
-        } else {
-            // Mock upload for development
-            console.warn('BLOB_READ_WRITE_TOKEN not set. Using mock URL.');
-            imageUrl = `https://mock-storage.com/${file.name}`;
         }
     }
 
     await db.update(courses)
-        .set({ imageUrl })
+        .set({ imageUrl: url })
         .where(eq(courses.id, courseId));
 
     revalidatePath(`/admin/courses/${courseId}/landing-page`);
-    redirect(`/admin/courses/${courseId}/landing-page?updated=true`);
+    // Only redirect if it was a form submission (FormData), otherwise just revalidate
+    if (typeof imageUrl !== 'string') {
+        redirect(`/admin/courses/${courseId}/landing-page?updated=true`);
+    }
 }

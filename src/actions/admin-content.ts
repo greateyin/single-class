@@ -158,6 +158,20 @@ export async function uploadAttachment(lessonId: string, formData: FormData) {
     revalidatePath(`/admin/lessons/${lessonId}`);
 }
 
+export async function saveAttachmentMetadata(lessonId: string, fileName: string, storageUrl: string) {
+    await enforceAdminRole();
+
+    await db.insert(attachments).values({
+        lessonId,
+        fileName,
+        storageUrl,
+    });
+
+    await db.update(lessons).set({ hasAttachment: true }).where(eq(lessons.id, lessonId));
+
+    revalidatePath(`/admin/lessons/${lessonId}`);
+}
+
 export async function deleteAttachment(id: string) {
     await enforceAdminRole();
 
