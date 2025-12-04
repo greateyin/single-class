@@ -5,6 +5,7 @@ import { modules, lessons } from '@/db/schema';
 import { enforceAdminRole } from '@/lib/auth-guards';
 import { eq, asc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { deleteLesson } from '@/actions/admin-content';
 
 export async function createModule(courseId: string, title: string) {
     await enforceAdminRole();
@@ -51,10 +52,16 @@ export async function deleteModule(moduleId: string) {
 
     if (!module) return;
 
-    // Optional: Move lessons to another module or delete them?
-    // For now, let's assume we delete them or they become orphaned (which is bad).
-    // Better: Delete lessons in this module.
-    await db.delete(lessons).where(eq(lessons.moduleId, moduleId));
+    // Fetch all lessons in this module
+    const moduleLessons = await db.query.lessons.findMany({
+        where: eq(lessons.moduleId, moduleId),
+    });
+
+    // Delete each lesson using the proper deleteLesson action (which handles cleanup)
+    for (const lesson of moduleLessons) {
+        await deleteLesson(lesson.id);
+    }
+
     await db.delete(modules).where(eq(modules.id, moduleId));
 
     revalidatePath(`/admin/courses/${module.courseId}/curriculum`);
