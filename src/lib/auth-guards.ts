@@ -36,6 +36,11 @@ export async function enforcePaidAccess(courseId: string) {
     const session = await enforceAuthentication();
     const userId = session.user.id;
 
+    // Allow admins to bypass payment check
+    if (session.user.role === 'admin') {
+        return session;
+    }
+
     // Query Drizzle DB
     const paid = await db.query.transactions.findFirst({
         where: and(
@@ -46,7 +51,7 @@ export async function enforcePaidAccess(courseId: string) {
     });
 
     if (!paid) {
-        redirect('/enroll'); // Redirect to enrollment page (should probably be course specific later)
+        redirect(`/enroll/${courseId}`); // Redirect to enrollment page
     }
     return session;
 }

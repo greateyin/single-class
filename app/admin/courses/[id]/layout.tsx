@@ -39,10 +39,16 @@ export default async function CourseEditorLayout({
                     <span className={`text-xs px-2 py-0.5 rounded ${course.isPublished ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}>
                         {course.isPublished ? 'PUBLISHED' : 'DRAFT'}
                     </span>
-                    <Link href={`/courses/${course.id}`} target="_blank">
+                    <Link href={`/enroll/${course.id}`} target="_blank">
                         <Button variant="outline" size="sm" className="ml-2">
                             <Eye className="h-4 w-4 mr-2" />
-                            Preview
+                            Landing Page
+                        </Button>
+                    </Link>
+                    <Link href={`/courses/${course.id}`} target="_blank">
+                        <Button variant="default" size="sm" className="ml-2 bg-[var(--brand-navy)] hover:bg-blue-900">
+                            <Eye className="h-4 w-4 mr-2" />
+                            Content Preview
                         </Button>
                     </Link>
                 </div>
