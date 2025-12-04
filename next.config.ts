@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '100mb',
     },
   },
+  async rewrites() {
+    return [
+      {
+        source: '/core',
+        destination: '/enroll/core',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

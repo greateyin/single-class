@@ -10,10 +10,4 @@
       "maxDuration": 30
     }
   },
-  "rewrites": [
-    {
-      "source": "/core",
-      "destination": "/enroll/core"
-    }
-  ]
 }
