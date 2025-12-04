@@ -11,6 +11,7 @@ import { notFound, redirect } from 'next/navigation';
 import { db } from '@/db';
 import { lessons, courses } from '@/db/schema';
 import { eq, and, asc, gt } from 'drizzle-orm';
+import { getEmbedUrl } from '@/lib/utils';
 
 export default async function LessonPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: lessonId } = await params;
@@ -38,7 +39,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
             {/* Video Player */}
             <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
                 <iframe
-                    src={lesson.videoEmbedUrl}
+                    src={getEmbedUrl(lesson.videoEmbedUrl) || ''}
                     className="w-full h-full"
                     allow="autoplay; fullscreen; picture-in-picture"
                     allowFullScreen
