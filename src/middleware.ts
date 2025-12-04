@@ -20,7 +20,13 @@ export default auth((req) => {
 
         const encodedCallbackUrl = encodeURIComponent(callbackUrl);
 
-        return Response.redirect(new URL(`/api/auth/signin?callbackUrl=${encodedCallbackUrl}`, req.nextUrl));
+        // Construct absolute URL using the Host header to avoid redirecting to Vercel's internal deployment URL
+        // which might trigger Vercel Authentication on Preview deployments.
+        const host = req.headers.get("host");
+        const protocol = req.headers.get("x-forwarded-proto") || "https";
+        const baseUrl = host ? `${protocol}://${host}` : req.nextUrl.origin;
+
+        return Response.redirect(new URL(`/api/auth/signin?callbackUrl=${encodedCallbackUrl}`, baseUrl));
     }
 });
 
