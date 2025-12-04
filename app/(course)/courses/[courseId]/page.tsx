@@ -138,6 +138,4 @@ function LessonCard({ lesson, courseId }: { lesson: any, courseId: string }) {
         </Link>
     );
 }
-        </div >
-    );
-}
+
