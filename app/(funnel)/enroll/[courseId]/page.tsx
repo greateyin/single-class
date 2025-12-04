@@ -232,11 +232,16 @@ export default async function EnrollPage({ params }: Props) {
 
                                         // 2. Open: Start Date <= Now < End Date
                                         if (now < endDate) {
+                                            const tenDaysInMs = 10 * 24 * 60 * 60 * 1000;
+                                            const showCountdown = endDate.getTime() - now.getTime() <= tenDaysInMs;
+
                                             return (
                                                 <div className="space-y-6">
-                                                    <div className="w-full">
-                                                        <FlipClock targetDate={endDate} label="Enrollment Closes In" />
-                                                    </div>
+                                                    {showCountdown && (
+                                                        <div className="w-full">
+                                                            <FlipClock targetDate={endDate} label="Enrollment Closes In" />
+                                                        </div>
+                                                    )}
 
                                                     <form action={createCoreCheckoutSession.bind(null, course.id)} className="w-full">
                                                         <Button size="lg" className="w-full bg-[var(--brand-red)] hover:opacity-90 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-[#9b2c2c]">
