@@ -72,7 +72,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
                             <h2 className="text-xl font-bold text-[var(--brand-navy)] pl-2 border-l-4 border-[var(--brand-gold)]">
                                 {module.title}
                             </h2>
-                            <div className="grid gap-4">
+                            <div className="grid gap-4 pl-6">
                                 {moduleLessons.map((lesson) => (
                                     <LessonCard key={lesson.id} lesson={lesson} courseId={course.id} />
                                 ))}
