@@ -244,15 +244,27 @@ export default async function EnrollPage({ params }: Props) {
                                                     )}
 
                                                     {course.priceCents === 0 ? (
-                                                        <form action={enrollForFree.bind(null, course.id)} className="w-full">
-                                                            <Button size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-green-800">
-                                                                <div className="flex items-center gap-2 flex-wrap justify-center">
-                                                                    <span>Enroll for Free</span>
-                                                                    <ArrowRight className="h-6 w-6 shrink-0" />
-                                                                </div>
-                                                                <span className="text-xs font-normal opacity-90 uppercase tracking-wider">Instant Access</span>
+                                                        session?.user ? (
+                                                            <form action={enrollForFree.bind(null, course.id)} className="w-full">
+                                                                <Button size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-green-800">
+                                                                    <div className="flex items-center gap-2 flex-wrap justify-center">
+                                                                        <span>Enroll for Free</span>
+                                                                        <ArrowRight className="h-6 w-6 shrink-0" />
+                                                                    </div>
+                                                                    <span className="text-xs font-normal opacity-90 uppercase tracking-wider">Instant Access</span>
+                                                                </Button>
+                                                            </form>
+                                                        ) : (
+                                                            <Button asChild size="lg" className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-slate-950">
+                                                                <Link href={`/api/auth/signin?callbackUrl=/enroll/${course.id}`}>
+                                                                    <div className="flex items-center gap-2 flex-wrap justify-center">
+                                                                        <span>Sign in to Enroll</span>
+                                                                        <ArrowRight className="h-6 w-6 shrink-0" />
+                                                                    </div>
+                                                                    <span className="text-xs font-normal opacity-90 uppercase tracking-wider">Create an account to start</span>
+                                                                </Link>
                                                             </Button>
-                                                        </form>
+                                                        )
                                                     ) : (
                                                         <>
                                                             <form action={createCoreCheckoutSession.bind(null, course.id)} className="w-full">
