@@ -97,13 +97,13 @@ export default async function EnrollPage({ params }: Props) {
             where: and(
                 eq(transactions.userId, session.user.id),
                 eq(transactions.status, 'completed'),
-                eq(transactions.courseId, courseId)
+                eq(transactions.courseId, course.id)
             ),
         });
         hasAccess = !!tx;
 
         if (hasAccess) {
-            redirect(`/courses/${courseId}`);
+            redirect(`/courses/${course.id}`);
         }
     }
 
@@ -210,7 +210,7 @@ export default async function EnrollPage({ params }: Props) {
 
                                 {/* Payment Buttons */}
                                 <div className="space-y-4">
-                                    <form action={createCoreCheckoutSession.bind(null, courseId)} className="w-full">
+                                    <form action={createCoreCheckoutSession.bind(null, course.id)} className="w-full">
                                         <Button size="lg" className="w-full bg-[var(--brand-red)] hover:opacity-90 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-[#9b2c2c]">
                                             <div className="flex items-center gap-2 flex-wrap justify-center">
                                                 <span>YES! Upgrade My Skills Now</span>
@@ -231,7 +231,7 @@ export default async function EnrollPage({ params }: Props) {
 
                                     <div className="w-full">
                                         <PayPalButton
-                                            courseId={courseId}
+                                            courseId={course.id}
                                             clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
                                         />
                                     </div>

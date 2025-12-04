@@ -11,17 +11,28 @@ import { notFound } from 'next/navigation';
 export default async function CoursePage({ params }: { params: Promise<{ courseId: string }> }) {
     const { courseId } = await params;
 
-    const session = await enforcePaidAccess(courseId);
-    const userId = session.user.id;
-
-    const course = await db.query.courses.findFirst({
-        where: eq(courses.id, courseId),
-    });
+    let course;
+    if (courseId === 'core') {
+        course = await db.query.courses.findFirst();
+        if (course) {
+            redirect(`/courses/${course.id}`);
+        }
+    } else {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseId);
+        if (isUuid) {
+            course = await db.query.courses.findFirst({
+                where: eq(courses.id, courseId),
+            });
+        }
+    }
 
     if (!course) notFound();
 
+    const session = await enforcePaidAccess(course.id);
+    const userId = session.user.id;
+
     const courseLessons = await db.query.lessons.findMany({
-        where: eq(lessons.courseId, courseId),
+        where: eq(lessons.courseId, course.id),
         orderBy: [asc(lessons.orderIndex)],
         with: {
             lessonCompletion: {
@@ -49,7 +60,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
                 {courseLessons.map((lesson) => {
                     const isCompleted = lesson.lessonCompletion.length > 0;
                     return (
-                        <Link key={lesson.id} href={`/lessons/${lesson.id}?courseId=${courseId}`}>
+                        <Link key={lesson.id} href={`/lessons/${lesson.id}?courseId=${course.id}`}>
                             <Card className={`hover:shadow-md transition-all duration-200 border-l-4 ${isCompleted ? 'border-l-green-500 bg-green-50/30' : 'border-l-[var(--brand-navy)] hover:border-l-[var(--brand-gold)]'}`}>
                                 <CardContent className="p-6 flex items-center gap-6">
                                     <div className="flex-shrink-0">
