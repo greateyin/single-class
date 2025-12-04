@@ -224,7 +224,7 @@ export default async function EnrollPage({ params }: Props) {
                                         if (now < startDate) {
                                             return (
                                                 <div className="w-full">
-                                                    <FlipClock targetDate={startDate} label="距離開賣時間" />
+                                                    <FlipClock targetDate={startDate} label="Enrollment Opens In" />
                                                     <p className="text-center text-sm text-slate-500 mt-4">
                                                         Enrollment opens soon. Mark your calendar!
                                                     </p>
@@ -237,7 +237,7 @@ export default async function EnrollPage({ params }: Props) {
                                             return (
                                                 <div className="space-y-6">
                                                     <div className="w-full">
-                                                        <FlipClock targetDate={endDate} label="距離停售時間" />
+                                                        <FlipClock targetDate={endDate} label="Enrollment Closes In" />
                                                     </div>
 
                                                     <form action={createCoreCheckoutSession.bind(null, course.id)} className="w-full">

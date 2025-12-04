@@ -60,7 +60,7 @@ export function FlipClock({ targetDate, label }: FlipClockProps) {
                                 {formatNumber(timeLeft.months)}
                             </span>
                         </div>
-                        <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">月</span>
+                        <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">Months</span>
                     </div>
                 )}
 
@@ -70,7 +70,7 @@ export function FlipClock({ targetDate, label }: FlipClockProps) {
                             {formatNumber(timeLeft.days)}
                         </span>
                     </div>
-                    <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">日</span>
+                    <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">Days</span>
                 </div>
 
                 <div className="flex flex-col">
@@ -79,7 +79,7 @@ export function FlipClock({ targetDate, label }: FlipClockProps) {
                             {formatNumber(timeLeft.hours)}
                         </span>
                     </div>
-                    <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">時</span>
+                    <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">Hours</span>
                 </div>
 
                 <div className="flex flex-col">
@@ -88,7 +88,7 @@ export function FlipClock({ targetDate, label }: FlipClockProps) {
                             {formatNumber(timeLeft.minutes)}
                         </span>
                     </div>
-                    <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">分</span>
+                    <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">Mins</span>
                 </div>
 
                 <div className="flex flex-col">
@@ -97,7 +97,7 @@ export function FlipClock({ targetDate, label }: FlipClockProps) {
                             {formatNumber(timeLeft.seconds)}
                         </span>
                     </div>
-                    <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">秒</span>
+                    <span className="text-xs md:text-sm mt-2 text-gray-400 uppercase">Secs</span>
                 </div>
             </div>
             <div className="text-sm text-gray-400 pt-2">
