@@ -40,7 +40,7 @@ function SignInForm() {
                     // We'll attempt to resend the verification email to check if it's an unverified email scenario.
                     const resendResult = await resendVerificationEmail(email.toLowerCase());
                     if (resendResult.success) {
-                        toast.warning('請先認證 email 後登入'); // "Please verify email before logging in"
+                        toast.warning('Please verify your email address before logging in.');
                     } else {
                         // If resend failed, it might be a genuine 'Configuration' error not related to verification,
                         // or the email was already verified but credentials were wrong.
@@ -57,7 +57,7 @@ function SignInForm() {
                     // For other errors, we can still try to resend as a fallback
                     const resendResult = await resendVerificationEmail(email.toLowerCase());
                     if (resendResult.success) {
-                        toast.warning('請先認證 email 後登入');
+                        toast.warning('Please verify your email address before logging in.');
                     } else if (resendResult.message.startsWith('Failed to send')) {
                         toast.error(resendResult.message);
                     } else {

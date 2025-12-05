@@ -25,6 +25,9 @@ export default async function CourseLayout({
                         <Link href="/qa" className="text-sm font-medium text-blue-100 hover:text-white transition-colors">
                             Q&A
                         </Link>
+                        <Link href="/profile" className="text-sm font-medium text-blue-100 hover:text-white transition-colors">
+                            Profile
+                        </Link>
                         <form
                             action={async () => {
                                 'use server';
