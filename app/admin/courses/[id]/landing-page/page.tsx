@@ -59,7 +59,7 @@ export default async function CourseLandingPage({ params }: { params: Promise<{ 
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Basic info</label>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <select
                                     name="language"
                                     defaultValue={course.language || 'English'}
