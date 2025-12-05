@@ -24,16 +24,39 @@ cp .env.example .env.local
 
 ### Key Environment Variables
 
--   **`NEXT_PUBLIC_BASE_URL`**: (Required for Production) The full URL of your application (e.g., `https://uat-class.most.tw`).
--   **`NEXT_PUBLIC_APP_NAME`**: The name of your application (e.g., "Most Class"), used in email subjects and headers.
+#### Application Setup
+-   **`NEXT_PUBLIC_APP_NAME`**: The name of your application (e.g., "Single Class").
+-   **`NEXT_PUBLIC_BASE_URL`**: The full URL of your application (e.g., `https://yourdomain.com`).
+
+#### Database
 -   **`DATABASE_URL`**: Connection string for your PostgreSQL database (e.g., Neon).
--   **`AUTH_SECRET`**: Random string for NextAuth encryption.
--   **`AUTH_GOOGLE_CLIENT_ID` / `SECRET`**: Google OAuth credentials.
--   **`RESEND_FROM_EMAIL`**: The "From" email address for system emails (e.g., `notification@yourdomain.com`). Must be verified in Resend for production use.
--   **`BLOB_READ_WRITE_TOKEN`**: (Required for Image Uploads) Token for Vercel Blob storage. You can find this in your Vercel Storage dashboard.
--   **`NEXT_PUBLIC_GOOGLE_ANALYTICS_ID`**: (Optional) GA4 Measurement ID for Google Analytics.
--   **`NEXT_PUBLIC_FACEBOOK_PIXEL_ID`**: (Optional) Pixel ID for Facebook/Meta tracking.
--   **`NEXT_PUBLIC_MICROSOFT_CLARITY_ID`**: (Optional) Project ID for Microsoft Clarity heatmaps and session recording.
+
+#### Authentication (NextAuth.js)
+-   **`AUTH_SECRET`**: Encrypted secret for session management. Generate with `npx auth secret`.
+-   **`AUTH_GOOGLE_CLIENT_ID`**: Google OAuth Client ID.
+-   **`AUTH_GOOGLE_CLIENT_SECRET`**: Google OAuth Client Secret.
+
+#### Email Services
+-   **`RESEND_API_KEY`**: API key from Resend.com.
+-   **`RESEND_FROM_EMAIL`**: Verified sender address (e.g., `onboarding@yourdomain.com`).
+
+#### Storage
+-   **`BLOB_READ_WRITE_TOKEN`**: Vercel Blob token for storing images.
+
+#### Payments (Stripe)
+-   **`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`**: Public key for client-side Stripe elements.
+-   **`STRIPE_SECRET_KEY`**: Secret key for server-side operations.
+-   **`STRIPE_WEBHOOK_SECRET`**: Secret for ensuring webhook integrity.
+
+#### Payments (PayPal)
+-   **`NEXT_PUBLIC_PAYPAL_CLIENT_ID`**: PayPal Client ID.
+-   **`PAYPAL_CLIENT_SECRET`**: PayPal Client Secret.
+-   **`PAYPAL_MODE`**: `sandbox` for testing, `live` for production.
+
+#### Analytics (Optional)
+-   **`NEXT_PUBLIC_GOOGLE_ANALYTICS_ID`**: GA4 Measurement ID.
+-   **`NEXT_PUBLIC_FACEBOOK_PIXEL_ID`**: Facebook Pixel ID.
+-   **`NEXT_PUBLIC_MICROSOFT_CLARITY_ID`**: Microsoft Clarity Project ID.
 
 ## 🔐 Authentication Setup
 
