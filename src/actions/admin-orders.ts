@@ -106,9 +106,9 @@ export async function sendInvoiceEmail(transactionId: string) {
 
     try {
         await resend.emails.send({
-            from: 'Acme <onboarding@resend.dev>', // Should use configured domain
-            to: [order.user.email],
-            subject: `Invoice for Order #${order.id.slice(0, 8)}`,
+            from: `Single Class <${process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'}>`,
+            to: order.user.email,
+            subject: `Invoice for ${order.course?.title || 'Course'}`,
             html: `
                 <h1>Invoice / Receipt</h1>
                 <p>Thank you for your business!</p>

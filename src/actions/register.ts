@@ -74,7 +74,7 @@ export async function registerUser(formData: FormData) {
         const resend = new Resend(process.env.RESEND_API_KEY);
 
         await resend.emails.send({
-            from: "Single Class <no-reply@resend.dev>",
+            from: `Single Class <${process.env.RESEND_FROM_EMAIL || 'no-reply@resend.dev'}>`,
             to: email,
             subject: "Confirm your email",
             html: `<p>Click <a href="${confirmLink}">here</a> to confirm your email.</p>`,

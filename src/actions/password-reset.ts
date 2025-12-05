@@ -49,7 +49,7 @@ export async function requestPasswordReset(formData: FormData) {
         const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/reset-password?token=${token}`;
 
         await resend.emails.send({
-            from: 'Single Class <no-reply@resend.dev>',
+            from: `Single Class <${process.env.RESEND_FROM_EMAIL || 'no-reply@resend.dev'}>`,
             to: email,
             subject: 'Reset your password',
             html: `<p>Click <a href="${resetLink}">here</a> to reset your password.</p><p>Link expires in 1 hour.</p>`,
