@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { RefundButton } from './_components/refund-button';
 import { SendInvoiceButton } from './_components/send-invoice-button';
+import { FixEnrollmentButton } from './_components/fix-enrollment-button';
 
 export default async function OrderDetailsPage({
     params,
@@ -31,7 +32,15 @@ export default async function OrderDetailsPage({
                     </Button>
                 </Link>
                 <h2 className="text-2xl font-bold tracking-tight">Order Details</h2>
-                <div className="ml-auto">
+                <div className="ml-auto flex gap-2">
+                    {order.status === 'completed' && (() => {
+                        /* eslint-disable @typescript-eslint/no-explicit-any */
+                        const hasEnrollment = (order.user as any).enrollments?.some((e: any) => e.courseId === order.courseId);
+                        if (!hasEnrollment) {
+                            return <FixEnrollmentButton orderId={order.id} />;
+                        }
+                        return null;
+                    })()}
                     <SendInvoiceButton orderId={order.id} />
                 </div>
             </div>

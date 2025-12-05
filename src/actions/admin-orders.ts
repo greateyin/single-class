@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { transactions, users, courses } from '@/db/schema';
+import { transactions, users, courses, enrollments } from '@/db/schema';
 import { enforceAdminRole } from '@/lib/auth-guards';
 import { stripe } from '@/lib/stripe';
 import { desc, eq, sql } from 'drizzle-orm';
@@ -126,5 +126,42 @@ export async function sendInvoiceEmail(transactionId: string) {
     } catch (error) {
         console.error('Failed to send invoice:', error);
         throw new Error('Failed to send invoice email');
+    }
+}
+
+export async function fixEnrollment(transactionId: string) {
+    await enforceAdminRole();
+    const order = await db.query.transactions.findFirst({
+        where: eq(transactions.id, transactionId),
+        with: {
+            user: {
+                with: {
+                    enrollments: true,
+                }
+            },
+        },
+    });
+
+    if (!order) throw new Error('Order not found');
+    if (!order.courseId) throw new Error('Order has no course ID');
+
+    // Check if enrollment already exists
+    const existingEnrollment = order.user.enrollments.find(e => e.courseId === order.courseId);
+    if (existingEnrollment) {
+        return { success: true, message: 'Enrollment already exists' };
+    }
+
+    try {
+        await db.insert(enrollments).values({
+            userId: order.userId,
+            courseId: order.courseId,
+        });
+
+        revalidatePath(`/admin/orders/${transactionId}`);
+        revalidatePath(`/admin/users/${order.userId}`);
+        return { success: true, message: 'Enrollment created successfully' };
+    } catch (error) {
+        console.error('Failed to fix enrollment:', error);
+        throw new Error('Failed to create enrollment');
     }
 }

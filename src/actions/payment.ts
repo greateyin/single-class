@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { enforceAuthentication } from '@/lib/auth-guards';
 import { db } from '@/db';
-import { transactions, users, courses } from '@/db/schema';
+import { transactions, users, courses, enrollments } from '@/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
 // import { revalidateTag, revalidatePath } from 'next/cache';
 import { stripe } from '@/lib/stripe';
@@ -190,6 +190,11 @@ export async function enrollForFree(courseId: string) {
         amountCents: 0,
         status: 'completed',
         type: 'core',
+    });
+
+    await db.insert(enrollments).values({
+        userId,
+        courseId,
     });
 
     redirect(`/courses/${courseId}`);
