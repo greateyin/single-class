@@ -34,9 +34,29 @@ function SignInForm() {
 
             if (result?.error) {
                 if (result.error === 'Configuration') {
-                    toast.error('Please verify your email address.');
+                    // In NextAuth.js v5, 'Configuration' often wraps specific errors.
+                    // We'll attempt to resend the verification email to check if it's an unverified email scenario.
+                    const resendResult = await resendVerificationEmail(email.toLowerCase());
+                    if (resendResult.success) {
+                        toast.warning('尚未認證 email，已重新送出認證信'); // "Email not verified, verification email resent"
+                    } else {
+                        // If resend failed, it might be a genuine 'Configuration' error not related to verification,
+                        // or the email was already verified but credentials were wrong.
+                        if (resendResult.message === 'Email already verified!') {
+                            toast.error('Invalid credentials'); // Wrong password but verified email
+                        } else {
+                            toast.error('Invalid credentials or unverified email');
+                        }
+                    }
                 } else {
-                    toast.error('Invalid credentials or unverified email');
+                    // For other errors, we can still try to resend as a fallback,
+                    // or just show a generic error. The instruction implies trying to resend.
+                    const resendResult = await resendVerificationEmail(email.toLowerCase());
+                    if (resendResult.success) {
+                        toast.warning('尚未認證 email，已重新送出認證信');
+                    } else {
+                        toast.error('Invalid credentials or unverified email');
+                    }
                 }
             } else {
                 toast.success('Signed in successfully');

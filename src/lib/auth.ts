@@ -46,7 +46,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 if (isValid) {
                     // Check if email is verified
                     if (!user.emailVerified) {
-                        return null; // Or throw Error('Email not verified');
+                        throw new Error('EmailNotVerified');
                     }
 
                     // Return user object, Auth.js will create session based on this

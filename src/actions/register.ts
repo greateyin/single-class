@@ -73,11 +73,18 @@ export async function registerUser(formData: FormData) {
         const { Resend } = await import('resend');
         const resend = new Resend(process.env.RESEND_API_KEY);
 
+        const { getEmailTemplate } = await import('@/lib/email-templates');
+
         const { error } = await resend.emails.send({
             from: `${process.env.NEXT_PUBLIC_APP_NAME || 'Single Class'} <${process.env.RESEND_FROM_EMAIL || 'no-reply@resend.dev'}>`,
             to: email,
             subject: "Confirm your email",
-            html: `<p>Click <a href="${confirmLink}">here</a> to confirm your email.</p>`,
+            html: getEmailTemplate(
+                "Verify your email",
+                "Thanks for signing up! Please verify your email address to continue.",
+                "Verify Email",
+                confirmLink
+            ),
         });
 
         if (error) {
