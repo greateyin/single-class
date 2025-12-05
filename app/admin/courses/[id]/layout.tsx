@@ -27,14 +27,14 @@ export default async function CourseEditorLayout({
 
     return (
         <div className="space-y-6 p-6 pb-16 block">
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex flex-col items-start gap-4 mb-8 md:flex-row md:items-center">
                 <Link href="/admin/courses">
                     <Button variant="ghost" size="sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back to courses
                     </Button>
                 </Link>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                     <h1 className="text-xl font-bold tracking-tight">{course.title}</h1>
                     <span className={`text-xs px-2 py-0.5 rounded ${course.isPublished ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}>
                         {course.isPublished ? 'PUBLISHED' : 'DRAFT'}

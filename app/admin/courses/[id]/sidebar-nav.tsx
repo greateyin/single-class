@@ -55,13 +55,13 @@ export function SidebarNav({ className, courseId, ...props }: SidebarNavProps) {
     return (
         <nav
             className={cn(
-                'flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1',
+                'flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1 overflow-x-auto pb-2 lg:pb-0',
                 className
             )}
             {...props}
         >
             {items.map((group, i) => (
-                <div key={i} className="mb-6">
+                <div key={i} className="mb-6 shrink-0">
                     <h4 className="mb-2 px-4 text-sm font-semibold tracking-tight">
                         {group.title}
                     </h4>
