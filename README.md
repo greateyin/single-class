@@ -24,10 +24,12 @@ cp .env.example .env.local
 
 ### Key Environment Variables
 
--   **`NEXT_PUBLIC_BASE_URL`**: (Required for Production) The full URL of your application (e.g., `https://uat-class.most.tw`). This is used to validate login redirects and prevent Vercel Authentication issues.
+-   **`NEXT_PUBLIC_BASE_URL`**: (Required for Production) The full URL of your application (e.g., `https://uat-class.most.tw`).
+-   **`NEXT_PUBLIC_APP_NAME`**: The name of your application (e.g., "Most Class"), used in email subjects and headers.
 -   **`DATABASE_URL`**: Connection string for your PostgreSQL database (e.g., Neon).
 -   **`AUTH_SECRET`**: Random string for NextAuth encryption.
 -   **`AUTH_GOOGLE_CLIENT_ID` / `SECRET`**: Google OAuth credentials.
+-   **`RESEND_FROM_EMAIL`**: The "From" email address for system emails (e.g., `notification@yourdomain.com`). Must be verified in Resend for production use.
 -   **`BLOB_READ_WRITE_TOKEN`**: (Required for Image Uploads) Token for Vercel Blob storage. You can find this in your Vercel Storage dashboard.
 -   **`NEXT_PUBLIC_GOOGLE_ANALYTICS_ID`**: (Optional) GA4 Measurement ID for Google Analytics.
 -   **`NEXT_PUBLIC_FACEBOOK_PIXEL_ID`**: (Optional) Pixel ID for Facebook/Meta tracking.

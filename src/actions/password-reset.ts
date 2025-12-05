@@ -48,12 +48,17 @@ export async function requestPasswordReset(formData: FormData) {
 
         const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/reset-password?token=${token}`;
 
-        await resend.emails.send({
-            from: `Single Class <${process.env.RESEND_FROM_EMAIL || 'no-reply@resend.dev'}>`,
+        const { error } = await resend.emails.send({
+            from: `${process.env.NEXT_PUBLIC_APP_NAME || 'Single Class'} <${process.env.RESEND_FROM_EMAIL || 'no-reply@resend.dev'}>`,
             to: email,
             subject: 'Reset your password',
             html: `<p>Click <a href="${resetLink}">here</a> to reset your password.</p><p>Link expires in 1 hour.</p>`,
         });
+
+        if (error) {
+            console.error('Resend error:', error);
+            return { success: false, message: 'Failed to send reset email: ' + error.message };
+        }
 
         return { success: true, message: 'If an account exists, a reset link has been sent.' };
     } catch (error) {

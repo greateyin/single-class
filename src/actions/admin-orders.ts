@@ -105,8 +105,8 @@ export async function sendInvoiceEmail(transactionId: string) {
     if (!order.user.email) throw new Error('User has no email address');
 
     try {
-        await resend.emails.send({
-            from: `Single Class <${process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'}>`,
+        const { error } = await resend.emails.send({
+            from: `${process.env.NEXT_PUBLIC_APP_NAME || 'Single Class'} <${process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'}>`,
             to: order.user.email,
             subject: `Invoice for ${order.course?.title || 'Course'}`,
             html: `
@@ -121,6 +121,11 @@ export async function sendInvoiceEmail(transactionId: string) {
                 <p>If you have any questions, please reply to this email.</p>
             `,
         });
+
+        if (error) {
+            console.error('Resend error:', error);
+            throw new Error('Resend failed: ' + error.message);
+        }
 
         return { success: true };
     } catch (error) {

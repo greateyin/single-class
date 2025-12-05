@@ -73,12 +73,19 @@ export async function registerUser(formData: FormData) {
         const { Resend } = await import('resend');
         const resend = new Resend(process.env.RESEND_API_KEY);
 
-        await resend.emails.send({
-            from: `Single Class <${process.env.RESEND_FROM_EMAIL || 'no-reply@resend.dev'}>`,
+        const { error } = await resend.emails.send({
+            from: `${process.env.NEXT_PUBLIC_APP_NAME || 'Single Class'} <${process.env.RESEND_FROM_EMAIL || 'no-reply@resend.dev'}>`,
             to: email,
             subject: "Confirm your email",
             html: `<p>Click <a href="${confirmLink}">here</a> to confirm your email.</p>`,
         });
+
+        if (error) {
+            console.error('Resend error:', error);
+            // Note: User is created but email failed. Maybe we should rollback or return specific warning?
+            // Since transaction support might be tricky with Resend call, we'll return success: false for now.
+            return { success: false, message: 'Account created but failed to send verification email: ' + error.message };
+        }
 
         return {
             success: true,
