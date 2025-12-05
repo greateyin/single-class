@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { format } from "date-fns";
+import { formatDateTime, formatDate } from "@/lib/utils";
 import { Eye } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -54,10 +54,12 @@ export default async function AdminUsersPage() {
                             return (
                                 <TableRow key={user.id}>
                                     <TableCell>
-                                        <div className="flex flex-col">
-                                            <span className="font-medium">{user.name || 'No Name'}</span>
-                                            <span className="text-xs text-muted-foreground">{user.email}</span>
-                                        </div>
+                                        <Link href={`/admin/users/${user.id}`} className="hover:underline">
+                                            <div className="flex flex-col">
+                                                <span className="font-medium">{user.name || 'No Name'}</span>
+                                                <span className="text-xs text-muted-foreground">{user.email}</span>
+                                            </div>
+                                        </Link>
                                     </TableCell>
                                     <TableCell>
                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin'
@@ -69,11 +71,11 @@ export default async function AdminUsersPage() {
                                     </TableCell>
                                     <TableCell>
                                         {user.lastLoginAt
-                                            ? format(user.lastLoginAt, 'MMM d, yyyy HH:mm')
+                                            ? formatDateTime(user.lastLoginAt)
                                             : <span className="text-muted-foreground">-</span>}
                                     </TableCell>
                                     <TableCell>
-                                        {format(user.createdAt, 'MMM d, yyyy')}
+                                        {formatDate(user.createdAt)}
                                     </TableCell>
                                     <TableCell className="text-right font-medium">
                                         ${(totalSpend / 100).toFixed(2)}

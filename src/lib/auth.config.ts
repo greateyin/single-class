@@ -1,6 +1,9 @@
 import type { NextAuthConfig } from "next-auth"
 
 export const authConfig = {
+    pages: {
+        signIn: '/auth/signin',
+    },
     session: { strategy: "jwt" },
     providers: [], // Initialize with empty providers
     callbacks: {

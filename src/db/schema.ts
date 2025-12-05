@@ -257,3 +257,11 @@ export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
     references: [courses.id],
   }),
 }));
+
+// 12. Password Reset Tokens
+export const passwordResetTokens = pgTable('password_reset_tokens', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  email: text('email').notNull(),
+  token: text('token').unique().notNull(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+});
