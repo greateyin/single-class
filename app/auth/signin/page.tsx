@@ -33,7 +33,11 @@ function SignInForm() {
             });
 
             if (result?.error) {
-                toast.error('Invalid credentials');
+                if (result.error === 'Configuration') {
+                    toast.error('Please verify your email address.');
+                } else {
+                    toast.error('Invalid credentials or unverified email');
+                }
             } else {
                 toast.success('Signed in successfully');
                 window.location.href = callbackUrl;

@@ -14,6 +14,7 @@ export const users = pgTable('users', {
   image: text('image'),
   hashedPassword: text('hashed_password'), // For Credentials provider
   role: userRoles('role').default('student').notNull(),
+  emailVerified: timestamp('email_verified', { withTimezone: true }),
   stripeCustomerId: text('stripe_customer_id'), // Critical for One-Click Upsell
   lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -265,3 +266,16 @@ export const passwordResetTokens = pgTable('password_reset_tokens', {
   token: text('token').unique().notNull(),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
 });
+
+// 13. Verification Tokens
+export const verificationTokens = pgTable(
+  "verification_token",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (vt) => ({
+    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
+  })
+);

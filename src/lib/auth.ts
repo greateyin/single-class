@@ -44,6 +44,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 const isValid = await compare(credentials.password as string, user.hashedPassword);
 
                 if (isValid) {
+                    // Check if email is verified
+                    if (!user.emailVerified) {
+                        return null; // Or throw Error('Email not verified');
+                    }
+
                     // Return user object, Auth.js will create session based on this
                     return { id: user.id, email: user.email, role: user.role };
                 }
