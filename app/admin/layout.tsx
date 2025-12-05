@@ -33,6 +33,22 @@ export default async function AdminLayout({
                         <BookOpen className="h-4 w-4" />
                         Courses
                     </Link>
+                    <Link href="/admin/orders" className="flex items-center gap-3 rounded-lg px-3 py-2 text-blue-100 transition-all hover:text-white hover:bg-blue-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="h-4 w-4">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                        Orders
+                    </Link>
+                    <Link href="/admin/sales" className="flex items-center gap-3 rounded-lg px-3 py-2 text-blue-100 transition-all hover:text-white hover:bg-blue-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="h-4 w-4">
+                            <line x1="12" y1="20" x2="12" y2="10" />
+                            <line x1="18" y1="20" x2="18" y2="4" />
+                            <line x1="6" y1="20" x2="6" y2="16" />
+                        </svg>
+                        Sales
+                    </Link>
 
                 </nav>
                 <div className="absolute bottom-0 w-64 p-4 border-t border-blue-800">
