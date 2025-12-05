@@ -38,22 +38,26 @@ function SignInForm() {
                     // We'll attempt to resend the verification email to check if it's an unverified email scenario.
                     const resendResult = await resendVerificationEmail(email.toLowerCase());
                     if (resendResult.success) {
-                        toast.warning('尚未認證 email，已重新送出認證信'); // "Email not verified, verification email resent"
+                        toast.warning('請先認證 email 後登入'); // "Please verify email before logging in"
                     } else {
                         // If resend failed, it might be a genuine 'Configuration' error not related to verification,
                         // or the email was already verified but credentials were wrong.
                         if (resendResult.message === 'Email already verified!') {
                             toast.error('Invalid credentials'); // Wrong password but verified email
+                        } else if (resendResult.message.startsWith('Failed to send')) {
+                            // Show specific Resend error if possible, or generic
+                            toast.error(resendResult.message);
                         } else {
                             toast.error('Invalid credentials or unverified email');
                         }
                     }
                 } else {
-                    // For other errors, we can still try to resend as a fallback,
-                    // or just show a generic error. The instruction implies trying to resend.
+                    // For other errors, we can still try to resend as a fallback
                     const resendResult = await resendVerificationEmail(email.toLowerCase());
                     if (resendResult.success) {
-                        toast.warning('尚未認證 email，已重新送出認證信');
+                        toast.warning('請先認證 email 後登入');
+                    } else if (resendResult.message.startsWith('Failed to send')) {
+                        toast.error(resendResult.message);
                     } else {
                         toast.error('Invalid credentials or unverified email');
                     }
