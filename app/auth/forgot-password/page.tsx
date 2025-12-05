@@ -1,6 +1,8 @@
 'use client';
 
 import { requestPasswordReset } from '@/actions/password-reset';
+import { AuthWrapper } from '@/components/auth/auth-wrapper';
+import { GlassCard } from '@/components/auth/glass-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,24 +33,24 @@ export default function ForgotPasswordPage() {
     }
 
     return (
-        <div className="container flex h-screen w-screen flex-col items-center justify-center">
-            <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                <div className="flex flex-col space-y-2 text-center">
-                    <h1 className="text-2xl font-semibold tracking-tight">Forgot Password</h1>
-                    <p className="text-sm text-muted-foreground">
+        <AuthWrapper>
+            <GlassCard>
+                <div className="flex flex-col space-y-2 text-center mb-6">
+                    <h1 className="text-2xl font-semibold tracking-tight text-white">Forgot Password</h1>
+                    <p className="text-sm text-white/70">
                         Enter your email address to reset your password.
                     </p>
                 </div>
                 <div className="grid gap-6">
                     {successMessage ? (
-                        <div className="text-center text-sm text-muted-foreground bg-green-50 p-4 rounded-md border border-green-200">
+                        <div className="text-center text-sm text-emerald-800 bg-emerald-50/90 p-4 rounded-md border border-emerald-200 shadow-sm backdrop-blur-sm">
                             {successMessage}
                         </div>
                     ) : (
                         <form onSubmit={onSubmit}>
                             <div className="grid gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email</Label>
+                                    <Label htmlFor="email" className="text-gray-200">Email</Label>
                                     <Input
                                         id="email"
                                         name="email"
@@ -59,9 +61,10 @@ export default function ForgotPasswordPage() {
                                         autoCorrect="off"
                                         disabled={isLoading}
                                         required
+                                        className="bg-white/80 border-0 focus-visible:bg-white text-slate-900 placeholder:text-slate-500"
                                     />
                                 </div>
-                                <Button disabled={isLoading}>
+                                <Button disabled={isLoading} className="w-full bg-slate-900 hover:bg-slate-800 text-white">
                                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Send Reset Link
                                 </Button>
@@ -69,12 +72,12 @@ export default function ForgotPasswordPage() {
                         </form>
                     )}
                 </div>
-                <p className="px-8 text-center text-sm text-muted-foreground">
-                    <Link href="/auth/signin" className="hover:text-brand underline underline-offset-4">
+                <div className="mt-6 text-center text-sm">
+                    <Link href="/auth/signin" className="font-semibold text-white hover:underline">
                         Back to Sign In
                     </Link>
-                </p>
-            </div>
-        </div>
+                </div>
+            </GlassCard>
+        </AuthWrapper>
     );
 }

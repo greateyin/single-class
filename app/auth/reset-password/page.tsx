@@ -1,6 +1,8 @@
 'use client';
 
 import { resetPassword } from '@/actions/password-reset';
+import { AuthWrapper } from '@/components/auth/auth-wrapper';
+import { GlassCard } from '@/components/auth/glass-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,12 +20,18 @@ function ResetPasswordForm() {
 
     if (!token) {
         return (
-            <div className="text-center">
-                <p className="text-red-500 mb-4">Invalid or missing token.</p>
-                <Link href="/auth/signin" className="text-sm underline">
-                    Back to Sign In
-                </Link>
-            </div>
+            <AuthWrapper>
+                <GlassCard>
+                    <div className="text-center">
+                        <p className="text-red-300 font-semibold mb-4 border border-red-500/50 bg-red-500/10 p-4 rounded-lg">
+                            Invalid or missing token.
+                        </p>
+                        <Link href="/auth/signin" className="text-sm font-semibold text-white hover:underline">
+                            Back to Sign In
+                        </Link>
+                    </div>
+                </GlassCard>
+            </AuthWrapper>
         );
     }
 
@@ -47,11 +55,11 @@ function ResetPasswordForm() {
     }
 
     return (
-        <div className="container flex h-screen w-screen flex-col items-center justify-center">
-            <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                <div className="flex flex-col space-y-2 text-center">
-                    <h1 className="text-2xl font-semibold tracking-tight">Reset Password</h1>
-                    <p className="text-sm text-muted-foreground">
+        <AuthWrapper>
+            <GlassCard>
+                <div className="flex flex-col space-y-2 text-center mb-6">
+                    <h1 className="text-2xl font-semibold tracking-tight text-white">Reset Password</h1>
+                    <p className="text-sm text-white/70">
                         Enter a new password for your account.
                     </p>
                 </div>
@@ -59,7 +67,7 @@ function ResetPasswordForm() {
                     <form onSubmit={onSubmit}>
                         <div className="grid gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="password">New Password</Label>
+                                <Label htmlFor="password" className="text-gray-200">New Password</Label>
                                 <Input
                                     id="password"
                                     name="password"
@@ -68,17 +76,18 @@ function ResetPasswordForm() {
                                     disabled={isLoading}
                                     required
                                     minLength={6}
+                                    className="bg-white/80 border-0 focus-visible:bg-white text-slate-900 placeholder:text-slate-500"
                                 />
                             </div>
-                            <Button disabled={isLoading}>
+                            <Button disabled={isLoading} className="w-full bg-slate-900 hover:bg-slate-800 text-white">
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Reset Password
                             </Button>
                         </div>
                     </form>
                 </div>
-            </div>
-        </div>
+            </GlassCard>
+        </AuthWrapper>
     );
 }
 

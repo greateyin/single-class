@@ -1,7 +1,8 @@
 'use client';
 
 import { resendVerificationEmail } from '@/actions/verification';
-
+import { AuthWrapper } from '@/components/auth/auth-wrapper';
+import { GlassCard } from '@/components/auth/glass-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -87,11 +88,11 @@ function SignInForm() {
     }
 
     return (
-        <div className="container flex h-screen w-screen flex-col items-center justify-center">
-            <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                <div className="flex flex-col space-y-2 text-center">
-                    <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-                    <p className="text-sm text-muted-foreground">
+        <AuthWrapper>
+            <GlassCard>
+                <div className="flex flex-col space-y-2 text-center mb-6">
+                    <h1 className="text-2xl font-semibold tracking-tight text-white">Login</h1>
+                    <p className="text-sm text-white/70">
                         Enter your email to sign in to your account
                     </p>
                 </div>
@@ -99,7 +100,7 @@ function SignInForm() {
                     <form onSubmit={onSubmit}>
                         <div className="grid gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email" className="text-gray-200">Email</Label>
                                 <Input
                                     id="email"
                                     name="email"
@@ -110,10 +111,11 @@ function SignInForm() {
                                     autoCorrect="off"
                                     disabled={isLoading || isGoogleLoading}
                                     required
+                                    className="bg-white/80 border-0 focus-visible:bg-white text-slate-900 placeholder:text-slate-500"
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password" className="text-gray-200">Password</Label>
                                 <Input
                                     id="password"
                                     name="password"
@@ -122,27 +124,28 @@ function SignInForm() {
                                     autoComplete="current-password"
                                     disabled={isLoading || isGoogleLoading}
                                     minLength={6}
+                                    className="bg-white/80 border-0 focus-visible:bg-white text-slate-900 placeholder:text-slate-500"
                                 />
                                 <Link
                                     href="/auth/forgot-password"
-                                    className="text-xs text-muted-foreground hover:text-brand underline underline-offset-4 text-right"
+                                    className="text-xs text-white/70 hover:text-white underline underline-offset-4 text-right"
                                 >
-                                    Forgot your password?
+                                    Forgot Password?
                                 </Link>
                             </div>
-                            <Button disabled={isLoading || isGoogleLoading}>
+                            <Button disabled={isLoading || isGoogleLoading} className="w-full bg-slate-900 hover:bg-slate-800 text-white">
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Sign In with Email
+                                Sign in
                             </Button>
                         </div>
                     </form>
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
+                            <span className="w-full border-t border-white/20" />
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">
-                                Or continue with
+                            <span className="bg-transparent px-2 text-white/70">
+                                or continue with
                             </span>
                         </div>
                     </div>
@@ -151,6 +154,7 @@ function SignInForm() {
                         type="button"
                         disabled={isLoading || isGoogleLoading}
                         onClick={googleSignIn}
+                        className="bg-white border-0 hover:bg-white/90 text-slate-900"
                     >
                         {isGoogleLoading ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -177,13 +181,14 @@ function SignInForm() {
                         Google
                     </Button>
                 </div>
-                <p className="px-8 text-center text-sm text-muted-foreground">
-                    <Link href="/register" className="hover:text-brand underline underline-offset-4">
-                        Don&apos;t have an account? Sign Up
+                <div className="mt-6 text-center text-sm">
+                    <span className="text-white/70">Don&apos;t have an account yet? </span>
+                    <Link href="/register" className="font-semibold text-white hover:underline">
+                        Register for free
                     </Link>
-                </p>
-            </div>
-        </div>
+                </div>
+            </GlassCard>
+        </AuthWrapper>
     );
 }
 
