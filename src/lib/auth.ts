@@ -4,7 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import Resend from "next-auth/providers/resend";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from '@/db'; // Drizzle DB Client
-import { users } from '@/db/schema';
+import { users, accounts, sessions, verificationTokens } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { compare } from 'bcrypt'; // Must run in Node.js Runtime
 import { authConfig } from "./auth.config";
@@ -12,7 +12,12 @@ import { authConfig } from "./auth.config";
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    adapter: DrizzleAdapter(db) as any,
+    adapter: DrizzleAdapter(db, {
+        usersTable: users,
+        accountsTable: accounts,
+        sessionsTable: sessions,
+        verificationTokensTable: verificationTokens,
+    }) as any,
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_CLIENT_ID,
@@ -24,6 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     email: profile.email,
                     image: profile.picture,
                     role: "student", // Default role
+                    emailVerified: profile.email_verified ? new Date() : null,
                 };
             },
             allowDangerousEmailAccountLinking: true,

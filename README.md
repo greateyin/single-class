@@ -35,6 +35,16 @@ cp .env.example .env.local
 -   **`NEXT_PUBLIC_FACEBOOK_PIXEL_ID`**: (Optional) Pixel ID for Facebook/Meta tracking.
 -   **`NEXT_PUBLIC_MICROSOFT_CLARITY_ID`**: (Optional) Project ID for Microsoft Clarity heatmaps and session recording.
 
+## 🔐 Authentication Setup
+
+### Google OAuth Redirect URIs
+When configuring your Google Cloud Console project, add the following to **Authorized redirect URIs**:
+
+-   **Local Development**: `http://localhost:3000/api/auth/callback/google`
+-   **Utility / Testing**: `https://uat-class.most.tw/api/auth/callback/google`
+-   **Production**: `https://[your-production-domain]/api/auth/callback/google`
+
+
 ## 📊 Analytics & Tracking
 
 The platform supports built-in integration for popular analytics tools. Simply add the corresponding ID to your environment variables to enable them.
