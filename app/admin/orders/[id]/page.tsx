@@ -2,10 +2,12 @@ import { getOrder, refundOrder } from '@/actions/admin-orders';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatPrice } from '@/lib/format';
+import { formatDateTime, formatDate } from '@/lib/utils';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { RefundButton } from './_components/refund-button';
+import { SendInvoiceButton } from './_components/send-invoice-button';
 
 export default async function OrderDetailsPage({
     params,
@@ -29,6 +31,9 @@ export default async function OrderDetailsPage({
                     </Button>
                 </Link>
                 <h2 className="text-2xl font-bold tracking-tight">Order Details</h2>
+                <div className="ml-auto">
+                    <SendInvoiceButton orderId={order.id} />
+                </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
@@ -44,19 +49,30 @@ export default async function OrderDetailsPage({
                         </div>
                         <div className="flex justify-between border-b pb-2">
                             <span className="text-sm font-medium text-muted-foreground">Date</span>
-                            <span className="text-sm">{new Date(order.saleDate).toLocaleString()}</span>
+                            <span className="text-sm">{formatDateTime(order.saleDate)}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2">
                             <span className="text-sm font-medium text-muted-foreground">Amount</span>
                             <span className="text-sm font-bold">{formatPrice(order.amountCents)}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2">
+                            <span className="text-sm font-medium text-muted-foreground">Access Expires</span>
+                            <span className="text-sm font-mono">
+                                {(() => {
+                                    /* eslint-disable @typescript-eslint/no-explicit-any */
+                                    const enrollment = (order.user as any).enrollments?.find((e: any) => e.courseId === order.courseId);
+                                    if (!enrollment?.expiresAt) return '-';
+                                    return formatDate(enrollment.expiresAt);
+                                })()}
+                            </span>
+                        </div>
+                        <div className="flex justify-between border-b pb-2">
                             <span className="text-sm font-medium text-muted-foreground">Status</span>
                             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${order.status === 'completed'
-                                    ? 'bg-green-100 text-green-800'
-                                    : order.status === 'refunded'
-                                        ? 'bg-yellow-100 text-yellow-800'
-                                        : 'bg-red-100 text-red-800'
+                                ? 'bg-green-100 text-green-800'
+                                : order.status === 'refunded'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-red-100 text-red-800'
                                 }`}>
                                 {order.status.toUpperCase()}
                             </span>
