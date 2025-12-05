@@ -7,7 +7,7 @@ export default async function AdminDashboardPage() {
 
     return (
         <div className="space-y-8">
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Admin Dashboard</h1>
 
             <div className="grid gap-6 md:grid-cols-3">
                 <Card>

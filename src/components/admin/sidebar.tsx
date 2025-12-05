@@ -54,10 +54,12 @@ export const AdminSidebar = () => {
             <div className="px-3 py-2 flex-1">
                 <Link href="/admin/dashboard" className="flex items-center pl-3 mb-14">
                     <div className="relative w-8 h-8 mr-4 bg-indigo-600 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">O</span>
+                        <span className="text-white font-bold text-lg">
+                            {process.env.NEXT_PUBLIC_APP_NAME?.[0] || 'A'}
+                        </span>
                     </div>
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-                        OrbitNest
+                        {process.env.NEXT_PUBLIC_APP_NAME || 'Admin'}
                     </h1>
                 </Link>
                 <div className="space-y-1">

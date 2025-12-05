@@ -19,7 +19,7 @@ export default async function AdminCoursesPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold tracking-tight">Courses</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-slate-900">Courses</h1>
             </div>
 
             <Card>
