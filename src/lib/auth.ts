@@ -26,6 +26,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     role: "student", // Default role
                 };
             },
+            allowDangerousEmailAccountLinking: true,
         }),
         Resend({
             apiKey: process.env.RESEND_API_KEY,

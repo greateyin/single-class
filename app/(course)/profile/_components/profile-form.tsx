@@ -12,6 +12,7 @@ interface ProfileFormProps {
     user: {
         name: string | null;
         email: string;
+        image: string | null;
     };
 }
 
@@ -48,6 +49,24 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
     return (
         <form onSubmit={onSubmit} className="space-y-6">
+            <div className="flex items-center space-x-4">
+                {user.image ? (
+                    <img
+                        src={user.image}
+                        alt="Profile"
+                        className="h-16 w-16 rounded-full border object-cover"
+                    />
+                ) : (
+                    <div className="h-16 w-16 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-2xl">
+                        {user.name?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                )}
+                <div>
+                    <p className="text-sm font-medium">Profile Photo</p>
+                    <p className="text-xs text-muted-foreground">Managed by your login provider (Google/Gravatar)</p>
+                </div>
+            </div>
+
             <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input

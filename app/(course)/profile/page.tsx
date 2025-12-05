@@ -25,7 +25,11 @@ export default async function ProfilePage() {
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm border">
-                <ProfileForm user={user} />
+                <ProfileForm user={{
+                    name: user.name,
+                    email: user.email,
+                    image: user.image,
+                }} />
             </div>
         </div>
     );

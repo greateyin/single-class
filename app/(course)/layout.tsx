@@ -16,7 +16,7 @@ export default async function CourseLayout({
             <header className="bg-[var(--brand-navy)] border-b border-blue-900 sticky top-0 z-10 shadow-md">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/dashboard" className="font-bold text-xl text-[var(--brand-gold)] tracking-tight">
-                        Single Course
+                        {process.env.NEXT_PUBLIC_APP_NAME || 'Single Course'}
                     </Link>
                     <div className="flex items-center gap-4">
                         <Link href="/dashboard" className="text-sm font-medium text-blue-100 hover:text-white transition-colors">
