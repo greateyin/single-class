@@ -17,7 +17,6 @@ import Link from "next/link";
 import { markAsRead, markAllAsRead } from "@/actions/notifications";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { useDebounce } from "@/lib/hooks/use-debounce"; // Assuming this exists or I'll implement simple debounce
 import { useEffect, useState, useTransition } from "react";
 
 interface UserHeaderProps {
