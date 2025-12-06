@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { PlayCircle, Award, FileText, Smartphone, Infinity as InfinityIcon } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface CourseSidebarProps {
     course: {
@@ -11,11 +12,14 @@ interface CourseSidebarProps {
         priceCents: number;
         imageUrl?: string | null;
         videoEmbedUrl?: string | null;
+        features?: any;
     };
     progress: number;
+    nextLessonId?: string;
+    lessonCount: number;
 }
 
-export function CourseSidebar({ course, progress }: CourseSidebarProps) {
+export function CourseSidebar({ course, progress, nextLessonId, lessonCount }: CourseSidebarProps) {
     return (
         <Card className="shadow-lg border-0 overflow-hidden sticky top-4">
             {/* Preview Section */}
@@ -37,9 +41,9 @@ export function CourseSidebar({ course, progress }: CourseSidebarProps) {
                         <PlayCircle className="h-8 w-8 text-black fill-current" />
                     </div>
                 </div>
-                <div className="absolute bottom-4 left-0 right-0 text-center">
+                {/* <div className="absolute bottom-4 left-0 right-0 text-center">
                     <span className="text-white font-bold text-sm drop-shadow-md">Preview this course</span>
-                </div>
+                </div> */}
             </div>
 
             <CardContent className="p-6 space-y-6">
@@ -47,14 +51,16 @@ export function CourseSidebar({ course, progress }: CourseSidebarProps) {
                 {/* Progress Section (Since this is for enrolled students) */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between text-sm font-medium text-slate-600">
-                        <span>Values</span>
-                        <span>{Math.round(progress)}% Complete</span>
+                        <span>Course Progress</span>
+                        <span>{Math.round(progress)}%</span>
                     </div>
                     <Progress value={progress} className="h-2" />
 
-                    <Button className="w-full bg-[var(--brand-navy)] hover:bg-[var(--brand-navy)]/90 h-10 text-base font-bold">
-                        Continue Learning
-                    </Button>
+                    <Link href={nextLessonId ? `/lessons/${nextLessonId}?courseId=${course.id}` : '#'}>
+                        <Button className="w-full bg-[var(--brand-navy)] hover:bg-[var(--brand-navy)]/90 h-10 text-base font-bold">
+                            {progress === 100 ? 'Review Course' : 'Continue Learning'}
+                        </Button>
+                    </Link>
                 </div>
 
                 {/* Course Includes */}
@@ -63,11 +69,7 @@ export function CourseSidebar({ course, progress }: CourseSidebarProps) {
                     <ul className="space-y-2 text-sm text-slate-600">
                         <li className="flex items-center gap-3">
                             <PlayCircle className="h-4 w-4" />
-                            <span>14 hours on-demand video</span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                            <FileText className="h-4 w-4" />
-                            <span>5 articles</span>
+                            <span>{lessonCount} lessons</span>
                         </li>
                         <li className="flex items-center gap-3">
                             <Smartphone className="h-4 w-4" />
@@ -77,17 +79,18 @@ export function CourseSidebar({ course, progress }: CourseSidebarProps) {
                             <InfinityIcon className="h-4 w-4" />
                             <span>Full lifetime access</span>
                         </li>
-                        <li className="flex items-center gap-3">
-                            <Award className="h-4 w-4" />
-                            <span>Certificate of completion</span>
-                        </li>
+                        {course.features && (course.features as any).length > 0 && (
+                            <li className="flex items-center gap-3">
+                                <Award className="h-4 w-4" />
+                                <span>Certificate of completion</span>
+                            </li>
+                        )}
                     </ul>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex gap-2">
-                    <Button variant="outline" className="flex-1 font-bold">Share</Button>
-                    <Button variant="outline" className="flex-1 font-bold">Gift this course</Button>
+                    {/* <Button variant="outline" className="flex-1 font-bold">Share</Button> */}
                 </div>
 
             </CardContent>

@@ -49,10 +49,20 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
     const completedCount = courseLessons.filter(l => l.lessonCompletion.length > 0).length;
     const progress = courseLessons.length > 0 ? (completedCount / courseLessons.length) * 100 : 0;
 
+
+    // Calculate Next Lesson (First incomplete lesson)
+    const nextLesson = courseLessons.find(l => l.lessonCompletion.length === 0) || courseLessons[0];
+
     return (
         <div className="min-h-screen bg-slate-50 pb-20">
             {/* 1. Dark Header (Full Width) */}
-            <CourseHeader course={course} progress={progress} />
+            <CourseHeader
+                course={{
+                    ...course,
+                    updatedAt: course.createdAt // Fallback since updatedAt might not exist on schema yet or just use createdAt
+                }}
+                progress={progress}
+            />
 
             <div className="max-w-7xl mx-auto px-8 mt-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -134,7 +144,12 @@ export default async function CoursePage({ params }: { params: Promise<{ courseI
 
                     {/* 3. Sidebar (Right Column) */}
                     <div className="lg:col-span-1">
-                        <CourseSidebar course={course} progress={progress} />
+                        <CourseSidebar
+                            course={course}
+                            progress={progress}
+                            nextLessonId={nextLesson?.id}
+                            lessonCount={courseLessons.length}
+                        />
                     </div>
 
                 </div>

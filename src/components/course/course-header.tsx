@@ -10,6 +10,7 @@ interface CourseHeaderProps {
         description: string | null;
         language: string | null;
         updatedAt?: Date | null;
+        authorName?: string | null;
         // Add other necessary fields
     };
     progress: number;
@@ -38,28 +39,14 @@ export function CourseHeader({ course }: CourseHeaderProps) {
                         </p>
                     )}
 
-                    <div className="flex items-center gap-2 mb-4 text-sm">
-                        <span className="bg-[#eceb98] text-[#3d3c0a] px-2 py-0.5 font-bold text-xs rounded-sm">
-                            Bestseller
-                        </span>
-                        <div className="flex items-center gap-1 text-[#f69c08]">
-                            <span className="font-bold">4.8</span>
-                            {[1, 2, 3, 4, 5].map((i) => (
-                                <Star key={i} className="h-4 w-4 fill-current" />
-                            ))}
-                        </div>
-                        <span className="text-[#c0c4fc] underline">(1,234 ratings)</span>
-                        <span className="text-white">10,567 students</span>
-                    </div>
-
                     <div className="flex items-center gap-4 text-sm text-white mb-6">
                         <div className="flex items-center gap-1">
                             <span className="text-white">Created by</span>
-                            <a href="#" className="text-[#c0c4fc] underline">Single Class Admin</a>
+                            <span className="text-[#c0c4fc]">{course.authorName || 'Single Class Platform'}</span>
                         </div>
                         <div className="flex items-center gap-1">
                             <AlertCircle className="h-4 w-4" />
-                            <span>Last updated {new Date().toLocaleDateString()}</span>
+                            <span>Last updated {course.updatedAt ? new Date(course.updatedAt).toLocaleDateString() : new Date().toLocaleDateString()}</span>
                         </div>
                         <div className="flex items-center gap-1">
                             <Globe className="h-4 w-4" />
