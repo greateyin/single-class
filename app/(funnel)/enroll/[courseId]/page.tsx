@@ -10,7 +10,8 @@ import { PayPalButton } from '@/components/paypal-button';
 import { Metadata } from 'next';
 
 type Props = {
-    params: Promise<{ courseId: string }>
+    params: Promise<{ courseId: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata(
@@ -71,8 +72,9 @@ function getEmbedUrl(url: string): string {
     return url;
 }
 
-export default async function EnrollPage({ params }: Props) {
+export default async function EnrollPage({ params, searchParams }: Props) {
     const { courseId } = await params;
+    const resolvedSearchParams = await searchParams;
 
     let course;
     if (courseId === 'core') {
@@ -123,8 +125,14 @@ export default async function EnrollPage({ params }: Props) {
         });
         hasAccess = !!tx;
 
+        // Redirect logic with bypass for admin preview
         if (hasAccess) {
-            redirect(`/courses/${course.id}`);
+            const isPreview = resolvedSearchParams.preview === 'true';
+            const isAdmin = session.user.role === 'admin';
+
+            if (!isAdmin || !isPreview) {
+                redirect(`/courses/${course.id}`);
+            }
         }
     }
 
