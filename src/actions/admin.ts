@@ -4,6 +4,31 @@ import { db } from '@/db';
 import { transactions, users, lessons } from '@/db/schema';
 import { enforceAdminRole } from '@/lib/auth-guards';
 import { sql, eq, desc, count } from 'drizzle-orm';
+import { fulfillOrder } from '@/lib/fulfillment';
+import { v4 as uuidv4 } from 'uuid';
+
+export async function manualFulfillOrder(email: string, courseId: string, offerType: 'core' | 'upsell' | 'downsell' = 'core') {
+    await enforceAdminRole();
+
+    const transactionId = `manual_${uuidv4()}`;
+
+    try {
+        await fulfillOrder(
+            null, // Let it find/create user by email
+            offerType,
+            transactionId,
+            'stripe', // Source
+            null, // Customer Ref (unknown)
+            courseId,
+            email
+        );
+        return { success: true };
+    } catch (error) {
+        console.error('Manual fulfillment failed:', error);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return { success: false, error: (error as any).message || 'Failed' };
+    }
+}
 
 export async function getSalesStats() {
     await enforceAdminRole();

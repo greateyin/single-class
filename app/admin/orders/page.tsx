@@ -13,6 +13,7 @@ import { formatDateTime, formatDate } from '@/lib/utils';
 import { Eye } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { ManualOrderDialog } from './_components/manual-order-dialog';
 
 export default async function AdminOrdersPage({
     searchParams,
@@ -29,11 +30,14 @@ export default async function AdminOrdersPage({
 
     return (
         <div className="space-y-6">
-            <div>
-                <h2 className="text-2xl font-bold tracking-tight text-slate-900">Order Management</h2>
-                <p className="text-muted-foreground">
-                    View and manage customer orders and transactions.
-                </p>
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">Order Management</h2>
+                    <p className="text-muted-foreground">
+                        View and manage customer orders and transactions.
+                    </p>
+                </div>
+                <ManualOrderDialog />
             </div>
 
             <div className="rounded-md border">
