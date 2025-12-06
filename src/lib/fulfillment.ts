@@ -43,9 +43,11 @@ export async function fulfillOrder(
         });
 
         if (existingUser) {
+            console.log(`[Fulfill] Found existing user: ${existingUser.id} (${existingUser.email})`);
             targetUserId = existingUser.id;
         } else {
             // B. Create new user
+            console.log(`[Fulfill] Creating new user for email: ${userEmail}`);
             const newUser = await db.insert(users).values({
                 id: uuidv4(),
                 email: userEmail,
@@ -54,10 +56,12 @@ export async function fulfillOrder(
             }).returning();
             targetUserId = newUser[0].id;
             isNewUser = true;
+            console.log(`[Fulfill] New user created: ${targetUserId}`);
         }
     }
 
     if (!targetUserId) {
+        console.error('[Fulfill] Failed to resolve targetUserId');
         throw new Error('Failed to resolve user for fulfillment');
     }
 
@@ -77,6 +81,7 @@ export async function fulfillOrder(
             receiptUrl: receiptUrl || null,
             paymentMethodDetails: paymentDetails || null,
         });
+        console.log(`[Fulfill] Transaction recorded: ${transactionRef}`);
 
         // B. Update User (Save Stripe Customer ID for Core)
         if (offerType === 'core' && customerRef && source === 'stripe') {

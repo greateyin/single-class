@@ -22,7 +22,7 @@ export function PayPalButton({ courseId, clientId }: PayPalButtonProps) {
                 }}
                 onApprove={async (data) => {
                     await capturePayPalOrder(data.orderID, courseId);
-                    window.location.href = `/courses/${courseId}`;
+                    window.location.href = `/confirmation`;
                 }}
             />
         </PayPalScriptProvider>

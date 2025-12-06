@@ -157,3 +157,7 @@ DELETE FROM "authenticator" WHERE "userId" IN (SELECT id FROM users WHERE email 
 
 -- 3. 最後刪除使用者本體 (User)
 DELETE FROM users WHERE email = 'richman.yin@gmail.com';
+
+
+sb-rdacp47834009@personal.example.com
+fI0e?@Rg

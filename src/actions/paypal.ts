@@ -67,13 +67,19 @@ export async function capturePayPalOrder(orderId: string, courseId: string) {
     const session = await auth();
     const currentUserId = session?.user?.id;
 
+    console.log(`[PayPal] Starting capture for Order ID: ${orderId}, Course ID: ${courseId}`);
+    console.log(`[PayPal] Current Session User: ${currentUserId || 'Guest'}`);
+
     try {
         const { result: capture } = await ordersController.captureOrder({
             id: orderId,
             body: {}
         });
 
+        console.log('[PayPal] Capture response received');
+
         if (!capture.purchaseUnits || !capture.purchaseUnits[0] || !capture.purchaseUnits[0].payments || !capture.purchaseUnits[0].payments.captures || !capture.purchaseUnits[0].payments.captures[0]) {
+            console.error('[PayPal] Invalid capture response structure:', JSON.stringify(capture, null, 2));
             throw new Error('Invalid PayPal capture response structure');
         }
 
@@ -88,18 +94,24 @@ export async function capturePayPalOrder(orderId: string, courseId: string) {
         const customId = JSON.parse(captureData.customId || '{}');
         const { userId, offerType } = customId; // Use userId from customId if available
 
+        console.log('[PayPal] Extracted Custom ID:', customId);
+
         // Extract Payer Email
         // Note: SDK types might be tricky, checking structure from user log
         const payerEmail = (capture as any).payer?.email_address || (capture as any).payer?.emailAddress;
 
         if (!payerEmail) {
-            console.error('PayPal Payer Email missing', capture);
+            console.error('[PayPal] Payer Email missing. Full Capture Object:', JSON.stringify(capture, null, 2));
             throw new Error('PayPal Payer Email missing');
+        } else {
+            console.log(`[PayPal] Payer Email: ${payerEmail}`);
         }
 
         // Extract Amount and Currency
         const amount = captureData.amount?.value;
         const currency = captureData.amount?.currencyCode || 'USD';
+
+        console.log(`[PayPal] Amount: ${amount} ${currency}`);
 
         await fulfillOrder(
             userId || currentUserId, // Use userId from custom_id which was set at create time, or current session
