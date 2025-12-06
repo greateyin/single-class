@@ -31,6 +31,20 @@ export async function createCoreCheckoutSession(courseId: string) {
         throw new Error('Course not found');
     }
 
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const successUrl = `${baseUrl}/upsell?session_id={CHECKOUT_SESSION_ID}&courseId=${courseId}`;
+    const cancelUrl = `${baseUrl}/courses/${courseId}`;
+
+    console.log('--- DEBUG STRIPE URLs ---');
+    console.log('Base URL:', baseUrl);
+    console.log('Success URL:', successUrl);
+    console.log('Cancel URL:', cancelUrl);
+    console.log('-------------------------');
+
+    if (!baseUrl) {
+        throw new Error('NEXT_PUBLIC_BASE_URL is not defined');
+    }
+
     const checkoutSession = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
@@ -47,8 +61,8 @@ export async function createCoreCheckoutSession(courseId: string) {
             },
         ],
         mode: 'payment',
-        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/upsell?session_id={CHECKOUT_SESSION_ID}&courseId=${courseId}`, // Pass courseId for context if needed
-        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/courses/${courseId}`,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
         customer_email: session?.user?.email || undefined,
         metadata: {
             userId: userId || '', // Empty string if guest
