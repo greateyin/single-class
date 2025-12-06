@@ -112,10 +112,13 @@ export async function fulfillOrder(
     const finalUserEmail = userEmail || (await db.query.users.findFirst({ where: eq(users.id, targetUserId) }))?.email;
 
     if (finalUserEmail) {
+        const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Single Class';
+        const sender = `${appName} <${process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'}>`;
+
         try {
             // Order Confirmation
             await resend.emails.send({
-                from: 'Acme <onboarding@resend.dev>', // Update with verified domain in prod
+                from: sender,
                 to: [finalUserEmail],
                 subject: `Order Confirmed: ${offerType.toUpperCase()}`,
                 html: `<p>Thank you for your purchase of the ${offerType} package!</p>`,
@@ -124,9 +127,9 @@ export async function fulfillOrder(
             // Welcome Email for New Users
             if (isNewUser) {
                 await resend.emails.send({
-                    from: 'Acme <onboarding@resend.dev>',
+                    from: sender,
                     to: [finalUserEmail],
-                    subject: `Welcome to Single Class!`,
+                    subject: `Welcome to ${appName}!`,
                     html: `
                         <h1>Welcome!</h1>
                         <p>Your account has been created.</p>

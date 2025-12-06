@@ -140,3 +140,20 @@ npm run db:seed
 - **"User not found"**: Ensure you have registered or that the auto-registration flow (Guest Checkout) is working.
 
 
+---測試帳號
+-- 1. 刪除關聯的業務資料 (Business Data)
+DELETE FROM transactions WHERE user_id IN (SELECT id FROM users WHERE email = 'richman.yin@gmail.com');
+DELETE FROM enrollments WHERE user_id IN (SELECT id FROM users WHERE email = 'richman.yin@gmail.com');
+DELETE FROM lesson_completion WHERE user_id IN (SELECT id FROM users WHERE email = 'richman.yin@gmail.com');
+DELETE FROM qa_messages WHERE author_id IN (SELECT id FROM users WHERE email = 'richman.yin@gmail.com');
+DELETE FROM user_attempts WHERE user_id IN (SELECT id FROM users WHERE email = 'richman.yin@gmail.com');
+DELETE FROM notifications WHERE user_id IN (SELECT id FROM users WHERE email = 'richman.yin@gmail.com');
+
+-- 2. 刪除 Auth.js 關聯資料 (Auth Data)
+-- 注意: Auth Tables 在您的 Schema 中使用 camelCase 欄位名稱，所以需要加上雙引號
+DELETE FROM "account" WHERE "userId" IN (SELECT id FROM users WHERE email = 'richman.yin@gmail.com');
+DELETE FROM "session" WHERE "userId" IN (SELECT id FROM users WHERE email = 'richman.yin@gmail.com');
+DELETE FROM "authenticator" WHERE "userId" IN (SELECT id FROM users WHERE email = 'richman.yin@gmail.com');
+
+-- 3. 最後刪除使用者本體 (User)
+DELETE FROM users WHERE email = 'richman.yin@gmail.com';
