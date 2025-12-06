@@ -24,9 +24,7 @@ export default async function AdminLayout({
                 Assuming MobileHeader handles the mobile menu toggle. 
                 MobileHeader currently likely has dark theme styles, might need update later.
              */}
-            <div className="md:hidden absolute top-0 left-0 w-full z-50">
-                <MobileHeader />
-            </div>
+
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col h-full overflow-hidden">
