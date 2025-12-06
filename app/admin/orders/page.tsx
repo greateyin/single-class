@@ -12,6 +12,7 @@ import { formatPrice } from '@/lib/format';
 import { formatDateTime, formatDate } from '@/lib/utils';
 import { Eye } from 'lucide-react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export default async function AdminOrdersPage({
     searchParams,
@@ -21,6 +22,10 @@ export default async function AdminOrdersPage({
     const { page } = await searchParams;
     const currentPage = Number(page) || 1;
     const { data: orders, metadata } = await getOrders(currentPage);
+
+    if (metadata.totalPages > 0 && currentPage > metadata.totalPages) {
+        redirect(`/admin/orders?page=${metadata.totalPages}`);
+    }
 
     return (
         <div className="space-y-6">
@@ -45,49 +50,57 @@ export default async function AdminOrdersPage({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {orders.map((order) => (
-                            <TableRow key={order.id}>
-                                <TableCell>
-                                    {formatDateTime(order.saleDate)}
-                                </TableCell>
-                                <TableCell>
-                                    <Link href={`/admin/users/${order.userId}`} className="hover:underline">
-                                        <div className="flex flex-col">
-                                            <span className="font-medium">{order.user.name || 'Unknown'}</span>
-                                            <span className="text-xs text-muted-foreground">{order.user.email}</span>
-                                        </div>
-                                    </Link>
-                                </TableCell>
-                                <TableCell>{order.course?.title || 'Unknown Course'}</TableCell>
-                                <TableCell>{formatPrice(order.amountCents)}</TableCell>
-                                <TableCell>
-                                    <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${order.status === 'completed'
-                                        ? 'bg-green-100 text-green-800'
-                                        : order.status === 'refunded'
-                                            ? 'bg-yellow-100 text-yellow-800'
-                                            : 'bg-red-100 text-red-800'
-                                        }`}>
-                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    {(() => {
-                                        /* eslint-disable @typescript-eslint/no-explicit-any */
-                                        const enrollment = (order.user as any).enrollments?.find((e: any) => e.courseId === order.courseId);
-                                        if (!enrollment?.expiresAt) return '-';
-                                        return formatDate(enrollment.expiresAt);
-                                    })()}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <Link href={`/admin/orders/${order.id}`}>
-                                        <Button variant="ghost" size="sm">
-                                            <Eye className="h-4 w-4" />
-                                            <span className="sr-only">View</span>
-                                        </Button>
-                                    </Link>
+                        {orders.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                                    No orders found.
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ) : (
+                            orders.map((order) => (
+                                <TableRow key={order.id}>
+                                    <TableCell>
+                                        {formatDateTime(order.saleDate)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Link href={`/admin/users/${order.userId}`} className="hover:underline">
+                                            <div className="flex flex-col">
+                                                <span className="font-medium">{order.user.name || 'Unknown'}</span>
+                                                <span className="text-xs text-muted-foreground">{order.user.email}</span>
+                                            </div>
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell>{order.course?.title || 'Unknown Course'}</TableCell>
+                                    <TableCell>{formatPrice(order.amountCents)}</TableCell>
+                                    <TableCell>
+                                        <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${order.status === 'completed'
+                                            ? 'bg-green-100 text-green-800'
+                                            : order.status === 'refunded'
+                                                ? 'bg-yellow-100 text-yellow-800'
+                                                : 'bg-red-100 text-red-800'
+                                            }`}>
+                                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        {(() => {
+                                            /* eslint-disable @typescript-eslint/no-explicit-any */
+                                            const enrollment = (order.user as any).enrollments?.find((e: any) => e.courseId === order.courseId);
+                                            if (!enrollment?.expiresAt) return '-';
+                                            return formatDate(enrollment.expiresAt);
+                                        })()}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <Link href={`/admin/orders/${order.id}`}>
+                                            <Button variant="ghost" size="sm">
+                                                <Eye className="h-4 w-4" />
+                                                <span className="sr-only">View</span>
+                                            </Button>
+                                        </Link>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </div>
