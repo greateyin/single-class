@@ -1,10 +1,10 @@
 'use server';
 
 import { ordersController } from '@/lib/paypal';
-import { 
-    CheckoutPaymentIntent, 
-    OrderApplicationContextShippingPreference, 
-    OrderApplicationContextUserAction 
+import {
+    CheckoutPaymentIntent,
+    OrderApplicationContextShippingPreference,
+    OrderApplicationContextUserAction
 } from '@paypal/paypal-server-sdk';
 import { enforceAuthentication } from '@/lib/auth-guards';
 import { auth } from '@/lib/auth';
@@ -63,44 +63,55 @@ export async function createPayPalOrder(courseId: string) {
 }
 
 export async function capturePayPalOrder(orderId: string, courseId: string) {
-    const session = await enforceAuthentication();
-    const currentUserId = session.user.id; // Renamed to avoid shadowing
+    // Remove strict auth guard to allow Guest Checkout
+    const session = await auth();
+    const currentUserId = session?.user?.id;
 
     try {
         const { result: capture } = await ordersController.captureOrder({
             id: orderId,
             body: {}
         });
-        
+
         if (!capture.purchaseUnits || !capture.purchaseUnits[0] || !capture.purchaseUnits[0].payments || !capture.purchaseUnits[0].payments.captures || !capture.purchaseUnits[0].payments.captures[0]) {
             throw new Error('Invalid PayPal capture response structure');
         }
 
-        const captureId = capture.purchaseUnits[0].payments.captures[0].id;
-        
+        const captureData = capture.purchaseUnits[0].payments.captures[0];
+        const captureId = captureData.id;
+
         if (!captureId) {
             throw new Error('PayPal capture ID missing');
         }
 
         // Extract customId to get metadata
-        const customId = JSON.parse(capture.purchaseUnits[0].payments.captures[0].customId || '{}');
+        const customId = JSON.parse(captureData.customId || '{}');
         const { userId, offerType } = customId; // Use userId from customId if available
 
         // Extract Payer Email
-        const payerEmail = capture.payer?.emailAddress;
+        // Note: SDK types might be tricky, checking structure from user log
+        const payerEmail = (capture as any).payer?.email_address || (capture as any).payer?.emailAddress;
 
         if (!payerEmail) {
+            console.error('PayPal Payer Email missing', capture);
             throw new Error('PayPal Payer Email missing');
         }
 
+        // Extract Amount and Currency
+        const amount = captureData.amount?.value;
+        const currency = captureData.amount?.currencyCode || 'USD';
+
         await fulfillOrder(
-            userId || currentUserId, // Use userId from custom_id or current session userId
+            userId || currentUserId, // Use userId from custom_id which was set at create time, or current session
             offerType || 'core',
             captureId,
             'paypal',
             null,
             courseId,
-            payerEmail
+            payerEmail,
+            null, // receiptUrl
+            currency,
+            { amount, payerEmail, orderId } // paymentDetails
         );
 
         return { success: true, orderId: orderId };
