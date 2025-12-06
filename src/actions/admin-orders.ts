@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { transactions, users, courses, enrollments } from '@/db/schema';
+import { transactions, enrollments } from '@/db/schema';
 import { enforceAdminRole } from '@/lib/auth-guards';
 import { stripe } from '@/lib/stripe';
 import { desc, eq, sql } from 'drizzle-orm';

@@ -184,7 +184,7 @@ export default async function EnrollPage({ params, searchParams }: Props) {
 
                             <div className="relative z-10">
                                 <h2 className="text-3xl font-black text-[#111] border-b-4 border-[#dc2626] pb-4 inline-block mb-6 uppercase">
-                                    Start Now!! <span className="font-medium text-slate-600 normal-case block text-xl mt-2">Here's Everything You Get...</span>
+                                    Start Now!! <span className="font-medium text-slate-600 normal-case block text-xl mt-2">Here&apos;s Everything You Get...</span>
                                 </h2>
                                 <div className="prose prose-lg text-slate-600 leading-relaxed max-w-none">
                                     <p className="whitespace-pre-wrap">

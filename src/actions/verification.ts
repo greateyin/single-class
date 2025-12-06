@@ -2,7 +2,7 @@
 
 import { db } from '@/db';
 import { users, verificationTokens } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 export async function verifyEmail(token: string) {
     const existingToken = await db.query.verificationTokens.findFirst({

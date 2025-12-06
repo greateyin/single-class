@@ -11,7 +11,6 @@ import { authConfig } from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     adapter: DrizzleAdapter(db, {
         usersTable: users,
         accountsTable: accounts,

@@ -14,7 +14,7 @@ export async function getSalesStats(interval: Interval = 'month', startDate?: Da
     const end = endDate || new Date();
     const start = startDate || new Date(new Date().setFullYear(end.getFullYear() - 1));
 
-    let timeBucket: any;
+    let timeBucket: ReturnType<typeof sql>;
     // Postgres date_trunc function
     switch (interval) {
         case 'week':
@@ -68,7 +68,7 @@ export async function getSalesStats(interval: Interval = 'month', startDate?: Da
 
     return {
         chartData: salesData.map(d => ({
-            date: d.date,
+            date: d.date ? String(d.date) : '',
             amount: Number(d.totalSales) / 100, // Convert cents to dollars
             count: Number(d.count)
         })),

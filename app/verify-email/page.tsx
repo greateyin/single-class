@@ -36,8 +36,10 @@ function VerifyEmailForm() {
     }, [token, success, error]);
 
     useEffect(() => {
-        onSubmit();
-    }, [onSubmit]);
+        if (!success && !error && token) {
+            onSubmit();
+        }
+    }, [onSubmit, success, error, token]);
 
     return (
         <AuthWrapper>
