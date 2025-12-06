@@ -359,3 +359,10 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+// 15. System Settings
+export const systemSettings = pgTable('system_settings', {
+  id: boolean('id').primaryKey().default(true), // Singleton constraint logic handled by app or setup
+  stripeEnabled: boolean('stripe_enabled').default(true).notNull(),
+  paypalEnabled: boolean('paypal_enabled').default(true).notNull(),
+});

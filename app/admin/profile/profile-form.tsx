@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useTransition } from "react";
+import { useTransition, useState } from "react"; // Added useState
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-interface SettingsFormProps {
+interface ProfileFormProps {
     user: {
         name?: string | null;
         email?: string | null;
@@ -23,9 +23,10 @@ interface FormData {
     confirmPassword?: string;
 }
 
-export function SettingsForm({ user }: SettingsFormProps) {
-    const [isPending, startTransition] = useTransition();
+export function ProfileForm({ user }: ProfileFormProps) { // Renamed from SettingsForm
     const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+    // const router = useRouter(); // This line was a duplicate in the provided snippet, removed.
 
     const {
         register,
@@ -55,24 +56,27 @@ export function SettingsForm({ user }: SettingsFormProps) {
             formData.append("password", data.password);
         }
 
-        startTransition(async () => {
-            const result = await updateProfile(formData);
-            if (result.success) {
-                toast.success(result.message);
-                router.refresh();
-                // Reset password fields only
-                reset({
-                    name: data.name,
-                    password: "",
-                    confirmPassword: "",
-                });
-            } else {
-                toast.error(result.message);
-                if (result.errors) {
-                    // Start showing validation errors from server if any
-                    // For brevity, we just toast the main message, but you could setError here
-                }
-            }
+        startTransition(() => {
+            updateProfile(formData)
+                .then((result) => {
+                    if (result.success) {
+                        toast.success(result.message);
+                        router.refresh();
+                        // Reset password fields only
+                        reset({
+                            name: data.name,
+                            password: "",
+                            confirmPassword: "",
+                        });
+                    } else {
+                        toast.error(result.message);
+                        if (result.errors) {
+                            // Start showing validation errors from server if any
+                            // For brevity, we just toast the main message, but you could setError here
+                        }
+                    }
+                })
+                .catch(() => toast.error("An unexpected error occurred."));
         });
     };
 
@@ -148,8 +152,8 @@ export function SettingsForm({ user }: SettingsFormProps) {
                     </div>
 
                     <div className="flex justify-end pt-4">
-                        <Button type="submit" disabled={isPending}>
-                            {isPending ? "Saving..." : "Save Changes"}
+                        <Button disabled={isPending} type="submit">
+                            {isPending ? "Saving..." : "Save changes"}
                         </Button>
                     </div>
                 </CardContent>

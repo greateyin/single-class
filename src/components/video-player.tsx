@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { ReactPlayerProps } from 'react-player';
+
 
 // Use dynamic import for ReactPlayer to avoid SSR issues and lazy load
-const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
+const ReactPlayer = dynamic(() => import('react-player'), { ssr: false }) as any;
 
 interface VideoPlayerProps {
     url: string;
@@ -34,7 +34,7 @@ export function VideoPlayer({ url, title, onComplete }: VideoPlayerProps) {
                     vimeo: {
                         playerOptions: { responsive: true }
                     }
-                }}
+                } as any}
             />
         </div>
     );

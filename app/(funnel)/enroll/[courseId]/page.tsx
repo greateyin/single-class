@@ -48,6 +48,7 @@ export async function generateMetadata(
 
 import Link from 'next/link';
 import { FlipClock } from '@/components/flip-clock';
+import { getSystemSettings } from '@/actions/admin-settings';
 
 // Helper to convert standard URLs to embed URLs
 function getEmbedUrl(url: string): string {
@@ -135,6 +136,8 @@ export default async function EnrollPage({ params, searchParams }: Props) {
             }
         }
     }
+
+    const systemSettings = await getSystemSettings();
 
     return (
         <div className="min-h-screen w-full bg-[#f8fafc] font-sans text-[#2d3748] overflow-x-hidden">
@@ -283,6 +286,7 @@ export default async function EnrollPage({ params, searchParams }: Props) {
                                                     )}
 
                                                     {course.priceCents === 0 ? (
+                                                        // Free Course Logic (Unchanged)
                                                         session?.user ? (
                                                             <form action={enrollForFree.bind(null, course.id)} className="w-full">
                                                                 <Button size="lg" className="w-full bg-[#dc2626] hover:bg-red-700 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-red-900">
@@ -306,32 +310,44 @@ export default async function EnrollPage({ params, searchParams }: Props) {
                                                         )
                                                     ) : (
                                                         <>
-                                                            <form action={createCoreCheckoutSession.bind(null, course.id)} className="w-full">
-                                                                <Button size="lg" className="w-full bg-[#dc2626] hover:bg-red-700 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-red-900">
-                                                                    <div className="flex items-center gap-2 flex-wrap justify-center">
-                                                                        <svg viewBox="0 0 60 25" xmlns="http://www.w3.org/2000/svg" className="h-8 w-auto fill-white">
-                                                                            <path d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.02 1.27-.06 1.48zM52.02 10c0-1.08-.43-2.09-1.6-2.09-1.15 0-2.2.84-2.46 2.1h4.06zM40.45 20.3c-1.4 0-2.54-.98-2.54-2.88V5.31h-2.7v7.3h-2.3v3.66h2.3v3.98c0 2.87 1.95 5.06 4.98 5.06 1.45 0 2.58-.33 3.06-.75v-3.7a4.17 4.17 0 0 0-2.8.44zM14.3 20.17c-1.75 2.1-4.22 2.54-5.63 2.54-6.02 0-8.66-4.59-8.66-7.85 0-3.1 2.45-7.77 8.08-7.77 1.6 0 3.7.67 5.17 1.77l2.4-3.66C13.68 3.55 10.5 3 8.1 3c-8.1 0-14.1 6.13-14.1 13.92 0 8.07 5.8 12.3 12.23 12.3 3.1 0 6.13-1.05 8.14-3.14l-2.65-3.46zM28.4 24.37h4.4V10.1h-4.4v14.27zm-2.22-19.1c0 1.62 1.25 2.76 2.9 2.76 1.67 0 2.9-1.14 2.9-2.76 0-1.6-1.23-2.76-2.9-2.76-1.65 0-2.9 1.16-2.9 2.76z" />
-                                                                        </svg>
+                                                            {/* Stripe Button */}
+                                                            {systemSettings?.stripeEnabled && (
+                                                                <form action={createCoreCheckoutSession.bind(null, course.id)} className="w-full">
+                                                                    <Button size="lg" className="w-full bg-[#dc2626] hover:bg-red-700 text-white font-bold text-lg md:text-xl py-6 md:py-8 h-auto whitespace-normal shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center gap-1 rounded-lg border-b-4 border-red-900">
+                                                                        <div className="flex items-center gap-2 flex-wrap justify-center">
+                                                                            <img src="/stripe.svg" alt="Stripe" className="h-8 w-auto" />
+                                                                        </div>
+                                                                        <span className="text-xs font-normal opacity-90 uppercase tracking-wider">Secure 256-bit SSL Encryption</span>
+                                                                    </Button>
+                                                                </form>
+                                                            )}
+
+                                                            {/* PayPal Button */}
+                                                            {systemSettings?.paypalEnabled && (
+                                                                <>
+                                                                    <div className="relative py-2">
+                                                                        <div className="absolute inset-0 flex items-center">
+                                                                            <span className="w-full border-t border-slate-200" />
+                                                                        </div>
+                                                                        <div className="relative flex justify-center text-xs uppercase">
+                                                                            <span className="bg-white px-2 text-slate-400 font-semibold">Or pay with PayPal</span>
+                                                                        </div>
                                                                     </div>
-                                                                    <span className="text-xs font-normal opacity-90 uppercase tracking-wider">Secure 256-bit SSL Encryption</span>
-                                                                </Button>
-                                                            </form>
 
-                                                            <div className="relative py-2">
-                                                                <div className="absolute inset-0 flex items-center">
-                                                                    <span className="w-full border-t border-slate-200" />
-                                                                </div>
-                                                                <div className="relative flex justify-center text-xs uppercase">
-                                                                    <span className="bg-white px-2 text-slate-400 font-semibold">Or pay with PayPal</span>
-                                                                </div>
-                                                            </div>
+                                                                    <div className="w-full">
+                                                                        <PayPalButton
+                                                                            courseId={course.id}
+                                                                            clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
+                                                                        />
+                                                                    </div>
+                                                                </>
+                                                            )}
 
-                                                            <div className="w-full">
-                                                                <PayPalButton
-                                                                    courseId={course.id}
-                                                                    clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!}
-                                                                />
-                                                            </div>
+                                                            {!systemSettings?.stripeEnabled && !systemSettings?.paypalEnabled && (
+                                                                <div className="text-center p-4 bg-slate-100 rounded text-slate-500">
+                                                                    Enrollment temporarily paused.
+                                                                </div>
+                                                            )}
                                                         </>
                                                     )}
                                                 </div>

@@ -44,6 +44,18 @@ const routes = [
         href: "/admin/sales",
         color: "text-emerald-500",
     },
+    {
+        label: "Profile",
+        icon: Users, // Using Users icon as a placeholder since User icon might not be imported or conflict. Or use Settings icon and change Settings page icon to something else like ToggleRight
+        href: "/admin/profile",
+        color: "text-slate-500",
+    },
+    {
+        label: "System Settings",
+        icon: Settings,
+        href: "/admin/settings",
+        color: "text-gray-500",
+    },
 ];
 
 export const AdminSidebar = () => {
