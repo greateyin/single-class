@@ -14,6 +14,7 @@ import { getEmbedUrl } from '@/lib/utils';
 import { auth } from '@/lib/auth';
 import { CourseSidebar } from '@/components/course-sidebar';
 import { lessonCompletion } from '@/db/schema';
+import { VideoPlayer } from '@/components/video-player';
 
 export default async function LessonPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: lessonId } = await params;
@@ -62,6 +63,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
         orderBy: [asc(lessons.orderIndex)],
     });
 
+
     // Fetch modules for sidebar structure
     const courseModules = await db.query.modules.findMany({
         where: eq(modules.courseId, course.id),
@@ -74,15 +76,17 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-8">
                     {/* Video Player */}
-                    <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
-                        <iframe
-                            src={getEmbedUrl(lesson.videoEmbedUrl) || ''}
-                            className="w-full h-full"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowFullScreen
-                            title={lesson.title}
-                        />
-                    </div>
+                    <VideoPlayer
+                        url={lesson.videoEmbedUrl || ''}
+                        title={lesson.title}
+                        onComplete={async () => {
+                            'use server';
+                            await markLessonCompleted(lessonId);
+                        }}
+                    />
+
+                    {/* ... rest of the component ... */}
+
 
                     {/* Header & Actions */}
                     <div className="flex flex-col gap-4">
