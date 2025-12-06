@@ -45,7 +45,7 @@ export async function createPayPalOrder(courseId: string) {
             brandName: process.env.NEXT_PUBLIC_APP_NAME || 'Single Class',
             shippingPreference: OrderApplicationContextShippingPreference.NoShipping,
             userAction: OrderApplicationContextUserAction.PayNow,
-            returnUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/upsell`,
+            returnUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/confirmation`,
             cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/courses/${courseId}`
         }
     };

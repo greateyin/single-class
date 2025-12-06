@@ -32,7 +32,8 @@ export async function createCoreCheckoutSession(courseId: string) {
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const successUrl = `${baseUrl}/upsell?session_id={CHECKOUT_SESSION_ID}&courseId=${courseId}`;
+    // Bypass upsell, go directly to confirmation
+    const successUrl = `${baseUrl}/confirmation`;
     const cancelUrl = `${baseUrl}/courses/${courseId}`;
 
     console.log('--- DEBUG STRIPE URLs ---');
