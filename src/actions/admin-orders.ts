@@ -68,9 +68,30 @@ export async function refundOrder(transactionId: string) {
     if (!order.paymentIntentId) throw new Error('No payment intent ID found');
 
     try {
-        await stripe.refunds.create({
-            payment_intent: order.paymentIntentId,
-        });
+        if (order.provider === 'paypal') {
+            const { paymentsController } = await import('@/lib/paypal');
+
+            // For PayPal, paymentIntentId stores the Capture ID
+            const captureId = order.paymentIntentId;
+
+            console.log(`[Refund] Processing PayPal refund for Capture ID: ${captureId}`);
+
+            const { result: refund } = await paymentsController.refundCapturedPayment({
+                captureId: captureId,
+                body: {
+                    noteToPayer: 'Refund initiated by Admin',
+                },
+                prefer: 'return=representation'
+            });
+
+            console.log('[Refund] PayPal refund successful:', refund.id);
+
+        } else {
+            // Default to Stripe
+            await stripe.refunds.create({
+                payment_intent: order.paymentIntentId,
+            });
+        }
 
         await db.update(transactions)
             .set({ status: 'refunded' })

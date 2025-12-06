@@ -1,4 +1,4 @@
-import { Client, Environment, LogLevel, OrdersController } from '@paypal/paypal-server-sdk';
+import { Client, Environment, LogLevel, OrdersController, PaymentsController } from '@paypal/paypal-server-sdk';
 
 const configureClient = function () {
     const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
@@ -25,5 +25,6 @@ const configureClient = function () {
 
 const client = configureClient();
 const ordersController = new OrdersController(client);
+const paymentsController = new PaymentsController(client);
 
-export { client, ordersController };
+export { client, ordersController, paymentsController };
