@@ -6,6 +6,7 @@ import type { AdapterAccountType } from "next-auth/adapters"
 export const userRoles = pgEnum('user_role', ['student', 'admin']);
 export const transactionStatus = pgEnum('transaction_status', ['pending', 'completed', 'failed', 'refunded']);
 export const offerType = pgEnum('offer_type', ['core', 'upsell', 'downsell']);
+export const notificationType = pgEnum('notification_type', ['info', 'warning', 'success', 'error']);
 
 // 1. Users
 export const users = pgTable('users', {
@@ -194,6 +195,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   qaMessages: many(qaMessages),
   userAttempts: many(userAttempts),
   enrollments: many(enrollments),
+  notifications: many(notifications),
 }));
 
 export const coursesRelations = relations(courses, ({ many }) => ({
@@ -334,3 +336,22 @@ export const verificationTokens = pgTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   })
 );
+
+// 14. Notifications
+export const notifications = pgTable('notifications', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id').references(() => users.id).notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  type: notificationType('type').notNull(),
+  isRead: boolean('is_read').default(false).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  link: text('link'),
+});
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
+  }),
+}));

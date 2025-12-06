@@ -2,13 +2,15 @@ import { enforceAdminRole } from '@/lib/auth-guards';
 import { MobileHeader } from '@/components/admin/mobile-header';
 import { AdminSidebar } from '@/components/admin/sidebar';
 import { AdminHeader } from '@/components/admin/header';
+import { getNotifications } from '@/actions/notifications';
 
 export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    await enforceAdminRole();
+    const session = await enforceAdminRole();
+    const { notifications, unreadCount } = await getNotifications();
 
     return (
         <div className="flex h-screen bg-slate-50 overflow-hidden">
@@ -28,7 +30,7 @@ export default async function AdminLayout({
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col h-full overflow-hidden">
-                <AdminHeader />
+                <AdminHeader user={session.user} notifications={notifications} unreadCount={unreadCount} />
                 <main className="flex-1 overflow-y-auto p-8 relative">
                     <div className="max-w-7xl mx-auto">
                         {children}
