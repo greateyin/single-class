@@ -20,7 +20,10 @@ export async function manualFulfillOrder(email: string, courseId: string, offerT
             'stripe', // Source
             null, // Customer Ref (unknown)
             courseId,
-            email
+            email,
+            null, // receiptUrl
+            'usd', // currency
+            { note: 'Manual Fulfillment' } // paymentDetails
         );
         return { success: true };
     } catch (error) {

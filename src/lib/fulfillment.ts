@@ -11,7 +11,11 @@ export async function fulfillOrder(
     source: 'stripe' | 'paypal',
     customerRef: string | null,
     courseId?: string,
-    userEmail?: string
+    userEmail?: string,
+    receiptUrl?: string | null,
+    currency: string = 'usd',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    paymentDetails?: any
 ) {
     console.log(`Fulfilling order for ${userId || userEmail}, offer: ${offerType}, course: ${courseId}`);
 
@@ -68,6 +72,10 @@ export async function fulfillOrder(
             paymentIntentId: transactionRef,
             isVaulted: !!customerRef,
             courseId,
+            provider: source,
+            currency,
+            receiptUrl: receiptUrl || null,
+            paymentMethodDetails: paymentDetails || null,
         });
 
         // B. Update User (Save Stripe Customer ID for Core)

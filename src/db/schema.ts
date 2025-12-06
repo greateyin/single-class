@@ -134,6 +134,10 @@ export const transactions = pgTable('transactions', {
   paymentIntentId: text('payment_intent_id').unique(), // For Idempotency
   isVaulted: boolean('is_vaulted').default(false), // Was card saved?
   saleDate: timestamp('sale_date', { withTimezone: true }).defaultNow().notNull(),
+  provider: text('provider').default('stripe').notNull(), // 'stripe' or 'paypal'
+  currency: text('currency').default('usd'),
+  receiptUrl: text('receipt_url'),
+  paymentMethodDetails: json('payment_method_details'),
 });
 
 // 5. Lesson Completion (Progress)

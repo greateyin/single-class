@@ -37,17 +37,35 @@ export async function POST(req: Request) {
         let customerRef: string | null = null;
         let customerEmail: string | null = null;
         let paymentIntentId: string | null = null;
+        let currency = 'usd';
+        let receiptUrl: string | null = null;
+        let paymentMethodDetails: any = null;
 
         if (event.type === 'checkout.session.completed') {
             const checkoutSession = session as Stripe.Checkout.Session;
             customerRef = checkoutSession.customer as string | null;
             customerEmail = checkoutSession.customer_details?.email || checkoutSession.customer_email || null;
             paymentIntentId = checkoutSession.payment_intent as string | null || checkoutSession.id;
+            currency = checkoutSession.currency || 'usd';
+            // Receipt usually on Charge, but session might have metadata or related object.
+            // For Checkout Session, payment_method_details might be in payment_method_options or need separate fetch.
+
+            // Try explicit extraction if available in this event version, otherwise default to minimal
+            paymentMethodDetails = checkoutSession.payment_method_options;
         } else {
             const paymentIntent = session as Stripe.PaymentIntent;
             customerRef = paymentIntent.customer as string | null;
             paymentIntentId = paymentIntent.id;
-            // PaymentIntent might not have email directly, usually passed in metadata or we rely on userId
+            currency = paymentIntent.currency || 'usd';
+
+            // PI Succeeded often has latest_charge which has receipt_url
+            if (paymentIntent.latest_charge) {
+                // In webhook payload, if expanded, it's an object. If not, it's a string ID.
+                // We can't guarantee expansion here without configuring webhook expansion or fetching.
+                // Let's assume unavailable unless we fetch.
+                // However, we can store what we have.
+            }
+            paymentMethodDetails = paymentIntent.payment_method_options;
         }
 
         if ((!userId && !customerEmail) || !offerType) {
@@ -63,7 +81,10 @@ export async function POST(req: Request) {
                 'stripe',
                 customerRef,
                 courseId || undefined,
-                customerEmail || undefined
+                customerEmail || undefined,
+                receiptUrl,
+                currency,
+                paymentMethodDetails
             );
             return NextResponse.json({ received: true });
         } catch (error) {
