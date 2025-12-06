@@ -24,10 +24,8 @@ export default async function CourseLayout({
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col h-full overflow-hidden">
                 <UserHeader user={session.user} notifications={notifications} unreadCount={unreadCount} />
-                <main className="flex-1 overflow-y-auto p-8 relative">
-                    <div className="max-w-7xl mx-auto">
-                        {children}
-                    </div>
+                <main className="flex-1 overflow-y-auto relative">
+                    {children}
                 </main>
             </div>
         </div>
