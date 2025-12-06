@@ -15,6 +15,9 @@ export function PayPalButton({ courseId, clientId }: PayPalButtonProps) {
                 style={{ layout: "horizontal", height: 55 }}
                 createOrder={async () => {
                     const order = await createPayPalOrder(courseId);
+                    if (!order?.id) {
+                        throw new Error('Failed to create PayPal order');
+                    }
                     return order.id;
                 }}
                 onApprove={async (data) => {

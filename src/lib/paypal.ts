@@ -1,6 +1,6 @@
-import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
+import { Client, Environment, LogLevel, OrdersController } from '@paypal/paypal-server-sdk';
 
-const configureEnvironment = function () {
+const configureClient = function () {
     const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
     const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
@@ -10,13 +10,20 @@ const configureEnvironment = function () {
 
     const environment = process.env.PAYPAL_MODE || (process.env.NODE_ENV === 'production' ? 'live' : 'sandbox');
 
-    return environment === 'live'
-        ? new checkoutNodeJssdk.core.LiveEnvironment(clientId, clientSecret)
-        : new checkoutNodeJssdk.core.SandboxEnvironment(clientId, clientSecret);
+    return new Client({
+        clientCredentialsAuthCredentials: {
+            oAuthClientId: clientId,
+            oAuthClientSecret: clientSecret,
+        },
+        timeout: 0,
+        environment: environment === 'live' ? Environment.Production : Environment.Sandbox,
+        logging: {
+            logLevel: LogLevel.Info,
+        },
+    });
 };
 
-const client = function () {
-    return new checkoutNodeJssdk.core.PayPalHttpClient(configureEnvironment());
-};
+const client = configureClient();
+const ordersController = new OrdersController(client);
 
-export { client };
+export { client, ordersController };

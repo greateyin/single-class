@@ -1,27 +1,28 @@
-import { client } from '@/lib/paypal';
-import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
+import { ordersController } from '@/lib/paypal';
+import { CheckoutPaymentIntent } from '@paypal/paypal-server-sdk';
 
 async function main() {
     console.log('Testing PayPal API connectivity...');
 
-    const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
-    request.prefer("return=representation");
-    request.requestBody({
-        intent: 'CAPTURE',
-        purchase_units: [{
+    const orderRequest = {
+        intent: CheckoutPaymentIntent.Capture,
+        purchaseUnits: [{
             amount: {
-                currency_code: 'USD',
+                currencyCode: 'USD',
                 value: '10.00',
             },
             description: 'Test Order',
         }]
-    });
+    };
 
     try {
-        const order = await client().execute(request);
+        const { result: order } = await ordersController.createOrder({
+            body: orderRequest,
+            prefer: "return=representation"
+        });
         console.log('Successfully created PayPal Order!');
-        console.log('Order ID:', order.result.id);
-        console.log('Status:', order.result.status);
+        console.log('Order ID:', order.id);
+        console.log('Status:', order.status);
     } catch (err: unknown) {
         console.error('PayPal API Error:', err);
         process.exit(1);
