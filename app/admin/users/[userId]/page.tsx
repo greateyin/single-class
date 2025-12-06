@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { updateEnrollmentExpiration } from "@/actions/admin-users";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { PasswordResetForm } from "./password-reset-form";
 
 export default async function AdminUserDetailsPage({ params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params;
@@ -121,6 +122,10 @@ export default async function AdminUserDetailsPage({ params }: { params: Promise
                         )}
                     </CardContent>
                 </Card>
+
+                <div className="md:col-span-1">
+                    <PasswordResetForm userId={user.id} />
+                </div>
             </div>
         </div>
     );
