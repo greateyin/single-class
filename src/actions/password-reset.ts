@@ -4,10 +4,8 @@ import { db } from '@/db';
 import { passwordResetTokens, users } from '@/db/schema';
 import { hash } from 'bcrypt';
 import { eq } from 'drizzle-orm';
-import { Resend } from 'resend';
+import { resend } from '@/lib/email';
 import { z } from 'zod';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 const forgotPasswordSchema = z.object({
     email: z.string().email(),

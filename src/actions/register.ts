@@ -70,8 +70,7 @@ export async function registerUser(formData: FormData) {
         const confirmLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email?token=${token}`;
 
         // Use standard import if possible, or dynamic import if Resend is not imported
-        const { Resend } = await import('resend');
-        const resend = new Resend(process.env.RESEND_API_KEY);
+        const { resend } = await import('@/lib/email');
 
         const { getEmailTemplate } = await import('@/lib/email-templates');
 

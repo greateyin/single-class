@@ -6,10 +6,8 @@ import { enforceAdminRole } from '@/lib/auth-guards';
 import { stripe } from '@/lib/stripe';
 import { desc, eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { Resend } from 'resend';
 import { formatPrice } from '@/lib/format';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { resend } from '@/lib/email';
 
 export async function getOrders(page = 1, limit = 20) {
     await enforceAdminRole();

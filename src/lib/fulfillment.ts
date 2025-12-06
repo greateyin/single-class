@@ -1,10 +1,8 @@
 import { db } from '@/db';
 import { transactions, users, enrollments } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { Resend } from 'resend';
+import { resend } from '@/lib/email';
 import { v4 as uuidv4 } from 'uuid';
-
-const resend = new Resend(process.env.RESEND_API_KEY || 're_123');
 
 export async function fulfillOrder(
     userId: string | null | undefined,

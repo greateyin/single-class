@@ -69,8 +69,7 @@ export async function resendVerificationEmail(email: string) {
     const confirmLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email?token=${token}`;
 
     // Dynamic import to avoid edge runtime issues if any (though standard import is fine here)
-    const { Resend } = await import('resend');
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { resend } = await import('@/lib/email');
 
     const { getEmailTemplate } = await import('@/lib/email-templates');
 
